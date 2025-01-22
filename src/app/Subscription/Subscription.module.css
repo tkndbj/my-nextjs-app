@@ -1,0 +1,151 @@
+/* ./src/app/Subscription/Subscription.module.css */
+
+.body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: repeating-linear-gradient(
+    #6F89E3,
+    #6F89E3 49.9%,
+    #F9F9F9 50.1%,
+    #F9F9F9 100%
+  );
+  font-family: 'Open Sans', sans-serif;
+}
+
+.header {
+  width: 100%;
+  max-width: 560px;
+  margin-bottom: 35px;
+  text-align: center;
+  color: #000000; /* Changed from #ffffff to black */
+}
+
+.headerTitle {
+  font-size: 32px;
+  color: #000000; /* Ensure header title is black */
+}
+
+.headerText {
+  color: #000000; /* Changed from #c0cbf2 to black */
+}
+
+.subscriptionContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  width: 90%;
+  max-width: 1200px;
+}
+
+.subscriptionButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: Roboto, sans-serif;
+  width: 250px;
+  padding: 20px;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 4px 13px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+  position: relative;
+}
+
+.subscriptionButton:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Removed the ::after pseudo-element to eliminate the "SUBSCRIBE" text/button */
+.subscriptionButton::after {
+  display: none;
+}
+
+.subscriptionTitle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 0;
+  font-size: 20px;
+  color: #000000; /* Changed from #6f89e3 to black */
+  width: 100%;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.subscriptionIcon {
+  /* Removed background, padding, and border-radius to eliminate the circle shape */
+  margin-top: 10px;
+  font-size: 38px;
+  color: #000000; /* Ensure icon color is black */
+}
+
+.subscriptionPrice {
+  display: block;
+  width: 100%;
+  text-align: center;
+  text-transform: lowercase;
+  font-size: 28px;
+  color: #000000; /* Ensure price text is black */
+  padding: 10px 0;
+  border-bottom: 2px solid #eff1f3;
+}
+
+.subscriptionPriceMonth {
+  font-size: 18px;
+  color: #c8cdd1;
+}
+
+.subscriptionList {
+  padding: 10px 0;
+  margin: 10px 0;
+  list-style-type: none;
+  width: 100%;
+}
+
+.subscriptionItem {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+  font-size: 14px;
+  color: #000000; /* Changed from #666662 to black */
+}
+
+.subscriptionItemText {
+  color: #000000; /* Changed from #aeaeac to black */
+  font-size: 13px;
+  margin-left: 5px;
+}
+
+.iconSubscription {
+  color: #000000; /* Changed from #c8cdd1 to black */
+  margin-right: 5px;
+}
+
+.subscriptionImage {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 15px;
+}
+
+.personal {
+  /* Additional styles if needed */
+}
+
+.business {
+  /* Additional styles if needed */
+}
+
+.enterprise {
+  /* Additional styles if needed */
+}
+
+.premium {
+  /* Additional styles if needed */
+}

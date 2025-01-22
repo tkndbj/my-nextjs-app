@@ -1,0 +1,81 @@
+/* src/app/components/NotificationsWindow.module.css */
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    margin-left: 0.5rem;
+  }
+  
+  .notificationsWindow {
+    width: 400px; /* Increased width for better visibility */
+    max-height: 500px; /* Increased max-height to accommodate more content */
+    background-color: var(--background);
+    color: var(--foreground);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    overflow-y: auto;
+    animation: fadeIn 0.3s ease;
+    position: absolute; /* Ensure absolute positioning relative to .menuItem */
+    z-index: 1001; /* Ensure it appears above other elements */
+  }
+  
+  .title {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    font-size: 1.4rem; /* Slightly larger font for the title */
+    font-weight: 600;
+  }
+  
+  .loading {
+    padding: 1rem;
+    text-align: center;
+    color: #555;
+  }
+  
+  .notificationList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .notificationItem {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  
+  .notificationItem:last-child {
+    border-bottom: none;
+  }
+  
+  .message {
+    margin: 0;
+    font-size: 1rem; /* Increased font size for better readability */
+    word-wrap: break-word; /* Ensure long messages wrap properly */
+  }
+  
+  .timestamp {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.85rem; /* Slightly larger for better visibility */
+    color: #888;
+  }
+  
+  .empty {
+    padding: 1rem;
+    text-align: center;
+    color: #555;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  

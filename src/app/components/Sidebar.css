@@ -1,0 +1,383 @@
+/* src/app/components/Sidebar.css */
+
+/* Root Variables */
+:root {
+  --body-color: #e4e9f7;
+  --sidebar-color: #fff;
+  --primary-color: #f4f2f2;
+  --primary-color-light: #f4f2f2;
+  --toggle-color: #ddd;
+  --text-color: #707070;
+  --dark-color: #000;
+
+  --trans-02: all 0.2s ease;
+  --trans-03: all 0.3s ease;
+  --trans-04: all 0.5s ease; /* Corrected duplicate variable */
+}
+
+body {
+  background-color: var(--body-color);
+  transition: var(--trans-02);
+}
+
+body.dark {
+  --body-color: #181914;
+  --sidebar-color: #242526;
+  --primary-color: #34383c;
+  --primary-color-light: #383a3c;
+  --toggle-color: #fff;
+  --text-color: #ccc;
+  --dark-color: #fff;
+  background-color: var(--body-color);
+}
+
+/* Adjusted sidebar positioning to account for the fixed header */
+.sidebar {
+  position: fixed;
+  top: 4rem; /* Shift sidebar below the header (header height is 4rem) */
+  left: 0px;
+  height: calc(
+    100% - 4rem
+  ); /* Adjust height to prevent overlapping the header */
+  width: 250px;
+  background-color: var(--sidebar-color);
+  padding: 10px 14px;
+  transition: var(--trans-02);
+  z-index: 60; /* Increase z-index to ensure toggle is above the header (header z-index is 50) */
+  overflow: visible; /* Changed from hidden to visible to allow toggle button to overflow */
+}
+
+.sidebar.close {
+  width: 78px;
+}
+
+/* Header inside Sidebar */
+.sidebar header {
+  position: relative;
+}
+
+.sidebar .image-text {
+  display: flex;
+  align-items: center;
+}
+
+.sidebar .image-text img {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+.sidebar .header-text {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+}
+
+.sidebar .header-text .main {
+  font-weight: 600;
+}
+
+.sidebar .header-text .sub {
+  margin-top: -2px;
+}
+
+/* Toggle Button */
+.sidebar .toggle {
+  position: absolute;
+  top: 50%;
+  right: -25px; /* Adjusted from -25px to -15px based on new size */
+  transform: translateY(-50%) rotate(180deg);
+  height: 20px; /* Reduced from 50px to 30px */
+  width: 20px; /* Reduced from 50px to 30px */
+  background-color: var(--dark-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--sidebar-color);
+  font-size: 16px; /* Reduced from 22px to 16px */
+  cursor: pointer;
+  transition: var(--trans-02);
+  z-index: 61; /* Higher than sidebar to ensure it's clickable */
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); /* Optional: Add shadow for better visibility */
+}
+
+.sidebar.close .toggle {
+  transform: translateY(-50%) rotate(0deg);
+}
+
+/* Menu Bar */
+.sidebar .menu-bar {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.menu-links,
+.bottom-content {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.sidebar .menu-links li {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  transition: var(--trans-02);
+}
+
+.sidebar .menu-links li a,
+.sidebar .menu-links li button,
+.sidebar .bottom-content li a,
+.sidebar .bottom-content li button {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--text-color);
+  width: 100%;
+  padding: 0 10px;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  transition: var(--trans-04);
+  cursor: pointer;
+  position: relative; /* For badge positioning */
+}
+
+.sidebar .menu-links li a:hover,
+.sidebar .menu-links li button:hover,
+.sidebar .bottom-content li a:hover,
+.sidebar .bottom-content li button:hover {
+  background: var(--primary-color);
+}
+
+.sidebar .menu-links li .icons,
+.sidebar .bottom-content li .icons {
+  min-width: 30px;
+  font-size: 20px;
+}
+
+.sidebar .menu-links li .text,
+.sidebar .bottom-content li .text {
+  margin-left: 10px;
+  white-space: nowrap;
+  opacity: 1;
+  transition: var(--trans-04);
+}
+
+.sidebar.close .menu-links li .text,
+.sidebar.close .bottom-content li .text {
+  opacity: 0;
+}
+
+/* Dropdown Button Styles */
+.dropdown-button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--text-color);
+  padding: 0;
+  cursor: pointer;
+  position: relative;
+  outline: none;
+}
+
+.dropdown-button .icons {
+  margin-right: 10px;
+}
+
+.dropdown-button .badge {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background-color: #e74c3c; /* Red color for badges */
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+/* Dropdown Content Styles */
+.dropdown .dropdown-content {
+  position: absolute;
+  top: 0;
+  left: 100%; /* Position to the right of the sidebar */
+  background-color: var(--sidebar-color);
+  min-width: 300px; /* Adjust width as needed */
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-left: 5px; /* Small gap between sidebar and dropdown */
+}
+
+.dropdown .dropdown-content::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent var(--sidebar-color) transparent transparent;
+}
+
+.dropdown .dropdown-content {
+  display: none;
+}
+
+.dropdown.show .dropdown-content {
+  display: block;
+}
+
+/* Bottom Content */
+.sidebar .bottom-content {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 10px; /* Reduced margin to move items slightly up */
+}
+
+.sidebar .bottom-content li {
+  height: 50px;
+  display: flex;
+  align-items: center;
+}
+
+/* Dark Mode Section */
+.sidebar .mode {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--primary-color-light);
+  padding: 0 10px;
+  border-radius: 6px;
+  height: 50px;
+  cursor: pointer;
+  margin-top: 5px; /* Adjusted to move slightly up */
+}
+
+.sidebar .mode .moon-sun {
+  position: relative;
+  height: 100%;
+  width: 30px;
+}
+
+.sidebar .mode .moon-sun .fa-sun,
+.sidebar .mode .moon-sun .fa-moon {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  transition: var(--trans-03);
+  opacity: 0;
+}
+
+body.dark .sidebar .mode .fa-sun {
+  opacity: 1;
+}
+
+body.dark .sidebar .mode .fa-moon {
+  opacity: 0;
+}
+
+.sidebar .mode-text {
+  flex: 1;
+  margin-left: 10px;
+  white-space: nowrap;
+  opacity: 1;
+  transition: opacity var(--trans-02);
+}
+
+.sidebar.close .mode-text {
+  opacity: 0;
+}
+
+.sidebar.close .mode {
+  display: none;
+}
+
+/* Toggle Switch */
+.sidebar .toggle-switch {
+  position: relative;
+  width: 44px;
+  height: 22px;
+  background-color: var(--toggle-color);
+  border-radius: 25px;
+  transition: var(--trans-02);
+}
+
+.sidebar .toggle-switch .switch {
+  position: absolute;
+  top: 50%;
+  left: 5px;
+  transform: translateY(-50%);
+  height: 15px;
+  width: 15px;
+  background-color: var(--sidebar-color);
+  border-radius: 50%;
+  transition: var(--trans-04);
+}
+
+body.dark .sidebar .toggle-switch .switch {
+  left: 25px;
+}
+
+/* Badge Styles */
+.badge {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background-color: #e74c3c; /* Red color for badges */
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+/* Ensure the dropdown appears to the right outside the sidebar */
+.dropdown .dropdown-content {
+  left: 100%; /* Position to the right of the dropdown button */
+  top: 0;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 78px;
+    top: 4rem; /* Ensure top offset is maintained */
+    height: calc(100% - 4rem); /* Maintain height adjustment */
+  }
+
+  .sidebar.close {
+    width: 0;
+  }
+
+  .sidebar.close .toggle {
+    right: -15px;
+  }
+
+  /* Adjust padding when sidebar is closed */
+  .sidebar.close .menu-links li a,
+  .sidebar.close .menu-links li button,
+  .sidebar.close .bottom-content li a,
+  .sidebar.close .bottom-content li button {
+    padding: 0 8px;
+    justify-content: center;
+  }
+
+  /* Hide text when sidebar is closed */
+  .sidebar.close .menu-links li .text,
+  .sidebar.close .bottom-content li .text {
+    display: none;
+  }
+
+  /* Adjust dropdown positioning for smaller screens */
+  .dropdown .dropdown-content {
+    min-width: 200px; /* Adjust width as needed */
+  }
+}

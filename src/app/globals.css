@@ -1,3 +1,9 @@
+/* src/global.css */
+
+@import url("https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap");
+@import "slick-carousel/slick/slick.css";
+@import "slick-carousel/slick/slick-theme.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,17 +11,166 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --accent-color: #00aaff; /* Added accent color for light mode */
+  --secondary-background: #ffffff; /* Added light secondary background */
+
+  --card-background: #ffffff; /* so rectangles have a distinct color in light mode */
+  --text-color: #171717; /* used by .profileImage, .modalContent, etc. */
+  --input-background: #fefefe; /* or #ffffff, your preference */
+  --input-border: #dddddd;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body.dark {
+  --background: #24252c; /* ChatGPT-like dark background */
+  --foreground: #ffffff; /* White text */
+  --secondary-background: #34334b; /* Secondary dark color */
+  --accent-color: #00aaff; /* Accent blue */
+
+  --card-background: #2f2f3b; /* a slightly lighter or darker gray so rectangles pop */
+  --text-color: #ffffff; /* for text inside rectangles & modals */
+  --input-background: #40404f; /* or #34334b, your preference */
+  --input-border: #666666;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Figtree", sans-serif; /* Updated to use Figtree */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Cursor styles for draggable area */
+.cursor-grab {
+  cursor: grab;
+}
+.cursor-grabbing {
+  cursor: grabbing;
+}
+
+/* Additional styles for Autocomplete */
+.autocomplete-container {
+  position: relative;
+}
+
+.autocomplete-item {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.autocomplete-item:hover {
+  background-color: #f3f4f6; /* Tailwind's gray-100 */
+}
+
+.hit {
+  display: flex;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.hit-image img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-right: 16px;
+}
+
+/* --- Added Styles for Responsive and Smooth Corners --- */
+
+/* Override Autocomplete Input Wrapper */
+.autocomplete-container .aa-InputWrapper {
+  border-radius: 9999px; /* Fully rounded */
+  overflow: hidden; /* Ensure child elements respect the border-radius */
+}
+
+/* Override Autocomplete Input */
+.autocomplete-container .aa-Input {
+  border-radius: 9999px; /* Fully rounded */
+  padding: 0.75rem 1rem; /* Optional: Adjust padding for better UX */
+  font-size: 1rem; /* Optional: Adjust font size for better readability */
+}
+
+/* Override Autocomplete Dropdown Panel */
+.autocomplete-container .aa-Panel {
+  border-radius: 0.5rem; /* Smooth corners */
+  margin-top: 0.5rem; /* Space between input and dropdown */
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); /* Optional: Enhance dropdown visibility */
+  background-color: var(--background); /* Match site background */
+}
+
+/* Override Autocomplete Items on Hover */
+.autocomplete-container .aa-Item:hover {
+  background-color: #f3f4f6; /* Tailwind's gray-100 */
+}
+
+/* Optional: Adjust Autocomplete Dropdown Width to Match Input */
+.autocomplete-container .aa-Panel {
+  width: 100%; /* Ensure the dropdown matches the input width */
+}
+
+/* Toggle Switch Styles */
+.toggle-switch {
+  width: 50px;
+  height: 25px;
+  background-color: #ccc;
+  border-radius: 9999px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.toggle-switch .switch {
+  width: 21px;
+  height: 21px;
+  background-color: #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.3s;
+}
+
+body.dark .toggle-switch {
+  background-color: #666;
+}
+
+body.dark .toggle-switch .switch {
+  transform: translateX(25px);
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.animate-slideIn {
+  animation: slideIn 0.3s forwards;
+}
+@keyframes slideOut {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-slideOut {
+  animation: slideOut 0.3s forwards;
 }

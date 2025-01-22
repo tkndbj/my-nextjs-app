@@ -1,0 +1,148 @@
+/* src/app/components/AllReviewsWindow.css */
+
+/* Backdrop Overlay */
+.reviews-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: flex-end;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Sliding Window */
+.reviews-window {
+  background-color: #ffffff;
+  width: 400px;
+  max-width: 90%;
+  height: 100%;
+  overflow-y: auto;
+  position: relative;
+  animation: slideIn 0.3s ease;
+  padding: 20px;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Close Button */
+.close-button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #333333;
+}
+
+/* Header */
+.reviews-header {
+  margin-bottom: 20px;
+}
+
+.reviews-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333333;
+}
+
+/* Reviews List */
+.reviews-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.review-item {
+  border-bottom: 1px solid #e0e0e0;
+  padding: 15px 0;
+}
+
+.review-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stars-container {
+  display: flex;
+}
+
+.star-icon {
+  color: #fbbf24; /* Amber-400 */
+  margin-right: 2px;
+}
+
+.featured-label {
+  background-color: #3b82f6; /* Blue-500 */
+  color: #ffffff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+/* Review Text */
+.review-text {
+  margin: 10px 0;
+  color: #4b5563; /* Gray-700 */
+}
+
+/* Review Images */
+.review-images {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.review-images img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.review-images img:hover {
+  transform: scale(1.05);
+}
+
+/* No Reviews Message */
+.no-reviews {
+  color: #6b7280; /* Gray-500 */
+  text-align: center;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .reviews-window {
+    width: 100%;
+  }
+
+  .review-images img {
+    width: 60px;
+    height: 60px;
+  }
+}

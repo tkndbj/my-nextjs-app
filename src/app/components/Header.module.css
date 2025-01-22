@@ -1,0 +1,259 @@
+/* src/app/components/Header.module.css */
+
+.header {
+  width: 100%;
+  background-color: #000;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.navContainer {
+  max-width: 1200px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  justify-content: space-between;
+  position: relative;
+}
+
+.leftContainer {
+  flex: 0 0 auto;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #fff;
+  text-decoration: none;
+}
+
+.searchContainer {
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: center;
+  margin: 0 20px;
+  position: relative; /* Ensure the autocomplete panel is positioned correctly */
+}
+
+/* Apply styles to the input rendered by Autocomplete */
+.searchInput {
+  width: 100%;
+  max-width: 400px;
+  padding: 8px 16px;
+  border-radius: 999px; /* pill shape */
+  border: 1px solid #444;
+  background-color: #222;
+  color: #fff;
+  outline: none;
+  font-size: 0.9rem;
+}
+
+/* Hide any default autocomplete UI to prevent conflicts */
+.autocomplete-wrapper input {
+  border: none;
+  outline: none;
+  background: transparent;
+  color: inherit;
+}
+
+.menu {
+  flex: 0 0 auto;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.menuItem {
+  position: relative;
+  margin-left: 20px;
+}
+
+.link {
+  color: #aaa;
+  text-decoration: none;
+  font-size: 0.95rem;
+  padding: 8px 0;
+  transition: color 0.2s ease;
+}
+
+.linkButton {
+  background: none;
+  border: none;
+  color: #aaa;
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 8px 0;
+  transition: color 0.2s ease;
+  position: relative; /* To position the badge relative to the button */
+}
+
+.link:hover,
+.linkButton:hover {
+  color: #fff;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #111;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  overflow: hidden;
+  padding: 4px 0;
+  width: 180px;
+  z-index: 9999;
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  color: #ccc;
+  text-decoration: none;
+  padding: 8px 12px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.dropdownItem:hover {
+  background-color: #222;
+  color: #fff;
+}
+
+.icon {
+  margin-right: 8px;
+}
+
+/* Badge for counters */
+.badge {
+  position: absolute;
+  top: -4px; /* Adjust as needed */
+  right: -10px; /* Adjust as needed */
+  background-color: #ff6060; /* Red color for the badge */
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  line-height: 1;
+}
+
+/* Adjust autocomplete panel styles if needed */
+.autocomplete-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  text-decoration: none;
+  color: #333;
+}
+
+.autocomplete-item:hover {
+  background-color: #f0f0f0;
+}
+
+/* Autocomplete Container */
+.aa-Autocomplete {
+  position: relative;
+  width: 100%;
+}
+
+/* Autocomplete Form */
+.aa-Form {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+/* Input Wrapper Prefix (Label) */
+.aa-InputWrapperPrefix {
+  margin-right: 8px;
+}
+
+/* Label */
+.aa-Label {
+  display: none; /* Hide label visually if not needed */
+}
+
+/* Input Wrapper */
+.aa-InputWrapper {
+  flex: 1;
+}
+
+/* Input Wrapper Suffix (Clear Button) */
+.aa-InputWrapperSuffix {
+  margin-left: 8px;
+}
+
+/* Clear Button */
+.aa-ClearButton {
+  background: none;
+  border: none;
+  color: #aaa;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.aa-ClearButton:hover {
+  color: #fff;
+}
+
+/* Autocomplete Panel Styles */
+.aa-Panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1000; /* Ensure it appears above other elements */
+  background-color: #222; /* Match header background */
+  border: 1px solid #444; /* Subtle border */
+  border-radius: 4px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Stalled Panel */
+.aa-Panel--stalled {
+  opacity: 0.5;
+}
+
+/* Autocomplete List */
+.aa-List {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Autocomplete Item */
+.aa-Item {
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.autocomplete-item {
+  color: #fff; /* Match header's text color */
+  text-decoration: none;
+  display: block;
+  width: 100%;
+}
+
+.autocomplete-item:hover {
+  background-color: #333; /* Darker shade on hover */
+}
+
+/* No Results */
+.autocomplete-no-results {
+  padding: 8px 16px;
+  color: #aaa;
+}
+
+/* Highlighting for Accessibility */
+.aa-ItemActive {
+  background-color: #444;
+}
