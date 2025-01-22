@@ -4,8 +4,8 @@ import ClientProviders from "./components/ClientProviders";
 import LayoutContent from "./components/LayoutContent";
 import "../app/components/Sidebar.module.css";
 import { SidebarProvider } from "../../context/SidebarContext";
-import Sidebar from "./components/Sidebar"; // Import Sidebar
-import { MarketProvider } from "../../context/MarketContext"; // Import MarketProvider
+import Sidebar from "./components/Sidebar";
+import { MarketProvider } from "../../context/MarketContext";
 
 export const metadata = {
   title: "My Web App",
@@ -42,11 +42,10 @@ export default function RootLayout({ children }) {
           <SidebarProvider>
             <MarketProvider>
               <div className="flex">
-                {/* Sidebar (fixed, always visible) */}
+                {/* Sidebar – it is fixed via CSS */}
                 <Sidebar />
-                {/* Main Content Area */}
-                <div className="flex-1 flex flex-col ml-[var(--sidebar-width)]">
-                  {/* LayoutContent wraps the current page */}
+                {/* Main Content Area: add a left margin to ensure content does not slip under the Sidebar */}
+                <div className="flex-1 flex flex-col ml-[200px] sm:ml-[200px] md:ml-[200px] lg:ml-[200px] xl:ml-[200px]">
                   <LayoutContent>{children}</LayoutContent>
                 </div>
               </div>

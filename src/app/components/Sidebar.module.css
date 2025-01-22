@@ -4,7 +4,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  height: 100vh;
+  height: 100vh; /* Full viewport height */
   background-color: rgb(0, 0, 0);
   color: #333;
   border-right: 1px solid rgba(0, 0, 0, 0.1);
@@ -17,57 +17,23 @@
   overflow: visible;
 }
 
-/* When collapsed, use a small width. Otherwise, use a wider width. */
 .collapsed {
-  width: 3%;
+  width: 5%; /* Slightly adjust collapsed width for mobile */
 }
 
 .expanded {
-  width: 7%;
+  /* On very small devices, the sidebar may need to be wider */
+  width: 36%;
   min-width: 200px;
 }
 
-@media (max-width: 768px) {
-  .collapsed {
-    width: 6%;
-  }
-}
-
-@media (max-width: 576px) {
-  .collapsed {
-    width: 5%;
-  }
-}
-
-@media (min-width: 1201px) {
+@media (min-width: 768px) {
   .expanded {
-    width: 7%;
+    width: 200px;
   }
 }
 
-@media (max-width: 1200px) {
-  .expanded {
-    width: 17%;
-  }
-}
-
-@media (max-width: 992px) {
-  .expanded {
-    width: 22%;
-  }
-}
-
-@media (max-width: 768px) {
-  .expanded {
-    width: 32%;
-  }
-}
-
-@media (max-width: 576px) {
-  .expanded {
-    width: 36%;
-  }
-}
+/* The rest of your CSS remains unchanged */
 
 .light {
   background-color: #ffffff;
