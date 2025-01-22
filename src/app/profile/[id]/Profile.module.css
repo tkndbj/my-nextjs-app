@@ -1,32 +1,7 @@
 /********************************************/
 /*            LAYOUT & GLOBALS             */
 /********************************************/
-:root {
-  /* Light mode defaults */
-  --background: #f7f7f7;
-  --foreground: #171717;
-  --accent-color: #00aaff;
-  --secondary-background: #f5f5f5;
 
-  --card-background: #ffffff;
-  --text-color: #171717;
-  --input-background: #fefefe;
-  --input-border: #dddddd;
-  --hover-color: rgba(255, 255, 255, 0.15);
-}
-
-body.dark {
-  --background: #24252c;
-  --foreground: #ffffff;
-  --secondary-background: #34334b;
-  --accent-color: #00aaff;
-
-  --card-background: #2f2f3b;
-  --text-color: #ffffff;
-  --input-background: #40404f;
-  --input-border: #666666;
-  --hover-color: rgba(255, 255, 255, 0.1);
-}
 
 .pageContainer {
   background: var(--background);
