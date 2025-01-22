@@ -17,7 +17,7 @@ import FilterSortRow from "./components/FilterSortRow";
 import { useMarket } from "../../context/MarketContext";
 import Sidebar from "./components/Sidebar";
 import { useSidebar } from "../../context/SidebarContext";
-import { useRouter, useSearchParams } from "next/navigation"; // This hook is used here
+import { useRouter, useSearchParams } from "next/navigation";
 import { FaPlus } from "react-icons/fa";
 
 export default function HomePageContent() {
@@ -144,6 +144,7 @@ export default function HomePageContent() {
   };
 
   const handleListProduct = () => {
+    // Navigate to the List Product page
     router.push("/listproduct");
   };
 
@@ -179,12 +180,9 @@ export default function HomePageContent() {
           {products.length === 0 ? (
             <p className="text-center text-foreground">No products found.</p>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-y-6 gap-x-2 justify-items-center">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-items-center">
               {products.map((p, index) => (
-                <ProductCard
-                  key={p.id || `product-${index}`}
-                  product={p}
-                />
+                <ProductCard key={p.id || `product-${index}`} product={p} />
               ))}
             </div>
           )}

@@ -1,8 +1,6 @@
 // src/app/layout.js
-
 import "./globals.css";
 import ClientProviders from "./components/ClientProviders";
-import Header from "./components/Header";
 import LayoutContent from "./components/LayoutContent";
 import "../app/components/Sidebar.module.css";
 import { SidebarProvider } from "../../context/SidebarContext";
@@ -12,13 +10,13 @@ import { MarketProvider } from "../../context/MarketContext"; // Import MarketPr
 export const metadata = {
   title: "My Web App",
   description: "A description of my web app.",
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        {/* Existing Links */}
         {/* Font Awesome 6 */}
         <link
           rel="stylesheet"
@@ -39,18 +37,17 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
         />
       </head>
-      <body>
+      <body className="overflow-x-hidden">
         <ClientProviders>
           <SidebarProvider>
-            <MarketProvider> {/* Wrap with MarketProvider */}
+            <MarketProvider>
               <div className="flex">
-                {/* Sidebar */}
+                {/* Sidebar (fixed, always visible) */}
                 <Sidebar />
-
-                {/* Main Content */}
-                <div className="flex-1 flex flex-col">
-                 
-                  <LayoutContent>{children}</LayoutContent> {/* Use LayoutContent */}
+                {/* Main Content Area */}
+                <div className="flex-1 flex flex-col ml-[var(--sidebar-width)]">
+                  {/* LayoutContent wraps the current page */}
+                  <LayoutContent>{children}</LayoutContent>
                 </div>
               </div>
             </MarketProvider>

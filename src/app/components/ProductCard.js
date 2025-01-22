@@ -1,7 +1,8 @@
+// src/app/components/ProductCard.js
 "use client";
 
 import { useRouter } from "next/navigation";
-import Image from "next/image"; // Updated import
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import {
   FaStar,
@@ -23,7 +24,6 @@ import {
   updateDoc,
   increment,
   serverTimestamp,
-  addDoc, // Ensure addDoc is imported
 } from "firebase/firestore";
 import { db } from "../../../lib/firebase";
 
@@ -40,21 +40,17 @@ export default function ProductCard({ product }) {
     brandModel,
     id,
     currency,
-    userId,
-    isBoosted, // 1. Destructure isBoosted
+    isBoosted,
   } = product;
 
   const router = useRouter();
   const { incrementClickCount, recordProductClick } = useMarket();
-
   const [selectedImage, setSelectedImage] = useState(
     imageUrls && imageUrls.length > 0
       ? imageUrls[0]
       : "https://via.placeholder.com/300x200"
   );
-
   const user = useUser();
-
   const [isFavorite, setIsFavorite] = useState(false);
   const [isInCart, setIsInCart] = useState(false);
 
@@ -62,18 +58,15 @@ export default function ProductCard({ product }) {
     if (user && id) {
       const favoritesRef = collection(db, "users", user.uid, "favorites");
       const cartRef = collection(db, "users", user.uid, "cart");
-
       const favDocRef = doc(favoritesRef, id);
       const cartDocRef = doc(cartRef, id);
 
       const unsubscribeFav = onSnapshot(favDocRef, (docSnap) => {
         setIsFavorite(docSnap.exists());
       });
-
       const unsubscribeCart = onSnapshot(cartDocRef, (docSnap) => {
         setIsInCart(docSnap.exists());
       });
-
       return () => {
         unsubscribeFav();
         unsubscribeCart();
@@ -90,7 +83,6 @@ export default function ProductCard({ product }) {
       alert("Please log in to manage your favorites.");
       return;
     }
-
     try {
       if (isFavorite) {
         await deleteDoc(doc(db, "users", user.uid, "favorites", id));
@@ -118,7 +110,6 @@ export default function ProductCard({ product }) {
       alert("Please log in to manage your cart.");
       return;
     }
-
     try {
       if (isInCart) {
         await deleteDoc(doc(db, "users", user.uid, "cart", id));
@@ -207,11 +198,9 @@ export default function ProductCard({ product }) {
     incrementClickCount(id).catch((error) => {
       console.error("Error incrementing click count:", error);
     });
-
     recordProductClick(product).catch((error) => {
       console.error("Error recording product click:", error);
     });
-
     router.push(`/products/${id}`);
   };
 
@@ -233,18 +222,13 @@ export default function ProductCard({ product }) {
             src={selectedImage}
             alt={productName}
             fill
-            sizes="(max-width: 640px) 100vw, 
-                   (max-width: 768px) 50vw, 
-                   (max-width: 1024px) 33vw, 
-                   25vw"
+            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
             className="object-cover"
           />
           <button
             onClick={toggleFavorite}
             className="absolute top-2 right-2 p-1 w-6 h-6 bg-background/80 rounded-full flex items-center justify-center hover:bg-secondaryBackground transition-colors z-10"
-            aria-label={
-              isFavorite ? "Remove from favorites" : "Add to favorites"
-            }
+            aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
           >
             {isFavorite ? (
               <FaHeart className="text-red-500" />
@@ -258,8 +242,6 @@ export default function ProductCard({ product }) {
           <h2 className="text-lg font-semibold text-foreground">
             {productName}
           </h2>
-
-          {/* 2. Modified Star Rating Section to include "Featured" */}
           <div className="flex items-center mt-1 justify-between">
             <div className="flex items-center space-x-1">
               {renderStars()}
@@ -271,11 +253,9 @@ export default function ProductCard({ product }) {
               </span>
             )}
           </div>
-
           <p className="text-gray-600 dark:text-gray-300 text-sm mt-2 flex-grow line-clamp-2">
             {displayText}
           </p>
-
           <div className="mt-2">
             {discountPercentage && discountPercentage > 0 ? (
               <div className="flex items-center space-x-2">
@@ -295,13 +275,11 @@ export default function ProductCard({ product }) {
               </div>
             )}
           </div>
-
-          {/* CHANGED: pass both color + index to guarantee uniqueness */}
           {colors.length > 0 && (
             <div className="flex items-center gap-1 my-2">
               {colors.map((color, index) => (
                 <button
-                  key={`${color}-${index}`} // CHANGED: ensure unique key
+                  key={`${color}-${index}`}
                   className="w-4 h-4 rounded-full border border-gray-300 hover:scale-110 transition"
                   style={{ backgroundColor: colorNameToColor(color) }}
                   onClick={(e) => {
