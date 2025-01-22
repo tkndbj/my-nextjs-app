@@ -67,6 +67,7 @@ export default function ProductCard({ product }) {
       const unsubscribeCart = onSnapshot(cartDocRef, (docSnap) => {
         setIsInCart(docSnap.exists());
       });
+
       return () => {
         unsubscribeFav();
         unsubscribeCart();
@@ -213,11 +214,12 @@ export default function ProductCard({ product }) {
 
   return (
     <div
-      className="relative w-72 h-96 font-figtree cursor-pointer"
+      className="relative w-full cursor-pointer"
       onClick={handleCardClick}
     >
-      <div className="bg-background rounded-2xl shadow-md overflow-hidden border border-secondaryBackground dark:border-2 dark:border-secondaryBackground transition-transform hover:scale-105 flex flex-col h-full">
-        <div className="w-full h-48 relative">
+      {/* Card container with aspect ratio to maintain a consistent height */}
+      <div className="bg-background rounded-2xl shadow-md overflow-hidden border border-secondaryBackground dark:border-2 dark:border-secondaryBackground transition-transform hover:scale-105 flex flex-col h-full aspect-[3/4]">
+        <div className="w-full relative h-1/2">
           <Image
             src={selectedImage}
             alt={productName}
@@ -238,49 +240,49 @@ export default function ProductCard({ product }) {
           </button>
         </div>
 
-        <div className="p-4 flex flex-col flex-grow">
-          <h2 className="text-lg font-semibold text-foreground">
+        <div className="p-2 flex flex-col flex-grow">
+          <h2 className="text-sm font-semibold text-foreground line-clamp-1">
             {productName}
           </h2>
           <div className="flex items-center mt-1 justify-between">
             <div className="flex items-center space-x-1">
               {renderStars()}
-              <span className="text-gray-400 text-sm">({roundedRating})</span>
+              <span className="text-gray-400 text-xs">({roundedRating})</span>
             </div>
             {isBoosted && (
-              <span className="text-sm font-semibold text-blue-500">
+              <span className="text-xs font-semibold text-blue-500">
                 Featured
               </span>
             )}
           </div>
-          <p className="text-gray-600 dark:text-gray-300 text-sm mt-2 flex-grow line-clamp-2">
+          <p className="text-gray-600 dark:text-gray-300 text-xs mt-1 flex-grow line-clamp-2">
             {displayText}
           </p>
-          <div className="mt-2">
+          <div className="mt-1">
             {discountPercentage && discountPercentage > 0 ? (
-              <div className="flex items-center space-x-2">
-                <span className="text-lg font-semibold text-foreground">
+              <div className="flex items-center space-x-1">
+                <span className="text-sm font-semibold text-foreground">
                   {formatCurrency(price)}
                 </span>
-                <span className="text-sm text-gray-500 line-through">
+                <span className="text-xs text-gray-500 line-through">
                   {formatCurrency(originalPrice)}
                 </span>
-                <span className="text-sm text-jade-green dark:text-accent font-semibold">
+                <span className="text-xs text-jade-green dark:text-accent font-semibold">
                   %{discountPercentage}
                 </span>
               </div>
             ) : (
-              <div className="text-lg font-semibold text-foreground">
+              <div className="text-sm font-semibold text-foreground">
                 {formatCurrency(price)}
               </div>
             )}
           </div>
           {colors.length > 0 && (
-            <div className="flex items-center gap-1 my-2">
+            <div className="flex items-center gap-1 mt-1">
               {colors.map((color, index) => (
                 <button
                   key={`${color}-${index}`}
-                  className="w-4 h-4 rounded-full border border-gray-300 hover:scale-110 transition"
+                  className="w-3 h-3 rounded-full border border-gray-300 hover:scale-110 transition"
                   style={{ backgroundColor: colorNameToColor(color) }}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -296,7 +298,7 @@ export default function ProductCard({ product }) {
 
       <button
         onClick={toggleCart}
-        className={`absolute bottom-3 right-3 flex items-center justify-center p-2 rounded-full border-2 ${
+        className={`absolute bottom-2 right-2 flex items-center justify-center p-1 rounded-full border-2 ${
           isInCart
             ? "bg-jade-green hover:bg-jade-green border-jade-green dark:bg-accent dark:hover:bg-accent dark:border-accent text-white dark:text-foreground"
             : "border-secondaryBackground text-foreground hover:bg-secondaryBackground hover:text-background"
@@ -304,9 +306,9 @@ export default function ProductCard({ product }) {
         aria-label={isInCart ? "Remove from cart" : "Add to cart"}
       >
         {isInCart ? (
-          <FaCheck className="text-lg" />
+          <FaCheck className="text-xs" />
         ) : (
-          <FaShoppingCart className="text-lg" />
+          <FaShoppingCart className="text-xs" />
         )}
       </button>
     </div>
