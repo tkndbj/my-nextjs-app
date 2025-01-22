@@ -1,22 +1,24 @@
 // src/app/layout.js
+
 import "./globals.css";
 import ClientProviders from "./components/ClientProviders";
+import Header from "./components/Header";
 import LayoutContent from "./components/LayoutContent";
 import "../app/components/Sidebar.module.css";
 import { SidebarProvider } from "../../context/SidebarContext";
-import Sidebar from "./components/Sidebar";
-import { MarketProvider } from "../../context/MarketContext";
+import Sidebar from "./components/Sidebar"; // Import Sidebar
+import { MarketProvider } from "../../context/MarketContext"; // Import MarketProvider
 
 export const metadata = {
   title: "My Web App",
   description: "A description of my web app.",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
+        {/* Existing Links */}
         {/* Font Awesome 6 */}
         <link
           rel="stylesheet"
@@ -37,16 +39,18 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
         />
       </head>
-      <body className="overflow-x-hidden">
+      <body>
         <ClientProviders>
           <SidebarProvider>
-            <MarketProvider>
+            <MarketProvider> {/* Wrap with MarketProvider */}
               <div className="flex">
-                {/* Sidebar – it is fixed via CSS */}
+                {/* Sidebar */}
                 <Sidebar />
-                {/* Main Content Area: add a left margin to ensure content does not slip under the Sidebar */}
-                <div className="flex-1 flex flex-col ml-[200px] sm:ml-[200px] md:ml-[200px] lg:ml-[200px] xl:ml-[200px]">
-                  <LayoutContent>{children}</LayoutContent>
+
+                {/* Main Content */}
+                <div className="flex-1 flex flex-col">
+                 
+                  <LayoutContent>{children}</LayoutContent> {/* Use LayoutContent */}
                 </div>
               </div>
             </MarketProvider>

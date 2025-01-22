@@ -1,4 +1,3 @@
-// src/app/page.jsx
 import React, { Suspense } from "react";
 import HomePageContent from "./HomePageContent";
 

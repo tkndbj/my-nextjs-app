@@ -1,8 +1,7 @@
-// src/app/components/ProductCard.js
 "use client";
 
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+import Image from "next/image"; // Updated import
 import { useEffect, useState } from "react";
 import {
   FaStar,
@@ -24,6 +23,7 @@ import {
   updateDoc,
   increment,
   serverTimestamp,
+  addDoc, // Ensure addDoc is imported
 } from "firebase/firestore";
 import { db } from "../../../lib/firebase";
 
@@ -40,17 +40,21 @@ export default function ProductCard({ product }) {
     brandModel,
     id,
     currency,
-    isBoosted,
+    userId,
+    isBoosted, // 1. Destructure isBoosted
   } = product;
 
   const router = useRouter();
   const { incrementClickCount, recordProductClick } = useMarket();
+
   const [selectedImage, setSelectedImage] = useState(
     imageUrls && imageUrls.length > 0
       ? imageUrls[0]
       : "https://via.placeholder.com/300x200"
   );
+
   const user = useUser();
+
   const [isFavorite, setIsFavorite] = useState(false);
   const [isInCart, setIsInCart] = useState(false);
 
@@ -58,12 +62,14 @@ export default function ProductCard({ product }) {
     if (user && id) {
       const favoritesRef = collection(db, "users", user.uid, "favorites");
       const cartRef = collection(db, "users", user.uid, "cart");
+
       const favDocRef = doc(favoritesRef, id);
       const cartDocRef = doc(cartRef, id);
 
       const unsubscribeFav = onSnapshot(favDocRef, (docSnap) => {
         setIsFavorite(docSnap.exists());
       });
+
       const unsubscribeCart = onSnapshot(cartDocRef, (docSnap) => {
         setIsInCart(docSnap.exists());
       });
@@ -84,6 +90,7 @@ export default function ProductCard({ product }) {
       alert("Please log in to manage your favorites.");
       return;
     }
+
     try {
       if (isFavorite) {
         await deleteDoc(doc(db, "users", user.uid, "favorites", id));
@@ -111,6 +118,7 @@ export default function ProductCard({ product }) {
       alert("Please log in to manage your cart.");
       return;
     }
+
     try {
       if (isInCart) {
         await deleteDoc(doc(db, "users", user.uid, "cart", id));
@@ -199,9 +207,11 @@ export default function ProductCard({ product }) {
     incrementClickCount(id).catch((error) => {
       console.error("Error incrementing click count:", error);
     });
+
     recordProductClick(product).catch((error) => {
       console.error("Error recording product click:", error);
     });
+
     router.push(`/products/${id}`);
   };
 
@@ -214,23 +224,27 @@ export default function ProductCard({ product }) {
 
   return (
     <div
-      className="relative w-full cursor-pointer"
+      className="relative w-72 h-96 font-figtree cursor-pointer"
       onClick={handleCardClick}
     >
-      {/* Card container with aspect ratio to maintain a consistent height */}
-      <div className="bg-background rounded-2xl shadow-md overflow-hidden border border-secondaryBackground dark:border-2 dark:border-secondaryBackground transition-transform hover:scale-105 flex flex-col h-full aspect-[3/4]">
-        <div className="w-full relative h-1/2">
+      <div className="bg-background rounded-2xl shadow-md overflow-hidden border border-secondaryBackground dark:border-2 dark:border-secondaryBackground transition-transform hover:scale-105 flex flex-col h-full">
+        <div className="w-full h-48 relative">
           <Image
             src={selectedImage}
             alt={productName}
             fill
-            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            sizes="(max-width: 640px) 100vw, 
+                   (max-width: 768px) 50vw, 
+                   (max-width: 1024px) 33vw, 
+                   25vw"
             className="object-cover"
           />
           <button
             onClick={toggleFavorite}
             className="absolute top-2 right-2 p-1 w-6 h-6 bg-background/80 rounded-full flex items-center justify-center hover:bg-secondaryBackground transition-colors z-10"
-            aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            aria-label={
+              isFavorite ? "Remove from favorites" : "Add to favorites"
+            }
           >
             {isFavorite ? (
               <FaHeart className="text-red-500" />
@@ -240,49 +254,55 @@ export default function ProductCard({ product }) {
           </button>
         </div>
 
-        <div className="p-2 flex flex-col flex-grow">
-          <h2 className="text-sm font-semibold text-foreground line-clamp-1">
+        <div className="p-4 flex flex-col flex-grow">
+          <h2 className="text-lg font-semibold text-foreground">
             {productName}
           </h2>
+
+          {/* 2. Modified Star Rating Section to include "Featured" */}
           <div className="flex items-center mt-1 justify-between">
             <div className="flex items-center space-x-1">
               {renderStars()}
-              <span className="text-gray-400 text-xs">({roundedRating})</span>
+              <span className="text-gray-400 text-sm">({roundedRating})</span>
             </div>
             {isBoosted && (
-              <span className="text-xs font-semibold text-blue-500">
+              <span className="text-sm font-semibold text-blue-500">
                 Featured
               </span>
             )}
           </div>
-          <p className="text-gray-600 dark:text-gray-300 text-xs mt-1 flex-grow line-clamp-2">
+
+          <p className="text-gray-600 dark:text-gray-300 text-sm mt-2 flex-grow line-clamp-2">
             {displayText}
           </p>
-          <div className="mt-1">
+
+          <div className="mt-2">
             {discountPercentage && discountPercentage > 0 ? (
-              <div className="flex items-center space-x-1">
-                <span className="text-sm font-semibold text-foreground">
+              <div className="flex items-center space-x-2">
+                <span className="text-lg font-semibold text-foreground">
                   {formatCurrency(price)}
                 </span>
-                <span className="text-xs text-gray-500 line-through">
+                <span className="text-sm text-gray-500 line-through">
                   {formatCurrency(originalPrice)}
                 </span>
-                <span className="text-xs text-jade-green dark:text-accent font-semibold">
+                <span className="text-sm text-jade-green dark:text-accent font-semibold">
                   %{discountPercentage}
                 </span>
               </div>
             ) : (
-              <div className="text-sm font-semibold text-foreground">
+              <div className="text-lg font-semibold text-foreground">
                 {formatCurrency(price)}
               </div>
             )}
           </div>
+
+          {/* CHANGED: pass both color + index to guarantee uniqueness */}
           {colors.length > 0 && (
-            <div className="flex items-center gap-1 mt-1">
+            <div className="flex items-center gap-1 my-2">
               {colors.map((color, index) => (
                 <button
-                  key={`${color}-${index}`}
-                  className="w-3 h-3 rounded-full border border-gray-300 hover:scale-110 transition"
+                  key={`${color}-${index}`} // CHANGED: ensure unique key
+                  className="w-4 h-4 rounded-full border border-gray-300 hover:scale-110 transition"
                   style={{ backgroundColor: colorNameToColor(color) }}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -298,7 +318,7 @@ export default function ProductCard({ product }) {
 
       <button
         onClick={toggleCart}
-        className={`absolute bottom-2 right-2 flex items-center justify-center p-1 rounded-full border-2 ${
+        className={`absolute bottom-3 right-3 flex items-center justify-center p-2 rounded-full border-2 ${
           isInCart
             ? "bg-jade-green hover:bg-jade-green border-jade-green dark:bg-accent dark:hover:bg-accent dark:border-accent text-white dark:text-foreground"
             : "border-secondaryBackground text-foreground hover:bg-secondaryBackground hover:text-background"
@@ -306,9 +326,9 @@ export default function ProductCard({ product }) {
         aria-label={isInCart ? "Remove from cart" : "Add to cart"}
       >
         {isInCart ? (
-          <FaCheck className="text-xs" />
+          <FaCheck className="text-lg" />
         ) : (
-          <FaShoppingCart className="text-xs" />
+          <FaShoppingCart className="text-lg" />
         )}
       </button>
     </div>
