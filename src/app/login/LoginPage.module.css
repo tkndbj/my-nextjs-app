@@ -22,11 +22,11 @@
 
 .loginContainer {
   position: relative;
-  width: 400px; /* Adjust as needed */
+  width: 400px; /* keeps desktop layout */
   max-width: 90%;
-  height: 600px; /* Adjust as needed */
+  height: 600px;
   background: transparent;
-  overflow: hidden;
+  overflow: hidden; /* We'll override on small screens */
 }
 
 /* Common Form Styles */
@@ -94,13 +94,6 @@
   border-radius: 8px;
 }
 
-/* Responsive Design */
-@media (max-width: 600px) {
-  .loginContainer {
-    width: 90%;
-    height: auto; /* Adjust height as needed */
-  }
-}
 .spinner {
   border: 4px solid rgba(0, 0, 0, 0.1);
   width: 24px;
@@ -114,5 +107,27 @@
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* 
+  --- ADDED: Responsive Rules for Mobile (max-width: 600px) ---
+  Ensures the form is visible & scrollable, and remains centered
+*/
+@media (max-width: 600px) {
+  .container {
+    /* Allow space for vertical scrolling if needed */
+    height: auto;
+    min-height: 100vh;
+    padding: 1rem 0;
+  }
+
+  .loginContainer {
+    /* Let the container auto-size instead of a fixed 600px height */
+    height: auto;
+    /* If the form overflows, allow scrolling */
+    overflow-y: auto;
+    /* Keep it centered horizontally */
+    margin: 0 auto;
   }
 }
