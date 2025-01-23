@@ -13,7 +13,6 @@ import {
   where,
   orderBy,
   deleteDoc,
-  // We remove startAt, endAt for local filtering approach
 } from "firebase/firestore";
 import Image from "next/image";
 import Sidebar from "../../components/Sidebar";
@@ -55,13 +54,9 @@ export default function MyProductsPage() {
   const [activeSubTab, setActiveSubTab] = useState("Listed");
 
   // ---- SEARCH STATES ----
-  // For "Listed" products
   const [searchListed, setSearchListed] = useState("");
-  // For "Sold" products
   const [searchSold, setSearchSold] = useState("");
-  // For "Bought" products
   const [searchBought, setSearchBought] = useState("");
-  // For "Properties"
   const [searchProperties, setSearchProperties] = useState("");
 
   // ============= PRODUCTS data =============
@@ -91,7 +86,6 @@ export default function MyProductsPage() {
       setLoadingListed(true);
       try {
         const productsRef = collection(db, "products");
-        // First, get all products for this user (ordered by createdAt)
         const qListed = query(
           productsRef,
           where("userId", "==", id),
@@ -103,10 +97,9 @@ export default function MyProductsPage() {
           ...d.data(),
         }));
 
-        // Then local-filter by searchListed
+        // local-filter by searchListed
         if (searchListed.trim() !== "") {
           const searchLower = searchListed.trim().toLowerCase();
-
           products = products.filter((p) => {
             const name = p.productName?.toLowerCase() || "";
             const brand = p.brandModel?.toLowerCase() || "";
@@ -138,7 +131,6 @@ export default function MyProductsPage() {
       setLoadingSold(true);
       try {
         const transactionsRef = collection(db, "users", id, "transactions");
-        // We'll fetch all sold transactions for now
         const qSold = query(
           transactionsRef,
           where("role", "==", "seller"),
@@ -161,7 +153,6 @@ export default function MyProductsPage() {
               productData = productDoc.data();
             }
           }
-
           enriched.push({
             ...t,
             productImage:
@@ -173,7 +164,7 @@ export default function MyProductsPage() {
           });
         }
 
-        // Local-filter by searchSold => check productName/brandModel
+        // Local-filter by searchSold
         let filtered = enriched;
         if (searchSold.trim() !== "") {
           const searchLower = searchSold.trim().toLowerCase();
@@ -208,7 +199,6 @@ export default function MyProductsPage() {
       setLoadingBought(true);
       try {
         const transactionsRef = collection(db, "users", id, "transactions");
-        // We'll fetch all "bought" transactions
         const qBought = query(
           transactionsRef,
           where("role", "==", "buyer"),
@@ -242,7 +232,7 @@ export default function MyProductsPage() {
           });
         }
 
-        // Local-filter by searchBought => check productName/brandModel
+        // Local-filter by searchBought
         let filtered = enriched;
         if (searchBought.trim() !== "") {
           const searchLower = searchBought.trim().toLowerCase();
@@ -276,7 +266,6 @@ export default function MyProductsPage() {
       setLoadingProperties(true);
       try {
         const propsRef = collection(db, "properties");
-        // We can do a similar local filter approach for properties if we want
         const qProps = query(propsRef, where("userId", "==", id));
         const snap = await getDocs(qProps);
         let items = snap.docs.map((ds) => ({
@@ -284,10 +273,8 @@ export default function MyProductsPage() {
           ...ds.data(),
         }));
 
-        // local filter if searchProperties is not empty
         if (searchProperties.trim() !== "") {
           const searchLower = searchProperties.trim().toLowerCase();
-          // Suppose property doc has a "title" or "propertyName" field
           items = items.filter((prop) => {
             const propName = (
               prop.title ||
@@ -339,8 +326,8 @@ export default function MyProductsPage() {
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex">
       <Sidebar />
 
-      <div className="flex-1 p-4 sm:p-6 max-w-7xl mx-auto transition-all duration-300">
-        {/* Check if unauthorized */}
+      {/* Reduced padding on mobile */}
+      <div className="flex-1 p-2 sm:p-6 max-w-7xl mx-auto transition-all duration-300">
         {!isOwnPage ? (
           <div className="flex justify-center items-center h-full">
             <p>You are not authorized to view this page.</p>
@@ -383,9 +370,9 @@ export default function MyProductsPage() {
               </button>
             </div>
 
-            {/* If "products" is selected => show the sub-tabs */}
             {activeMainTab === "products" && (
               <>
+                {/* SUB tabs for PRODUCTS */}
                 <div className="flex space-x-2 border-b mb-6 transition-all duration-300">
                   {subTabs.map((sub) => (
                     <button
@@ -411,7 +398,6 @@ export default function MyProductsPage() {
                 {/* LISTED PRODUCTS */}
                 {activeSubTab === "Listed" && (
                   <>
-                    {/* Search box for "Listed" */}
                     <div className="mb-4">
                       <input
                         type="text"
@@ -421,13 +407,13 @@ export default function MyProductsPage() {
                         className="w-full px-4 py-2 border rounded"
                       />
                     </div>
-
                     {loadingListed ? (
                       <div className="flex items-center justify-center h-64">
                         <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                       </div>
                     ) : listedProducts.length > 0 ? (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                      /* Updated grid classes for mobile: 2 columns, gap-2 */
+                      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
                         {listedProducts.map((product) => (
                           <ProductCard2
                             key={product.id}
@@ -449,7 +435,6 @@ export default function MyProductsPage() {
                 {/* SOLD PRODUCTS */}
                 {activeSubTab === "Sold" && (
                   <>
-                    {/* Search box for "Sold" */}
                     <div className="mb-4">
                       <input
                         type="text"
@@ -459,13 +444,12 @@ export default function MyProductsPage() {
                         className="w-full px-4 py-2 border rounded"
                       />
                     </div>
-
                     {loadingSold ? (
                       <div className="flex items-center justify-center h-64">
                         <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                       </div>
                     ) : soldTransactions.length > 0 ? (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
                         {soldTransactions.map((t) => (
                           <SoldProductCard
                             key={t.id}
@@ -483,7 +467,6 @@ export default function MyProductsPage() {
                 {/* BOUGHT PRODUCTS */}
                 {activeSubTab === "Bought" && (
                   <>
-                    {/* Search box for "Bought" */}
                     <div className="mb-4">
                       <input
                         type="text"
@@ -493,13 +476,12 @@ export default function MyProductsPage() {
                         className="w-full px-4 py-2 border rounded"
                       />
                     </div>
-
                     {loadingBought ? (
                       <div className="flex items-center justify-center h-64">
                         <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                       </div>
                     ) : boughtTransactions.length > 0 ? (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
                         {boughtTransactions.map((t) => (
                           <BoughtProductCard
                             key={t.id}
@@ -517,7 +499,6 @@ export default function MyProductsPage() {
             ) : (
               // PROPERTIES TAB
               <>
-                {/* Search box for "Properties" */}
                 <div className="mb-4">
                   <input
                     type="text"
@@ -527,13 +508,12 @@ export default function MyProductsPage() {
                     className="w-full px-4 py-2 border rounded"
                   />
                 </div>
-
                 {loadingProperties ? (
                   <div className="flex items-center justify-center h-64">
                     <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                   </div>
                 ) : userProperties.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
                     {userProperties.map((prop) => (
                       <PropertyCard2
                         key={prop.id}
