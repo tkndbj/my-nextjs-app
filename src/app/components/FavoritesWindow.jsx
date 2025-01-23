@@ -43,17 +43,7 @@ export default function CartWindow({ user, onClose }) {
   // For closing animation
   const [isClosing, setIsClosing] = useState(false);
 
-<div
-  style={{
-    position: 'fixed',
-    top: 0,
-    right: 0,
-    width: '80vw', // Adjust width as needed
-    height: '100vh',
-    // ... other styles ...
-  }}
-></div>
-
+  
   // On mount or when user changes, load all favorites if not already
   useEffect(() => {
     if (!user || alreadyFetched) return;
@@ -156,9 +146,9 @@ export default function CartWindow({ user, onClose }) {
 
   return (
     <div
-      className={`fixed top-0 right-0 w-80 sm:w-96 h-full bg-[var(--background)] text-[var(--foreground)] shadow-xl z-50 overflow-hidden transform transition-all duration-300 flex flex-col ${
-        isClosing ? "animate-slideOut" : "animate-slideIn"
-      }`}
+    className={`fixed top-0 right-0 w-80 sm:w-96 h-[100dvh] min-h-[100dvh] bg-[var(--background)] text-[var(--foreground)] shadow-xl z-50 overflow-hidden transform transition-all duration-300 flex flex-col ${
+      isClosing ? "animate-slideOut" : "animate-slideIn"
+    }`}
     >
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-gray-300 dark:border-gray-600">
