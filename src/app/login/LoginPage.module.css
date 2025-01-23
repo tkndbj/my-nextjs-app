@@ -1,15 +1,18 @@
 /* src/app/login/LoginPage.module.css */
 
+/* Outer container covers entire viewport, can scroll if needed */
 .container {
   position: relative;
   width: 100%;
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh; 
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Allow vertical scrolling if content is taller than screen */
+  overflow-y: auto;
 }
 
+/* Background video behind everything */
 .backgroundVideo {
   position: absolute;
   top: 0;
@@ -17,16 +20,19 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  z-index: -1;
+  z-index: -1; /* behind container */
 }
 
+/* The main box containing the forms */
 .loginContainer {
   position: relative;
-  width: 400px; /* keeps desktop layout */
-  max-width: 90%;
+  /* Keep desktop layout: 400px wide, 600px tall */
+  width: 400px; 
   height: 600px;
+  /* On narrower screens, allow up to 90% */
+  max-width: 90%; 
   background: transparent;
-  overflow: hidden; /* We'll override on small screens */
+  z-index: 2; /* ensures it's above the video */
 }
 
 /* Common Form Styles */
@@ -111,23 +117,17 @@
 }
 
 /* 
-  --- ADDED: Responsive Rules for Mobile (max-width: 600px) ---
-  Ensures the form is visible & scrollable, and remains centered
+  --- MOBILE (max-width: 600px) ---
+  Make the container & forms auto-height, 
+  so everything stays visible & scrollable if needed.
 */
 @media (max-width: 600px) {
-  .container {
-    /* Allow space for vertical scrolling if needed */
-    height: auto;
-    min-height: 100vh;
-    padding: 1rem 0;
-  }
-
   .loginContainer {
-    /* Let the container auto-size instead of a fixed 600px height */
-    height: auto;
-    /* If the form overflows, allow scrolling */
-    overflow-y: auto;
-    /* Keep it centered horizontally */
-    margin: 0 auto;
+    width: 90%;
+    height: auto; /* remove fixed 600px so it can shrink or expand */
+  }
+  .form {
+    height: auto; /* let the form expand as needed */
+    min-height: 500px; /* ensure enough space for content */
   }
 }
