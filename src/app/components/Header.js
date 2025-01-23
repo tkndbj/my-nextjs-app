@@ -78,35 +78,35 @@ export default function Header() {
   // Toggle mobile notifications
   const handleNotificationsClick = (e) => {
     e.stopPropagation();
-    setShowNotifications((prev) => !prev); // Toggle
-    if (showMessages) setShowMessages(false); // Close other window
+    setShowNotifications((prev) => !prev);
+    if (showMessages) setShowMessages(false);
   };
 
   // Toggle mobile messages
   const handleMessagesClick = (e) => {
     e.stopPropagation();
-    setShowMessages((prev) => !prev); // Toggle
+    setShowMessages((prev) => !prev);
     if (showNotifications) setShowNotifications(false);
   };
 
   return (
-    // Make the header "relative" so we can position mobile windows absolute inside it
+    // "relative" so we can absolutely-position the full-width windows
     <header className={`${styles.header} relative`}>
       <nav className={styles.navContainer}>
         {/* MOBILE VIEW (< md) */}
-        <div className="flex md:hidden w-full items-center justify-between">
-          {/* Left group: Hamburger, Bell, Mail */}
-          <div className="flex items-center space-x-3">
-            {/* Hamburger */}
+        <div className="md:hidden flex w-full items-center">
+          {/* LEFT GROUP: Hamburger, Bell, Mail */}
+          <div className="flex items-center space-x-2 pl-1">
+            {/* Hamburger Icon: bigger negative margin to push left */}
             <button
               onClick={toggleSidebar}
-              className="bg-transparent text-white text-2xl p-2 ml-[-4px]"
+              className="bg-transparent text-white text-2xl p-2 ml-[-12px]"
               aria-label="Toggle Sidebar"
             >
               <FaBars />
             </button>
 
-            {/* Bell Icon (Notifications) - highlight jade if open */}
+            {/* Bell Icon (Notifications) */}
             {user && (
               <button
                 onClick={handleNotificationsClick}
@@ -119,7 +119,7 @@ export default function Header() {
               </button>
             )}
 
-            {/* Mail Icon (Messages) - highlight jade if open */}
+            {/* Mail Icon (Messages) */}
             {user && (
               <button
                 onClick={handleMessagesClick}
@@ -133,17 +133,17 @@ export default function Header() {
             )}
           </div>
 
-          {/* Search Input */}
-          <div className="ml-2 mr-2">
+          {/* CENTER GROUP: Search Box (flex-1 + center) */}
+          <div className="flex-1 flex justify-center px-1">
             <input
               type="text"
               placeholder="Search..."
-              className={`${styles.searchInput} w-44`}
+              className={`${styles.searchInput} w-40`}
             />
           </div>
 
-          {/* Favorites & Cart (or Login) */}
-          <div className="flex items-center space-x-5 mr-1">
+          {/* RIGHT GROUP: Favorites & Cart (or Login) */}
+          <div className="flex items-center space-x-3 pr-2">
             {user ? (
               <>
                 {/* Favorites Icon */}
@@ -306,11 +306,7 @@ export default function Header() {
         </div>
       </nav>
 
-      {/** 
-        MOBILE FULL-WIDTH WINDOWS
-        We attach them "absolute" to the header, so top is exactly the bottom edge of nav.
-        'relative' on header ensures these are anchored below.
-      */}
+      {/* MOBILE FULL-WIDTH WINDOWS (Absolute below the header) */}
       {user && showNotifications && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-white text-black z-50">
           <NotificationsWindow
