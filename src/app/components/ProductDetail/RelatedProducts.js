@@ -54,30 +54,26 @@ const RelatedProducts = ({ currentProduct }) => {
   if (relatedProducts.length === 0) return null;
 
   return (
-    <div className="w-full">
+    <div className="w-full max-w-full">
       <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-foreground text-center">
         Related Products
       </h2>
-      <div className="relative w-full">
+
+      <div className="relative max-w-full">
         {/* 
-          Scrollable row:
-          - 'flex' with 'space-x-4' (or 2) for spacing
-          - 'overflow-x-auto' so it scrolls horizontally
-          - 'scrollbar-hide' to hide scrollbar on supporting browsers
+          The container that can scroll horizontally:
+          - flex-nowrap ensures they stay on one row (horizontal)
+          - overflow-x-auto allows finger scrolling on mobile
+          - scrollbar-hide hides the scrollbar in some browsers
         */}
         <div
           ref={scrollContainerRef}
-          className="flex space-x-4 overflow-x-auto scrollbar-hide p-2"
+          className="flex flex-nowrap space-x-4 overflow-x-auto scrollbar-hide max-w-full px-2"
         >
           {relatedProducts.map((product) => (
             <div
               key={product.id}
-              className="flex-none w-48 sm:w-56" 
-              /* 
-                 "flex-none" stops it from shrinking or growing 
-                 beyond what we set. "w-48" or "sm:w-56" fixes 
-                 the width so it doesn't push the entire page wide.
-              */
+              className="flex-none w-48 sm:w-56"
             >
               <CompactProductCard product={product} />
             </div>
