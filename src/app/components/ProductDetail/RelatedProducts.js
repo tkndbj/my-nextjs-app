@@ -17,7 +17,7 @@ const RelatedProducts = ({ currentProduct }) => {
     const q = query(
       relatedRef,
       where("category", "==", currentProduct.category)
-      // optionally exclude current product with: where("id", "!=", currentProduct.id)
+      // optionally exclude current product: where("id", "!=", currentProduct.id)
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -59,13 +59,28 @@ const RelatedProducts = ({ currentProduct }) => {
         Related Products
       </h2>
       <div className="relative w-full">
-        {/* Scrollable row */}
+        {/* 
+          Scrollable row:
+          - 'flex' with 'space-x-4' (or 2) for spacing
+          - 'overflow-x-auto' so it scrolls horizontally
+          - 'scrollbar-hide' to hide scrollbar on supporting browsers
+        */}
         <div
           ref={scrollContainerRef}
-          className="flex space-x-2 overflow-x-auto scrollbar-hide p-2"
+          className="flex space-x-4 overflow-x-auto scrollbar-hide p-2"
         >
           {relatedProducts.map((product) => (
-            <CompactProductCard key={product.id} product={product} />
+            <div
+              key={product.id}
+              className="flex-none w-48 sm:w-56" 
+              /* 
+                 "flex-none" stops it from shrinking or growing 
+                 beyond what we set. "w-48" or "sm:w-56" fixes 
+                 the width so it doesn't push the entire page wide.
+              */
+            >
+              <CompactProductCard product={product} />
+            </div>
           ))}
         </div>
 
