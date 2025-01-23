@@ -108,14 +108,27 @@ export default function HomePageContent() {
       {products.length === 0 ? (
         <p className="text-center text-foreground">No products found.</p>
       ) : (
-        <>
-          {/* 2 columns on mobile, 4 columns on md+ screens, smaller gap */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 justify-items-center">
+        <div className="mx-auto w-full max-w-7xl">
+          {/* 
+            On mobile (<md): 2 cols, gap-x-2, gap-y-2
+            On md+ screens: 4 cols, gap-x-1 (smaller horizontal gap), gap-y-2
+          */}
+          <div
+            className="
+              grid
+              grid-cols-2
+              md:grid-cols-4
+              gap-x-2
+              gap-y-2
+              md:gap-x-1
+              justify-items-center
+            "
+          >
             {products.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
           </div>
-        </>
+        </div>
       )}
     </div>
   );
