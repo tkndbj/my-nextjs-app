@@ -11,6 +11,17 @@ export default function CartWindow({ user, onClose }) {
   const [loading, setLoading] = useState(true);
   const [isClosing, setIsClosing] = useState(false);
 
+  <div
+  style={{
+    position: 'fixed',
+    top: 0,
+    right: 0,
+    width: '80vw', // Adjust width as needed
+    height: '100vh',
+    // ... other styles ...
+  }}
+></div>
+
   useEffect(() => {
     if (!user) return;
     const fetchCartItems = async () => {

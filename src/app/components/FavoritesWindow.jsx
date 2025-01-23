@@ -43,6 +43,17 @@ export default function CartWindow({ user, onClose }) {
   // For closing animation
   const [isClosing, setIsClosing] = useState(false);
 
+<div
+  style={{
+    position: 'fixed',
+    top: 0,
+    right: 0,
+    width: '80vw', // Adjust width as needed
+    height: '100vh',
+    // ... other styles ...
+  }}
+></div>
+
   // On mount or when user changes, load all favorites if not already
   useEffect(() => {
     if (!user || alreadyFetched) return;
