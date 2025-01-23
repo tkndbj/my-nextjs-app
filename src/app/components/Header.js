@@ -14,8 +14,6 @@ import { FaHeart, FaShoppingCart, FaBars } from "react-icons/fa";
 import FavoritesWindow from "./FavoritesWindow";
 import CartWindow from "./CartWindow";
 import { collection, getDocs } from "firebase/firestore";
-
-// Import the Sidebar context to toggle it from the hamburger
 import { useSidebar } from "../../../context/SidebarContext";
 
 export default function Header() {
@@ -31,7 +29,7 @@ export default function Header() {
   const [favoritesCount, setFavoritesCount] = useState(0);
   const [cartCount, setCartCount] = useState(0);
 
-  // Access the sidebar context
+  // Sidebar context
   const { toggleSidebar } = useSidebar();
 
   useEffect(() => {
@@ -44,7 +42,6 @@ export default function Header() {
 
   useEffect(() => {
     if (!user) {
-      // If not logged in, reset counts
       setFavoritesCount(0);
       setCartCount(0);
       return;
@@ -52,12 +49,10 @@ export default function Header() {
 
     const fetchCounts = async () => {
       try {
-        // Fetch favorites count
         const favRef = collection(db, "users", user.uid, "favorites");
         const favSnap = await getDocs(favRef);
         setFavoritesCount(favSnap.size);
 
-        // Fetch cart count
         const cartRef = collection(db, "users", user.uid, "cart");
         const cartSnap = await getDocs(cartRef);
         setCartCount(cartSnap.size);
@@ -72,36 +67,33 @@ export default function Header() {
   return (
     <header className={styles.header}>
       <nav className={styles.navContainer}>
-        {/* 
-          MOBILE VIEW (< md):
-          - Hamburger + shorter search + Favorites & Cart icons
-        */}
+        {/* MOBILE VIEW (< md) */}
         <div className="flex md:hidden w-full items-center justify-between">
-          {/* Hamburger Icon */}
+          {/* Hamburger Icon: slightly left, bigger */}
           <button
             onClick={toggleSidebar}
-            className="bg-transparent text-white text-xl p-2"
+            className="bg-transparent text-white text-2xl p-2 ml-1"
             aria-label="Toggle Sidebar"
           >
             <FaBars />
           </button>
 
-          {/* Shrinked Search Input */}
+          {/* Wider Search Input */}
           <div className="ml-2 mr-2">
             <input
               type="text"
               placeholder="Search..."
-              className={`${styles.searchInput} w-28`} 
+              className={`${styles.searchInput} w-36`}
             />
           </div>
 
-          {/* Favorites & Cart (or Login if user not logged in) */}
-          <div className="flex items-center space-x-4">
+          {/* Favorites & Cart (or Login) -- bigger icons, more gap */}
+          <div className="flex items-center space-x-5 mr-1">
             {user ? (
               <>
                 {/* Favorites Icon */}
                 <button
-                  className={styles.linkButton}
+                  className={`${styles.linkButton} text-xl`}
                   title="Favorites"
                   onClick={() => setShowFavorites(!showFavorites)}
                 >
@@ -119,7 +111,7 @@ export default function Header() {
 
                 {/* Cart Icon */}
                 <button
-                  className={styles.linkButton}
+                  className={`${styles.linkButton} text-xl`}
                   title="Cart"
                   onClick={() => setShowCart(!showCart)}
                 >
@@ -133,7 +125,6 @@ export default function Header() {
                 )}
               </>
             ) : (
-              // If not logged in, show a Login link
               <Link href="/login" className={styles.link}>
                 Login
               </Link>
@@ -141,10 +132,7 @@ export default function Header() {
           </div>
         </div>
 
-        {/* 
-          DESKTOP VIEW (md+):
-          - Show logo, full menu, bigger search, etc.
-        */}
+        {/* DESKTOP VIEW (md+) */}
         <div className="hidden md:flex w-full items-center justify-between">
           {/* Left: Logo */}
           <div className={styles.leftContainer}>
@@ -211,7 +199,7 @@ export default function Header() {
               )}
             </li>
 
-            {/* If user is logged in, show Favorites & Cart */}
+            {/* Favorites & Cart if logged in */}
             {user ? (
               <>
                 <li className={styles.menuItem}>
@@ -250,7 +238,6 @@ export default function Header() {
                 </li>
               </>
             ) : (
-              // If not logged in, show a Login link
               <li className={styles.menuItem}>
                 <Link href="/login" className={styles.link}>
                   Login
