@@ -7,14 +7,6 @@ import styles from "./NotificationsWindow.module.css";
 import { collection, query, orderBy, limit, onSnapshot } from "firebase/firestore";
 import { db } from "../../../lib/firebase";
 
-/**
- * NotificationsWindow
- *
- * Props:
- * - userId (string): current user's ID
- * - onClose (function): callback to close the popup
- * - isMobile (boolean): whether to render the mobile-friendly style (no .overlay)
- */
 const NotificationsWindow = ({ userId, onClose, isMobile = false }) => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -43,22 +35,29 @@ const NotificationsWindow = ({ userId, onClose, isMobile = false }) => {
     return () => unsubscribe();
   }, [userId]);
 
-  // Close the window when clicking outside
+  // Only apply outside-click for desktop usage
   useEffect(() => {
+    if (isMobile) return; // Skip outside-click on mobile
+
     function handleClickOutside(event) {
       if (windowRef.current && !windowRef.current.contains(event.target)) {
         onClose();
       }
     }
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [onClose]);
+  }, [onClose, isMobile]);
 
-  // The core content, used in both mobile & desktop
   const content = (
-    <div className={styles.notificationsWindow} ref={windowRef}>
+    <div
+      className={`${styles.notificationsWindow} ${
+        isMobile ? "w-full static" : ""
+      }`}
+      ref={windowRef}
+    >
       <h3 className={styles.title}>Notifications</h3>
       {loading ? (
         <p className={styles.loading}>Loading...</p>
@@ -81,12 +80,12 @@ const NotificationsWindow = ({ userId, onClose, isMobile = false }) => {
     </div>
   );
 
-  // If NOT mobile, wrap the content in the .overlay div
+  // If NOT mobile, use the .overlay for PC
   if (!isMobile) {
     return <div className={styles.overlay}>{content}</div>;
   }
 
-  // If mobile, return just the window (no .overlay)
+  // If mobile, return just the window (no overlay)
   return content;
 };
 

@@ -33,7 +33,7 @@ export default function Header() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [showCart, setShowCart] = useState(false);
 
-  // Mobile Notifications & Messages windows
+  // Mobile Notifications & Messages
   const [showNotifications, setShowNotifications] = useState(false);
   const [showMessages, setShowMessages] = useState(false);
 
@@ -75,30 +75,29 @@ export default function Header() {
     fetchCounts();
   }, [user]);
 
-  // Handle toggling of mobile notifications
+  // Toggle mobile notifications
   const handleNotificationsClick = (e) => {
     e.stopPropagation();
-    // Toggle notifications, close messages
-    setShowNotifications((prev) => !prev);
-    if (showMessages) setShowMessages(false);
+    setShowNotifications((prev) => !prev); // Toggle
+    if (showMessages) setShowMessages(false); // Close other window
   };
 
-  // Handle toggling of mobile messages
+  // Toggle mobile messages
   const handleMessagesClick = (e) => {
     e.stopPropagation();
-    // Toggle messages, close notifications
-    setShowMessages((prev) => !prev);
+    setShowMessages((prev) => !prev); // Toggle
     if (showNotifications) setShowNotifications(false);
   };
 
   return (
-    <header className={styles.header}>
+    // Make the header "relative" so we can position mobile windows absolute inside it
+    <header className={`${styles.header} relative`}>
       <nav className={styles.navContainer}>
         {/* MOBILE VIEW (< md) */}
         <div className="flex md:hidden w-full items-center justify-between">
-          {/* Left group: Hamburger, Bell, Mail (mobile only) */}
+          {/* Left group: Hamburger, Bell, Mail */}
           <div className="flex items-center space-x-3">
-            {/* Hamburger Icon: move left via negative margin */}
+            {/* Hamburger */}
             <button
               onClick={toggleSidebar}
               className="bg-transparent text-white text-2xl p-2 ml-[-4px]"
@@ -107,7 +106,7 @@ export default function Header() {
               <FaBars />
             </button>
 
-            {/* Bell Icon (Notifications) - highlight jade green if active */}
+            {/* Bell Icon (Notifications) - highlight jade if open */}
             {user && (
               <button
                 onClick={handleNotificationsClick}
@@ -120,7 +119,7 @@ export default function Header() {
               </button>
             )}
 
-            {/* Mail Icon (Messages) - highlight jade green if active */}
+            {/* Mail Icon (Messages) - highlight jade if open */}
             {user && (
               <button
                 onClick={handleMessagesClick}
@@ -134,7 +133,7 @@ export default function Header() {
             )}
           </div>
 
-          {/* Wider Search Input */}
+          {/* Search Input */}
           <div className="ml-2 mr-2">
             <input
               type="text"
@@ -307,12 +306,13 @@ export default function Header() {
         </div>
       </nav>
 
-      {/* 
-        FULL-WIDTH Notifications or Messages on mobile 
-        (below the header; we set a top offset).
+      {/** 
+        MOBILE FULL-WIDTH WINDOWS
+        We attach them "absolute" to the header, so top is exactly the bottom edge of nav.
+        'relative' on header ensures these are anchored below.
       */}
       {user && showNotifications && (
-        <div className="md:hidden fixed top-[60px] left-0 w-full bg-white text-black z-50 p-2">
+        <div className="md:hidden absolute top-full left-0 right-0 bg-white text-black z-50">
           <NotificationsWindow
             userId={user.uid}
             onClose={() => setShowNotifications(false)}
@@ -322,7 +322,7 @@ export default function Header() {
       )}
 
       {user && showMessages && (
-        <div className="md:hidden fixed top-[60px] left-0 w-full bg-white text-black z-50 p-2">
+        <div className="md:hidden absolute top-full left-0 right-0 bg-white text-black z-50">
           <MessagesWindow
             userId={user.uid}
             onClose={() => setShowMessages(false)}

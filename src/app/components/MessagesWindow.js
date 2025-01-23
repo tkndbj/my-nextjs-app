@@ -18,16 +18,12 @@ import styles from "./MessagesWindow.module.css";
 import ChatBox from "./ChatBox";
 import { useOutsideAlerter } from "../../hooks/useOutsideAlerter";
 
-/**
- * MessagesWindow Component
- *
- * Props:
- * - userId (string): Current user's ID
- * - onClose (function): Callback to close the MessagesWindow
- * - preselectedChatId (string): optional chatId to auto-open
- * - isMobile (boolean): toggles the overlay vs. direct window
- */
-const MessagesWindow = ({ userId, onClose, preselectedChatId, isMobile = false }) => {
+const MessagesWindow = ({
+  userId,
+  onClose,
+  preselectedChatId,
+  isMobile = false,
+}) => {
   const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [usersMap, setUsersMap] = useState({});
@@ -35,13 +31,21 @@ const MessagesWindow = ({ userId, onClose, preselectedChatId, isMobile = false }
 
   const windowRef = useRef(null);
 
-  // outside click
-  useOutsideAlerter([windowRef], () => {
-    // Only close the window if no chat is selected
-    if (!selectedChat) {
-      onClose();
+  // Only apply outside-click for desktop usage
+  useEffect(() => {
+    if (isMobile) return;
+
+    function handleClickOutside(event) {
+      if (windowRef.current && !windowRef.current.contains(event.target)) {
+        onClose();
+      }
     }
-  });
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [onClose, isMobile]);
 
   // Fetch user chats
   useEffect(() => {
@@ -63,7 +67,7 @@ const MessagesWindow = ({ userId, onClose, preselectedChatId, isMobile = false }
         setChats(items);
         setLoading(false);
 
-        // Build a map of other participants' displayNames
+        // Build map for participant displayNames
         const participantIds = new Set();
         items.forEach((c) => {
           c.participants?.forEach((pid) => {
@@ -101,17 +105,17 @@ const MessagesWindow = ({ userId, onClose, preselectedChatId, isMobile = false }
     );
 
     return () => unsubscribe();
-    // intentionally omit usersMap from deps to avoid re-fetch
+    // intentionally omit usersMap from deps (avoid re-fetch loops)
   }, [userId]);
 
-  // If preselectedChatId is passed, auto-open that chat (if it’s in the list)
+  // Handle preselectedChatId
   useEffect(() => {
     if (!preselectedChatId || !chats.length) return;
     const found = chats.find((c) => c.id === preselectedChatId);
     if (found) {
       setSelectedChat(found);
     } else {
-      // Possibly fetch directly
+      // Possibly fetch doc directly
       (async () => {
         try {
           const chatDocRef = doc(db, "chats", preselectedChatId);
@@ -124,7 +128,6 @@ const MessagesWindow = ({ userId, onClose, preselectedChatId, isMobile = false }
               chatData.visibleTo.includes(userId)
             ) {
               setSelectedChat(chatData);
-              // optionally prepend to local chats
             }
           }
         } catch (err) {
@@ -144,9 +147,11 @@ const MessagesWindow = ({ userId, onClose, preselectedChatId, isMobile = false }
     setSelectedChat(null);
   }
 
-  // The main content (both for mobile & PC)
   const content = (
-    <div className={styles.messagesWindow} ref={windowRef}>
+    <div
+      className={`${styles.messagesWindow} ${isMobile ? "w-full static" : ""}`}
+      ref={windowRef}
+    >
       <div className={styles.titleBar}>
         {selectedChat ? (
           <button
@@ -169,8 +174,9 @@ const MessagesWindow = ({ userId, onClose, preselectedChatId, isMobile = false }
           userId={userId}
           chat={selectedChat}
           otherName={
-            usersMap[selectedChat.participants.find((pid) => pid !== userId)] ||
-            "Unknown User"
+            usersMap[
+              selectedChat.participants.find((pid) => pid !== userId)
+            ] || "Unknown User"
           }
         />
       ) : (
@@ -208,12 +214,11 @@ const MessagesWindow = ({ userId, onClose, preselectedChatId, isMobile = false }
     </div>
   );
 
-  // If NOT mobile, wrap in .overlay to appear to the right in sidebar
+  // If desktop, wrap with .overlay
   if (!isMobile) {
     return <div className={styles.overlay}>{content}</div>;
   }
-
-  // If mobile, return just the window (no overlay)
+  // Mobile: no overlay
   return content;
 };
 
