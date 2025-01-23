@@ -2,8 +2,7 @@
 
 "use client";
 
-import { useParams } from "next/navigation";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { db } from "../../../../lib/firebase";
 import {
@@ -20,12 +19,16 @@ import Header from "../../components/Header";
 import { FaHeart, FaRegHeart, FaShoppingCart, FaCheck } from "react-icons/fa";
 import { useUser } from "../../../../context/UserContext";
 import StarRating from "../../components/StarRating";
+
+// Detail components
 import ProductDetailTracker from "../../components/ProductDetail/ProductDetailTracker";
 import ProductDetailDelivery from "../../components/ProductDetail/ProductDetailDelivery";
 import ProductDetailSellerInfo from "../../components/ProductDetail/ProductDetailSellerInfo";
 import ProductDetailReviews from "../../components/ProductDetail/ProductDetailReviews";
-import RelatedProducts from "../../components/ProductDetail/RelatedProducts";
 import ProductDetailDetails from "../../components/ProductDetail/ProductDetailDetails";
+import RelatedProducts from "../../components/ProductDetail/RelatedProducts";
+
+// Sidebar
 import Sidebar from "../../components/Sidebar";
 
 export default function ProductDetailPage() {
@@ -40,9 +43,10 @@ export default function ProductDetailPage() {
 
   const router = useRouter();
 
+  // Fetch product
   useEffect(() => {
-    async function fetchProduct() {
-      if (!id) return;
+    if (!id) return;
+    const fetchProduct = async () => {
       const docRef = doc(db, "products", id);
       const docSnap = await getDoc(docRef);
 
@@ -51,29 +55,29 @@ export default function ProductDetailPage() {
         setProduct({ id: docSnap.id, ...data });
         setSelectedImage(data.imageUrls?.[0] || "https://via.placeholder.com/600x400");
       } else {
-        // No such document => redirect to home
+        // If no doc, go home
         router.push("/");
       }
-    }
+    };
     fetchProduct();
   }, [id, router]);
 
+  // Favorites & Cart states
   useEffect(() => {
     if (user && product) {
-      const favDocRef = doc(db, "users", user.uid, "favorites", product.id);
-      const cartDocRef = doc(db, "users", user.uid, "cart", product.id);
+      const favRef = doc(db, "users", user.uid, "favorites", product.id);
+      const cartRef = doc(db, "users", user.uid, "cart", product.id);
 
-      const unsubscribeFav = onSnapshot(favDocRef, (docSnap) => {
+      const unsubFav = onSnapshot(favRef, (docSnap) => {
         setIsFavorite(docSnap.exists());
       });
-
-      const unsubscribeCart = onSnapshot(cartDocRef, (docSnap) => {
+      const unsubCart = onSnapshot(cartRef, (docSnap) => {
         setIsInCart(docSnap.exists());
       });
 
       return () => {
-        unsubscribeFav();
-        unsubscribeCart();
+        unsubFav();
+        unsubCart();
       };
     } else {
       setIsFavorite(false);
@@ -81,73 +85,72 @@ export default function ProductDetailPage() {
     }
   }, [user, product]);
 
+  // Toggle favorites
   const toggleFavorite = async (e) => {
     e.stopPropagation();
     if (!user) {
-      alert("Please log in to manage your favorites.");
+      alert("Please log in to manage favorites.");
       return;
     }
-
-    const favDocRef = doc(db, "users", user.uid, "favorites", product.id);
-    const productRef = doc(db, "products", product.id);
+    const favRef = doc(db, "users", user.uid, "favorites", product.id);
+    const prodRef = doc(db, "products", product.id);
 
     try {
       if (isFavorite) {
-        // Remove from favorites
-        await deleteDoc(favDocRef);
-        await updateDoc(productRef, { favoritesCount: increment(-1) });
+        await deleteDoc(favRef);
+        await updateDoc(prodRef, { favoritesCount: increment(-1) });
       } else {
-        // Add to favorites
-        await setDoc(favDocRef, { productId: product.id, addedAt: new Date() });
-        await updateDoc(productRef, { favoritesCount: increment(1) });
+        await setDoc(favRef, { productId: product.id, addedAt: new Date() });
+        await updateDoc(prodRef, { favoritesCount: increment(1) });
       }
-    } catch (error) {
-      console.error("Error updating favorites:", error);
-      alert("An error occurred while updating favorites. Please try again.");
+    } catch (err) {
+      console.error("Error updating favorites:", err);
+      alert("Error updating favorites. Please try again.");
     }
   };
 
+  // Toggle cart
   const toggleCart = async (e) => {
     e.stopPropagation();
     if (!user) {
       alert("Please log in to manage your cart.");
       return;
     }
-
-    const cartDocRef = doc(db, "users", user.uid, "cart", product.id);
-    const productRef = doc(db, "products", product.id);
+    const cartRef = doc(db, "users", user.uid, "cart", product.id);
+    const prodRef = doc(db, "products", product.id);
 
     try {
       if (isInCart) {
-        // Remove from cart
-        await deleteDoc(cartDocRef);
-        await updateDoc(productRef, { cartCount: increment(-1) });
+        await deleteDoc(cartRef);
+        await updateDoc(prodRef, { cartCount: increment(-1) });
       } else {
-        // Add to cart
-        await setDoc(cartDocRef, { productId: product.id, addedAt: new Date() });
-        await updateDoc(productRef, { cartCount: increment(1) });
+        await setDoc(cartRef, { productId: product.id, addedAt: new Date() });
+        await updateDoc(prodRef, { cartCount: increment(1) });
       }
-    } catch (error) {
-      console.error("Error updating cart:", error);
-      alert("An error occurred while updating the cart. Please try again.");
+    } catch (err) {
+      console.error("Error updating cart:", err);
+      alert("Error updating cart. Please try again.");
     }
   };
 
+  // Buy now
   const toggleBuyNow = () => {
     if (!user) {
-      alert("Please log in to proceed with the purchase.");
+      alert("Please log in to purchase.");
       return;
     }
     router.push(`/productpayment/${product.id}`);
   };
 
-  const formatCurrency = (value) => {
+  // Price formatting
+  const formatCurrency = (val) => {
     return new Intl.NumberFormat("tr-TR", {
       style: "currency",
       currency: "TRY",
-    }).format(value);
+    }).format(val);
   };
 
+  // If loading
   if (!product) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -158,8 +161,9 @@ export default function ProductDetailPage() {
 
   const rating = product.averageRating || 0.0;
 
-  const colorNameToColor = (colorName) => {
-    switch (colorName.toLowerCase()) {
+  // Color function
+  const colorNameToColor = (name) => {
+    switch (name?.toLowerCase()) {
       case "red":
         return "red";
       case "yellow":
@@ -191,18 +195,18 @@ export default function ProductDetailPage() {
   };
 
   return (
-    // 1) Use a full-width, overflow-x-hidden wrapper to prevent horizontal scroll
     <div className="w-full min-h-screen overflow-x-hidden bg-background flex">
-      <Sidebar />
+      {/* Hide sidebar on mobile => prevents wide layout */}
+      <div className="hidden md:block">
+        <Sidebar />
+      </div>
 
       <div className="flex-1 flex flex-col">
         <Header />
 
         <main className="pt-16 sm:pt-20 px-2 sm:px-6 max-w-7xl mx-auto w-full">
-          {/* 2) Container for product content, 
-                using flex-col for mobile, row for lg */}
           <div className="w-full flex flex-col lg:flex-row gap-6">
-            {/* Left Column: images */}
+            {/* Left Col: Images */}
             <div className="flex flex-col lg:w-1/2 gap-4">
               {/* Main Image */}
               <div className="w-full h-64 sm:h-96 relative rounded-lg overflow-hidden shadow-md bg-secondaryBackground">
@@ -216,19 +220,19 @@ export default function ProductDetailPage() {
 
               {/* Thumbnails */}
               <div className="flex gap-2 overflow-x-auto bg-background p-2 rounded-lg">
-                {product.imageUrls.map((img, index) => (
+                {product.imageUrls?.map((img, i) => (
                   <div
-                    key={index}
+                    key={i}
+                    onClick={() => setSelectedImage(img)}
                     className={`w-16 h-16 sm:w-24 sm:h-24 relative rounded-lg overflow-hidden cursor-pointer border ${
                       selectedImage === img
                         ? "border-accent"
                         : "border-secondaryBackground"
                     }`}
-                    onClick={() => setSelectedImage(img)}
                   >
                     <Image
                       src={img}
-                      alt={`${product.productName} ${index + 1}`}
+                      alt={`${product.productName}-${i}`}
                       layout="fill"
                       objectFit="cover"
                     />
@@ -236,13 +240,13 @@ export default function ProductDetailPage() {
                 ))}
               </div>
 
-              {/* Product Details (desktop) */}
+              {/* Product Details Desktop */}
               <div className="mt-8 hidden lg:block">
                 <ProductDetailDetails product={product} />
               </div>
             </div>
 
-            {/* Right Column: details & actions */}
+            {/* Right Col: Info & Actions */}
             <div className="lg:w-1/2 flex flex-col gap-4 bg-background p-4 rounded-lg shadow-md">
               <h1 className="text-xl sm:text-3xl font-bold text-foreground">
                 {product.productName}
@@ -289,7 +293,6 @@ export default function ProductDetailPage() {
                 <button
                   onClick={toggleBuyNow}
                   className="flex items-center gap-2 px-4 py-2 bg-accent text-background rounded-full hover:bg-accent-hover transition"
-                  aria-label="Buy It Now"
                 >
                   Buy It Now
                 </button>
@@ -304,16 +307,16 @@ export default function ProductDetailPage() {
                   } transition`}
                   aria-label={isInCart ? "Remove from cart" : "Add to cart"}
                 >
-                  <span className="icon-wrapper relative w-6 h-6">
+                  <span className="relative w-6 h-6">
                     <FaShoppingCart
                       className={`text-lg transition-opacity duration-300 ${
                         isInCart ? "opacity-0" : "opacity-100"
                       }`}
                     />
                     <FaCheck
-                      className={`text-lg transition-opacity duration-300 ${
+                      className={`text-lg transition-opacity duration-300 absolute top-0 left-0 ${
                         isInCart ? "opacity-100" : "opacity-0"
-                      } absolute top-0 left-0`}
+                      }`}
                     />
                   </span>
                   {isInCart ? "In Cart" : "Add to Cart"}
@@ -323,7 +326,9 @@ export default function ProductDetailPage() {
                 <button
                   onClick={toggleFavorite}
                   className="p-2 rounded-full bg-secondaryBackground shadow-md hover:bg-secondaryBackground-hover transition-colors"
-                  aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+                  aria-label={
+                    isFavorite ? "Remove from favorites" : "Add to favorites"
+                  }
                 >
                   {isFavorite ? (
                     <FaHeart className="text-red-500" />
@@ -333,7 +338,7 @@ export default function ProductDetailPage() {
                 </button>
               </div>
 
-              {/* Product Details (mobile) */}
+              {/* Product Details Mobile */}
               <div className="mt-8 lg:hidden">
                 <ProductDetailDetails product={product} />
               </div>
