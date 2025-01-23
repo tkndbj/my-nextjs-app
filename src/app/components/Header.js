@@ -19,7 +19,6 @@ import {
 
 import FavoritesWindow from "./FavoritesWindow";
 import CartWindow from "./CartWindow";
-// Updated NotificationsWindow & MessagesWindow
 import NotificationsWindow from "./NotificationsWindow";
 import MessagesWindow from "./MessagesWindow";
 import { collection, getDocs } from "firebase/firestore";
@@ -79,16 +78,16 @@ export default function Header() {
   // Handle toggling of mobile notifications
   const handleNotificationsClick = (e) => {
     e.stopPropagation();
+    // Toggle notifications, close messages
     setShowNotifications((prev) => !prev);
-    // Close messages if open
     if (showMessages) setShowMessages(false);
   };
 
   // Handle toggling of mobile messages
   const handleMessagesClick = (e) => {
     e.stopPropagation();
+    // Toggle messages, close notifications
     setShowMessages((prev) => !prev);
-    // Close notifications if open
     if (showNotifications) setShowNotifications(false);
   };
 
@@ -108,58 +107,30 @@ export default function Header() {
               <FaBars />
             </button>
 
-            {/* Bell Icon (Notifications) */}
+            {/* Bell Icon (Notifications) - highlight jade green if active */}
             {user && (
-              <div className="relative">
-                <button
-                  onClick={handleNotificationsClick}
-                  className="bg-transparent text-white text-xl p-2"
-                  aria-label="Notifications"
-                >
-                  <FaBell />
-                </button>
-                {showNotifications && (
-                  <div
-                    className="absolute top-full left-0 mt-2 bg-white text-black p-4 rounded shadow
-                               transition-all duration-300 ease-in-out"
-                    style={{ minWidth: "200px" }}
-                  >
-                    {/* Pass isMobile to skip .overlay */}
-                    <NotificationsWindow
-                      userId={user.uid}
-                      onClose={() => setShowNotifications(false)}
-                      isMobile
-                    />
-                  </div>
-                )}
-              </div>
+              <button
+                onClick={handleNotificationsClick}
+                className={`bg-transparent text-xl p-2 ${
+                  showNotifications ? "text-[#00A86B]" : "text-white"
+                }`}
+                aria-label="Notifications"
+              >
+                <FaBell />
+              </button>
             )}
 
-            {/* Mail Icon (Messages) */}
+            {/* Mail Icon (Messages) - highlight jade green if active */}
             {user && (
-              <div className="relative">
-                <button
-                  onClick={handleMessagesClick}
-                  className="bg-transparent text-white text-xl p-2"
-                  aria-label="Messages"
-                >
-                  <FaEnvelope />
-                </button>
-                {showMessages && (
-                  <div
-                    className="absolute top-full left-0 mt-2 bg-white text-black p-4 rounded shadow
-                               transition-all duration-300 ease-in-out"
-                    style={{ minWidth: "200px" }}
-                  >
-                    {/* Pass isMobile to skip .overlay */}
-                    <MessagesWindow
-                      userId={user.uid}
-                      onClose={() => setShowMessages(false)}
-                      isMobile
-                    />
-                  </div>
-                )}
-              </div>
+              <button
+                onClick={handleMessagesClick}
+                className={`bg-transparent text-xl p-2 ${
+                  showMessages ? "text-[#00A86B]" : "text-white"
+                }`}
+                aria-label="Messages"
+              >
+                <FaEnvelope />
+              </button>
             )}
           </div>
 
@@ -335,6 +306,30 @@ export default function Header() {
           </ul>
         </div>
       </nav>
+
+      {/* 
+        FULL-WIDTH Notifications or Messages on mobile 
+        (below the header; we set a top offset).
+      */}
+      {user && showNotifications && (
+        <div className="md:hidden fixed top-[60px] left-0 w-full bg-white text-black z-50 p-2">
+          <NotificationsWindow
+            userId={user.uid}
+            onClose={() => setShowNotifications(false)}
+            isMobile
+          />
+        </div>
+      )}
+
+      {user && showMessages && (
+        <div className="md:hidden fixed top-[60px] left-0 w-full bg-white text-black z-50 p-2">
+          <MessagesWindow
+            userId={user.uid}
+            onClose={() => setShowMessages(false)}
+            isMobile
+          />
+        </div>
+      )}
     </header>
   );
 }
