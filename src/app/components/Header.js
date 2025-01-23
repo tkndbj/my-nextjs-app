@@ -9,7 +9,13 @@ import { auth, db } from "../../../lib/firebase";
 import { useRouter } from "next/navigation";
 import styles from "./Header.module.css";
 import { FiMail, FiMessageSquare } from "react-icons/fi";
-import { FaHeart, FaShoppingCart, FaBars, FaBell, FaEnvelope } from "react-icons/fa";
+import {
+  FaHeart,
+  FaShoppingCart,
+  FaBars,
+  FaBell,
+  FaEnvelope,
+} from "react-icons/fa";
 
 import FavoritesWindow from "./FavoritesWindow";
 import CartWindow from "./CartWindow";
@@ -23,11 +29,11 @@ export default function Header() {
   const [user, setUser] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  // States for Favorites/Cart windows
+  // Favorites & Cart windows
   const [showFavorites, setShowFavorites] = useState(false);
   const [showCart, setShowCart] = useState(false);
 
-  // States for mobile Notifications/Messages windows
+  // Mobile Notifications & Messages windows
   const [showNotifications, setShowNotifications] = useState(false);
   const [showMessages, setShowMessages] = useState(false);
 
@@ -38,6 +44,7 @@ export default function Header() {
   // Sidebar context
   const { toggleSidebar } = useSidebar();
 
+  // Track auth state
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser || null);
@@ -45,13 +52,13 @@ export default function Header() {
     return () => unsubscribe();
   }, []);
 
+  // Fetch favorites/cart counts
   useEffect(() => {
     if (!user) {
       setFavoritesCount(0);
       setCartCount(0);
       return;
     }
-
     const fetchCounts = async () => {
       try {
         const favRef = collection(db, "users", user.uid, "favorites");
@@ -65,9 +72,24 @@ export default function Header() {
         console.error("Error fetching favorites/cart counts:", error);
       }
     };
-
     fetchCounts();
   }, [user]);
+
+  // Handle toggling of mobile notifications
+  const handleNotificationsClick = (e) => {
+    e.stopPropagation();
+    setShowNotifications((prev) => !prev);
+    // Close messages if open
+    if (showMessages) setShowMessages(false);
+  };
+
+  // Handle toggling of mobile messages
+  const handleMessagesClick = (e) => {
+    e.stopPropagation();
+    setShowMessages((prev) => !prev);
+    // Close notifications if open
+    if (showNotifications) setShowNotifications(false);
+  };
 
   return (
     <header className={styles.header}>
@@ -76,7 +98,7 @@ export default function Header() {
         <div className="flex md:hidden w-full items-center justify-between">
           {/* Left group: Hamburger, Bell, Mail (mobile only) */}
           <div className="flex items-center space-x-3">
-            {/* Hamburger Icon - move further left via negative margin */}
+            {/* Hamburger Icon: move left via negative margin */}
             <button
               onClick={toggleSidebar}
               className="bg-transparent text-white text-2xl p-2 ml-[-4px]"
@@ -85,45 +107,55 @@ export default function Header() {
               <FaBars />
             </button>
 
-            {/* Bell Icon (Notifications) */}
-            <div className="relative">
-              <button
-                onClick={() => setShowNotifications(!showNotifications)}
-                className="bg-transparent text-white text-2xl p-2"
-                aria-label="Notifications"
-              >
-                <FaBell />
-              </button>
-              {showNotifications && (
-                <div
-                  className="absolute top-full left-0 mt-2 bg-white text-black p-4 rounded shadow 
-                             transition-all duration-300 ease-in-out"
-                  style={{ minWidth: "200px" }}
+            {/* Bell Icon (Notifications) - smaller icon */}
+            {user && (
+              <div className="relative">
+                <button
+                  onClick={handleNotificationsClick}
+                  className="bg-transparent text-white text-xl p-2"
+                  aria-label="Notifications"
                 >
-                  <NotificationsWindow onClose={() => setShowNotifications(false)} />
-                </div>
-              )}
-            </div>
+                  <FaBell />
+                </button>
+                {showNotifications && (
+                  <div
+                    className="absolute top-full left-0 mt-2 bg-white text-black p-4 rounded shadow
+                               transition-all duration-300 ease-in-out"
+                    style={{ minWidth: "200px" }}
+                  >
+                    <NotificationsWindow
+                      userId={user.uid} // Pass the user ID here
+                      onClose={() => setShowNotifications(false)}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
 
-            {/* Mail Icon (Messages) */}
-            <div className="relative">
-              <button
-                onClick={() => setShowMessages(!showMessages)}
-                className="bg-transparent text-white text-2xl p-2"
-                aria-label="Messages"
-              >
-                <FaEnvelope />
-              </button>
-              {showMessages && (
-                <div
-                  className="absolute top-full left-0 mt-2 bg-white text-black p-4 rounded shadow 
-                             transition-all duration-300 ease-in-out"
-                  style={{ minWidth: "200px" }}
+            {/* Mail Icon (Messages) - smaller icon */}
+            {user && (
+              <div className="relative">
+                <button
+                  onClick={handleMessagesClick}
+                  className="bg-transparent text-white text-xl p-2"
+                  aria-label="Messages"
                 >
-                  <MessagesWindow onClose={() => setShowMessages(false)} />
-                </div>
-              )}
-            </div>
+                  <FaEnvelope />
+                </button>
+                {showMessages && (
+                  <div
+                    className="absolute top-full left-0 mt-2 bg-white text-black p-4 rounded shadow
+                               transition-all duration-300 ease-in-out"
+                    style={{ minWidth: "200px" }}
+                  >
+                    <MessagesWindow
+                      userId={user.uid} // Pass the user ID here
+                      onClose={() => setShowMessages(false)}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Wider Search Input */}
@@ -135,7 +167,7 @@ export default function Header() {
             />
           </div>
 
-          {/* Favorites & Cart (or Login) -- bigger icons, more gap */}
+          {/* Favorites & Cart (or Login) */}
           <div className="flex items-center space-x-5 mr-1">
             {user ? (
               <>
@@ -143,7 +175,7 @@ export default function Header() {
                 <button
                   className={`${styles.linkButton} text-xl`}
                   title="Favorites"
-                  onClick={() => setShowFavorites(!showFavorites)}
+                  onClick={() => setShowFavorites((prev) => !prev)}
                 >
                   <FaHeart />
                   {favoritesCount > 0 && (
@@ -161,7 +193,7 @@ export default function Header() {
                 <button
                   className={`${styles.linkButton} text-xl`}
                   title="Cart"
-                  onClick={() => setShowCart(!showCart)}
+                  onClick={() => setShowCart((prev) => !prev)}
                 >
                   <FaShoppingCart />
                   {cartCount > 0 && (
@@ -254,7 +286,7 @@ export default function Header() {
                   <button
                     className={styles.linkButton}
                     title="Favorites"
-                    onClick={() => setShowFavorites(!showFavorites)}
+                    onClick={() => setShowFavorites((prev) => !prev)}
                   >
                     <FaHeart />
                     {favoritesCount > 0 && (
@@ -273,7 +305,7 @@ export default function Header() {
                   <button
                     className={styles.linkButton}
                     title="Cart"
-                    onClick={() => setShowCart(!showCart)}
+                    onClick={() => setShowCart((prev) => !prev)}
                   >
                     <FaShoppingCart />
                     {cartCount > 0 && (
