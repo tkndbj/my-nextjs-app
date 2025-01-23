@@ -15,7 +15,7 @@ function InlineStarRating({ rating }) {
   const stars = [];
   for (let i = 1; i <= 5; i++) {
     if (rounded >= i) {
-      stars.push("★"); // full
+      stars.push("★");
     } else if (rounded + 0.5 === i) {
       stars.push("☆"); // half star placeholder
     } else {
@@ -36,6 +36,7 @@ import ProductDetailSellerInfo from "../../components/ProductDetail/ProductDetai
 import ProductDetailDetails from "../../components/ProductDetail/ProductDetailDetails";
 import ProductDetailDelivery from "../../components/ProductDetail/ProductDetailDelivery";
 import ProductDetailReviews from "../../components/ProductDetail/ProductDetailReviews";
+import RelatedProducts from "../../components/ProductDetail/RelatedProducts";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -47,7 +48,6 @@ export default function ProductDetailPage() {
   // Fetch product
   useEffect(() => {
     if (!id) return;
-
     async function fetchProduct() {
       const docRef = doc(db, "products", id);
       const docSnap = await getDoc(docRef);
@@ -86,6 +86,7 @@ export default function ProductDetailPage() {
       <Header />
 
       <main className="pt-16 sm:pt-20 px-2 sm:px-6 max-w-7xl mx-auto w-full">
+        {/* Main Content Container */}
         <div className="flex flex-col gap-4">
           {/* Main Image */}
           <div className="w-full h-64 sm:h-96 relative rounded-lg overflow-hidden shadow-md bg-secondaryBackground">
@@ -154,6 +155,11 @@ export default function ProductDetailPage() {
           <div className="mt-4">
             <ProductDetailReviews productId={product.id} />
           </div>
+        </div>
+
+        {/* Related Products at the bottom */}
+        <div className="mt-6">
+          <RelatedProducts currentProduct={product} />
         </div>
       </main>
     </div>

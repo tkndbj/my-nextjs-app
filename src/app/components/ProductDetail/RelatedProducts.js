@@ -17,14 +17,14 @@ const RelatedProducts = ({ currentProduct }) => {
     const q = query(
       relatedRef,
       where("category", "==", currentProduct.category)
-      // optionally exclude current product
-      // where("id", "!=", currentProduct.id)
+      // optionally exclude current product with: where("id", "!=", currentProduct.id)
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const products = snapshot.docs
         .map((doc) => ({ id: doc.id, ...doc.data() }))
         .filter((p) => p.id !== currentProduct.id);
+
       setRelatedProducts(products);
     });
 
@@ -54,23 +54,22 @@ const RelatedProducts = ({ currentProduct }) => {
   if (relatedProducts.length === 0) return null;
 
   return (
-    <div className="bg-background p-6 rounded-lg shadow-md mt-6 w-full max-w-7xl mx-auto">
-      <h2 className="text-2xl font-semibold mb-4 text-foreground text-center">
+    <div className="w-full">
+      <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-foreground text-center">
         Related Products
       </h2>
-
       <div className="relative w-full">
-        {/* Scroll Container */}
+        {/* Scrollable row */}
         <div
           ref={scrollContainerRef}
-          className="flex space-x-2 overflow-x-auto scrollbar-hide bg-background p-2 rounded-lg"
+          className="flex space-x-2 overflow-x-auto scrollbar-hide p-2"
         >
           {relatedProducts.map((product) => (
             <CompactProductCard key={product.id} product={product} />
           ))}
         </div>
 
-        {/* Left Scroll Button */}
+        {/* Left Scroll Button (hidden on mobile) */}
         <button
           onClick={scrollLeft}
           className="hidden sm:block absolute top-1/2 left-0 transform -translate-y-1/2 bg-secondaryBackground rounded-full p-2 shadow-md hover:bg-secondaryBackground-hover transition"
@@ -79,7 +78,7 @@ const RelatedProducts = ({ currentProduct }) => {
           <FaChevronLeft className="text-foreground" />
         </button>
 
-        {/* Right Scroll Button */}
+        {/* Right Scroll Button (hidden on mobile) */}
         <button
           onClick={scrollRight}
           className="hidden sm:block absolute top-1/2 right-0 transform -translate-y-1/2 bg-secondaryBackground rounded-full p-2 shadow-md hover:bg-secondaryBackground-hover transition"
