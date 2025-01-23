@@ -9,10 +9,12 @@ import { auth, db } from "../../../lib/firebase";
 import { useRouter } from "next/navigation";
 import styles from "./Header.module.css";
 import { FiMail, FiMessageSquare } from "react-icons/fi";
-import { FaHeart, FaShoppingCart, FaBars } from "react-icons/fa";
+import { FaHeart, FaShoppingCart, FaBars, FaBell, FaEnvelope } from "react-icons/fa";
 
 import FavoritesWindow from "./FavoritesWindow";
 import CartWindow from "./CartWindow";
+import NotificationsWindow from "./NotificationsWindow";
+import MessagesWindow from "./MessagesWindow";
 import { collection, getDocs } from "firebase/firestore";
 import { useSidebar } from "../../../context/SidebarContext";
 
@@ -24,6 +26,10 @@ export default function Header() {
   // States for Favorites/Cart windows
   const [showFavorites, setShowFavorites] = useState(false);
   const [showCart, setShowCart] = useState(false);
+
+  // States for mobile Notifications/Messages windows
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showMessages, setShowMessages] = useState(false);
 
   // Counters
   const [favoritesCount, setFavoritesCount] = useState(0);
@@ -68,14 +74,57 @@ export default function Header() {
       <nav className={styles.navContainer}>
         {/* MOBILE VIEW (< md) */}
         <div className="flex md:hidden w-full items-center justify-between">
-          {/* Hamburger Icon: move further left, keep bigger */}
-          <button
-            onClick={toggleSidebar}
-            className="bg-transparent text-white text-2xl p-2 ml-0"
-            aria-label="Toggle Sidebar"
-          >
-            <FaBars />
-          </button>
+          {/* Left group: Hamburger, Bell, Mail (mobile only) */}
+          <div className="flex items-center space-x-3">
+            {/* Hamburger Icon - move further left via negative margin */}
+            <button
+              onClick={toggleSidebar}
+              className="bg-transparent text-white text-2xl p-2 ml-[-4px]"
+              aria-label="Toggle Sidebar"
+            >
+              <FaBars />
+            </button>
+
+            {/* Bell Icon (Notifications) */}
+            <div className="relative">
+              <button
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="bg-transparent text-white text-2xl p-2"
+                aria-label="Notifications"
+              >
+                <FaBell />
+              </button>
+              {showNotifications && (
+                <div
+                  className="absolute top-full left-0 mt-2 bg-white text-black p-4 rounded shadow 
+                             transition-all duration-300 ease-in-out"
+                  style={{ minWidth: "200px" }}
+                >
+                  <NotificationsWindow onClose={() => setShowNotifications(false)} />
+                </div>
+              )}
+            </div>
+
+            {/* Mail Icon (Messages) */}
+            <div className="relative">
+              <button
+                onClick={() => setShowMessages(!showMessages)}
+                className="bg-transparent text-white text-2xl p-2"
+                aria-label="Messages"
+              >
+                <FaEnvelope />
+              </button>
+              {showMessages && (
+                <div
+                  className="absolute top-full left-0 mt-2 bg-white text-black p-4 rounded shadow 
+                             transition-all duration-300 ease-in-out"
+                  style={{ minWidth: "200px" }}
+                >
+                  <MessagesWindow onClose={() => setShowMessages(false)} />
+                </div>
+              )}
+            </div>
+          </div>
 
           {/* Wider Search Input */}
           <div className="ml-2 mr-2">
