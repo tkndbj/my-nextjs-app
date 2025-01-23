@@ -1,11 +1,10 @@
-// components/ProductDetail/ProductDetailSellerInfo.js
-
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { db } from "../../../../lib/firebase"; // Keeping your import path intact
+import { db } from "../../../../lib/firebase";
 import { doc, getDoc, collection, onSnapshot } from "firebase/firestore";
 import StarRating from "../StarRating";
+import { useRouter } from "next/navigation";
 
 const ProductDetailSellerInfo = ({ sellerId }) => {
   const [sellerInfo, setSellerInfo] = useState({
@@ -13,6 +12,7 @@ const ProductDetailSellerInfo = ({ sellerId }) => {
     sellerAverageRating: 0,
     sellerTotalReviews: 0,
   });
+  const router = useRouter();
 
   useEffect(() => {
     const fetchSellerInfo = async () => {
@@ -49,7 +49,6 @@ const ProductDetailSellerInfo = ({ sellerId }) => {
           }));
         });
 
-        // Cleanup listener on unmount
         return () => {
           unsubscribeReviews();
         };
@@ -63,16 +62,16 @@ const ProductDetailSellerInfo = ({ sellerId }) => {
 
   const handleSellerClick = () => {
     // Navigate to seller's profile or reviews page
-    router.push(`/seller/${sellerId}`); // Adjust the route as needed
+    router.push(`/seller/${sellerId}`);
   };
 
   return (
     <div
-      className="bg-background p-4 rounded-lg shadow-md flex items-center justify-between mt-4 cursor-pointer hover:bg-secondaryBackground transition-colors"
+      className="bg-background p-4 rounded-lg shadow-md flex flex-wrap items-center justify-between mt-4 cursor-pointer hover:bg-secondaryBackground transition-colors"
       onClick={handleSellerClick}
       aria-label="View Seller Information"
     >
-      <div className="flex items-center">
+      <div className="flex items-center mb-2 sm:mb-0">
         {/* Seller Avatar or Icon */}
         <div className="w-12 h-12 rounded-full bg-secondaryBackground flex items-center justify-center mr-4">
           {/* Placeholder Avatar */}
@@ -96,7 +95,6 @@ const ProductDetailSellerInfo = ({ sellerId }) => {
         className="text-accent hover:text-accent-hover transition-colors"
         aria-label="View Seller Reviews"
       >
-        {/* Optional: Add an arrow or info icon */}
         &rarr;
       </button>
     </div>

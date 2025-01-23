@@ -1,12 +1,8 @@
-// components/ProductDetail/ProductDetailTracker.js
-
 "use client";
 
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { db } from "../../../../lib/firebase";
 import { doc, onSnapshot } from "firebase/firestore";
-import StarRating from "../StarRating";
 
 const ProductDetailTracker = ({ productId }) => {
   const [trackers, setTrackers] = useState({
@@ -42,9 +38,9 @@ const ProductDetailTracker = ({ productId }) => {
   ];
 
   return (
-    <div className="bg-background p-4 rounded-lg shadow-md flex justify-around mt-4">
+    <div className="bg-background p-4 rounded-lg shadow-md flex flex-wrap justify-around mt-4">
       {trackerItems.map((item) => (
-        <div key={item.label} className="flex flex-col items-center">
+        <div key={item.label} className="flex flex-col items-center m-2">
           <span className="text-xl font-bold text-accent">{item.count}</span>
           <span className="text-sm text-foreground">{item.label}</span>
         </div>

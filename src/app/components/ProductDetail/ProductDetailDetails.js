@@ -1,4 +1,4 @@
-// src/app/components/ProductDetail/ProductDetailDetails.js
+"use client";
 
 import React from "react";
 import PropTypes from "prop-types";
@@ -23,8 +23,8 @@ const ProductDetailDetails = ({ product }) => {
   ];
 
   return (
-    <div className="bg-background p-8 rounded-lg shadow-md"> {/* Increased padding from p-6 to p-8 */}
-      <h2 className="text-xl font-semibold mb-4 text-foreground">
+    <div className="bg-background p-4 sm:p-8 rounded-lg shadow-md whitespace-normal break-words">
+      <h2 className="text-lg sm:text-xl font-semibold mb-4 text-foreground">
         Product Details
       </h2>
       <ul className="space-y-3">
@@ -32,7 +32,8 @@ const ProductDetailDetails = ({ product }) => {
           <li key={index} className="flex justify-between items-center">
             <span className="text-foreground font-medium">{item.label}:</span>
             <span className="text-foreground">
-              {item.value} {item.icon && item.icon}
+              {item.value}
+              {item.icon && item.icon}
             </span>
           </li>
         ))}

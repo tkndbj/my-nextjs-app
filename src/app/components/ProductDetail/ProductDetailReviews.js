@@ -1,5 +1,3 @@
-// src/app/components/ProductDetail/ProductDetailReviews.js
-
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -13,7 +11,7 @@ import {
 } from "firebase/firestore";
 import StarRating from "../StarRating";
 import { FaLanguage } from "react-icons/fa";
-import AllReviewsWindow from "../AllReviewsWindow"; // Import the AllReviewsWindow component
+import AllReviewsWindow from "../AllReviewsWindow";
 
 const ProductDetailReviews = ({ productId }) => {
   const [reviews, setReviews] = useState([]);
@@ -38,6 +36,11 @@ const ProductDetailReviews = ({ productId }) => {
     setIsSeeAllOpen(true);
   };
 
+  // Dummy translate function placeholder
+  const translateReview = (reviewId) => {
+    alert(`Translate review ID: ${reviewId}`);
+  };
+
   return (
     <div className="bg-background p-4 rounded-lg shadow-md mt-4">
       <div className="flex justify-between items-center mb-4">
@@ -49,6 +52,7 @@ const ProductDetailReviews = ({ productId }) => {
           See All Reviews
         </button>
       </div>
+
       {reviews.length === 0 ? (
         <p className="text-foreground">No reviews yet.</p>
       ) : (
@@ -63,9 +67,13 @@ const ProductDetailReviews = ({ productId }) => {
                 {new Date(review.timestamp?.toDate()).toLocaleDateString()}
               </span>
             </div>
-            <p className="text-foreground mt-2">{review.review}</p>
+
+            <p className="text-foreground mt-2 whitespace-normal break-words">
+              {review.review}
+            </p>
+
             {review.imageUrls && review.imageUrls.length > 0 && (
-              <div className="flex gap-2 mt-2">
+              <div className="flex flex-wrap gap-2 mt-2">
                 {review.imageUrls.map((imgUrl, idx) => (
                   <img
                     key={idx}
@@ -77,6 +85,7 @@ const ProductDetailReviews = ({ productId }) => {
                 ))}
               </div>
             )}
+
             <div className="flex items-center space-x-1 mt-2">
               <FaLanguage
                 className="text-accent cursor-pointer"

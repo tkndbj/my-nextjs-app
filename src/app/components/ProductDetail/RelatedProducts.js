@@ -1,9 +1,7 @@
-// components/ProductDetail/RelatedProducts.js
-
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import { db } from "../../../../lib/firebase"; // Keeping your import path intact
+import { db } from "../../../../lib/firebase";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import CompactProductCard from "./CompactProductCard";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
@@ -18,16 +16,20 @@ const RelatedProducts = ({ currentProduct }) => {
     const relatedRef = collection(db, "products");
     const q = query(
       relatedRef,
-      where("category", "==", currentProduct.category),
-      where("id", "!=", currentProduct.id)
-      // Add more filters if needed
+      where("category", "==", currentProduct.category)
+      // Optionally exclude the current product if needed
+      // where("id", "!=", currentProduct.id)
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const products = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const products = snapshot.docs
+        .map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+        // Exclude current product if you wish
+        .filter((p) => p.id !== currentProduct.id);
+
       setRelatedProducts(products);
     });
 
@@ -38,7 +40,7 @@ const RelatedProducts = ({ currentProduct }) => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({
         top: 0,
-        left: -300, // Adjust scroll distance as needed
+        left: -300,
         behavior: "smooth",
       });
     }
@@ -48,7 +50,7 @@ const RelatedProducts = ({ currentProduct }) => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({
         top: 0,
-        left: 300, // Adjust scroll distance as needed
+        left: 300,
         behavior: "smooth",
       });
     }
@@ -57,7 +59,7 @@ const RelatedProducts = ({ currentProduct }) => {
   if (relatedProducts.length === 0) return null;
 
   return (
-    <div className="bg-background p-6 rounded-lg shadow-md mt-6">
+    <div className="bg-background p-6 rounded-lg shadow-md mt-6 overflow-hidden">
       <h2 className="text-2xl font-semibold mb-4 text-foreground">
         Related Products
       </h2>
@@ -76,7 +78,7 @@ const RelatedProducts = ({ currentProduct }) => {
         {/* Left Scroll Button */}
         <button
           onClick={scrollLeft}
-          className="absolute top-1/2 left-0 transform -translate-y-1/2 bg-secondaryBackground rounded-full p-2 shadow-md hover:bg-secondaryBackground-hover transition"
+          className="hidden sm:block absolute top-1/2 left-0 transform -translate-y-1/2 bg-secondaryBackground rounded-full p-2 shadow-md hover:bg-secondaryBackground-hover transition"
           aria-label="Scroll Left"
         >
           <FaChevronLeft className="text-foreground" />
@@ -85,7 +87,7 @@ const RelatedProducts = ({ currentProduct }) => {
         {/* Right Scroll Button */}
         <button
           onClick={scrollRight}
-          className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-secondaryBackground rounded-full p-2 shadow-md hover:bg-secondaryBackground-hover transition"
+          className="hidden sm:block absolute top-1/2 right-0 transform -translate-y-1/2 bg-secondaryBackground rounded-full p-2 shadow-md hover:bg-secondaryBackground-hover transition"
           aria-label="Scroll Right"
         >
           <FaChevronRight className="text-foreground" />

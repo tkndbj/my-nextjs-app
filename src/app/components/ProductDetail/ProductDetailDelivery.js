@@ -1,10 +1,8 @@
-// components/ProductDetail/ProductDetailDelivery.js
-
 "use client";
 
 import React, { useState } from "react";
 import { FaTruck, FaInfoCircle } from "react-icons/fa";
-import DeliveryModal from "./DeliveryModal"; // Ensure this component supports dark mode as well
+import DeliveryModal from "./DeliveryModal";
 
 const ProductDetailDelivery = ({ deliveryOption }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,7 +16,6 @@ const ProductDetailDelivery = ({ deliveryOption }) => {
       title: "Self Delivery",
       description: "Pick up your product from our store at your convenience.",
     },
-    // Add more delivery options if needed
   };
 
   const { title, description } = deliveryDetails[deliveryOption] || {
@@ -27,8 +24,8 @@ const ProductDetailDelivery = ({ deliveryOption }) => {
   };
 
   return (
-    <div className="bg-background p-4 rounded-lg shadow-md flex items-center justify-between mt-4">
-      <div className="flex items-center">
+    <div className="bg-background p-4 rounded-lg shadow-md flex flex-wrap items-center justify-between mt-4">
+      <div className="flex items-center mb-2 sm:mb-0">
         <FaTruck className="text-accent text-2xl mr-2" />
         <div>
           <h3 className="text-lg font-semibold text-foreground">{title}</h3>
@@ -42,6 +39,7 @@ const ProductDetailDelivery = ({ deliveryOption }) => {
       >
         <FaInfoCircle size={20} />
       </button>
+
       {isModalOpen && (
         <DeliveryModal
           title={title}
