@@ -32,7 +32,7 @@ const ProductDetailSellerInfo = ({ sellerId }) => {
         // Reference to the 'reviews' subcollection
         const reviewsRef = collection(db, "users", sellerId, "reviews");
 
-        // Listen for real-time updates in the 'reviews' subcollection
+        // Listen for real-time updates
         const unsubscribeReviews = onSnapshot(reviewsRef, (snapshot) => {
           let totalRating = 0;
           snapshot.forEach((doc) => {
@@ -67,14 +67,13 @@ const ProductDetailSellerInfo = ({ sellerId }) => {
 
   return (
     <div
-      className="bg-background p-4 rounded-lg shadow-md flex flex-wrap items-center justify-between mt-4 cursor-pointer hover:bg-secondaryBackground transition-colors"
+      className="w-full bg-background p-4 rounded-lg shadow-md flex flex-wrap items-center justify-between mt-4 cursor-pointer hover:bg-secondaryBackground transition-colors"
       onClick={handleSellerClick}
       aria-label="View Seller Information"
     >
       <div className="flex items-center mb-2 sm:mb-0">
         {/* Seller Avatar or Icon */}
         <div className="w-12 h-12 rounded-full bg-secondaryBackground flex items-center justify-center mr-4">
-          {/* Placeholder Avatar */}
           <span className="text-foreground text-xl">
             {sellerInfo.sellerName.charAt(0).toUpperCase()}
           </span>

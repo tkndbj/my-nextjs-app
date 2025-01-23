@@ -24,9 +24,9 @@ const ProductDetailDelivery = ({ deliveryOption }) => {
   };
 
   return (
-    <div className="bg-background p-4 rounded-lg shadow-md flex flex-wrap items-center justify-between mt-4">
+    <div className="w-full bg-background p-4 rounded-lg shadow-md flex flex-wrap items-center justify-between mt-4">
       <div className="flex items-center mb-2 sm:mb-0">
-        <FaTruck className="text-accent text-2xl mr-2" />
+        <FaTruck className="text-accent text-2xl mr-2 flex-shrink-0" />
         <div>
           <h3 className="text-lg font-semibold text-foreground">{title}</h3>
           <p className="text-foreground text-sm">{description}</p>

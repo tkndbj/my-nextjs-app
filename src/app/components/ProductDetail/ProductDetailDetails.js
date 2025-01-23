@@ -23,7 +23,7 @@ const ProductDetailDetails = ({ product }) => {
   ];
 
   return (
-    <div className="bg-background p-4 sm:p-8 rounded-lg shadow-md whitespace-normal break-words">
+    <div className="w-full max-w-full bg-background p-4 sm:p-8 rounded-lg shadow-md whitespace-normal break-words">
       <h2 className="text-lg sm:text-xl font-semibold mb-4 text-foreground">
         Product Details
       </h2>
@@ -31,7 +31,7 @@ const ProductDetailDetails = ({ product }) => {
         {detailItems.map((item, index) => (
           <li key={index} className="flex justify-between items-center">
             <span className="text-foreground font-medium">{item.label}:</span>
-            <span className="text-foreground">
+            <span className="text-foreground flex-shrink-0">
               {item.value}
               {item.icon && item.icon}
             </span>

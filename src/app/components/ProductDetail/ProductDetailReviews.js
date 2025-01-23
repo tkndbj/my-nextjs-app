@@ -36,13 +36,13 @@ const ProductDetailReviews = ({ productId }) => {
     setIsSeeAllOpen(true);
   };
 
-  // Dummy translate function placeholder
+  // Dummy translate function
   const translateReview = (reviewId) => {
     alert(`Translate review ID: ${reviewId}`);
   };
 
   return (
-    <div className="bg-background p-4 rounded-lg shadow-md mt-4">
+    <div className="w-full max-w-full bg-background p-4 rounded-lg shadow-md mt-4">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-foreground">Reviews</h2>
         <button

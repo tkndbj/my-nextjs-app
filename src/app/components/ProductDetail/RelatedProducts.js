@@ -17,19 +17,14 @@ const RelatedProducts = ({ currentProduct }) => {
     const q = query(
       relatedRef,
       where("category", "==", currentProduct.category)
-      // Optionally exclude the current product if needed
+      // optionally exclude current product
       // where("id", "!=", currentProduct.id)
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const products = snapshot.docs
-        .map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
-        // Exclude current product if you wish
+        .map((doc) => ({ id: doc.id, ...doc.data() }))
         .filter((p) => p.id !== currentProduct.id);
-
       setRelatedProducts(products);
     });
 
@@ -59,12 +54,12 @@ const RelatedProducts = ({ currentProduct }) => {
   if (relatedProducts.length === 0) return null;
 
   return (
-    <div className="bg-background p-6 rounded-lg shadow-md mt-6 overflow-hidden">
-      <h2 className="text-2xl font-semibold mb-4 text-foreground">
+    <div className="bg-background p-6 rounded-lg shadow-md mt-6 w-full max-w-7xl mx-auto">
+      <h2 className="text-2xl font-semibold mb-4 text-foreground text-center">
         Related Products
       </h2>
 
-      <div className="relative">
+      <div className="relative w-full">
         {/* Scroll Container */}
         <div
           ref={scrollContainerRef}
