@@ -17,18 +17,12 @@ export default function HomePageContent() {
   const [products, setProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Access contexts and navigation
-  const {
-    showDeals,
-    showFeatured,
-    specialFilter,
-    sortOption,
-  } = useMarket();
+  const { showDeals, showFeatured, specialFilter, sortOption } = useMarket();
   const router = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    // Get 'query' from URL if using search
+    // Retrieve 'query' from URL if available
     const queryParam = searchParams.get("query") || "";
     setSearchQuery(queryParam);
   }, [searchParams]);
@@ -39,7 +33,7 @@ export default function HomePageContent() {
         let qRef = collection(db, "products");
         let qConstraints = [];
 
-        // If you want a text-based filter (simple)
+        // Simple text-based filter
         if (searchQuery.trim()) {
           qConstraints.push(where("name", ">=", searchQuery));
           qConstraints.push(where("name", "<=", searchQuery + "\uf8ff"));
@@ -94,7 +88,7 @@ export default function HomePageContent() {
           ...doc.data(),
         }));
 
-        // Show boosted products first, if that logic is still desired
+        // Boosted products first
         const boostedProducts = items.filter((p) => p.isBoosted);
         const otherProducts = items.filter((p) => !p.isBoosted);
         const sortedProducts = [...boostedProducts, ...otherProducts];
@@ -110,16 +104,18 @@ export default function HomePageContent() {
   }, [searchQuery, showDeals, showFeatured, specialFilter, sortOption]);
 
   return (
-    <div className="p-4 min-h-screen">
+    <div className="px-2 py-4 min-h-screen">
       {products.length === 0 ? (
         <p className="text-center text-foreground">No products found.</p>
       ) : (
-        // 2 columns on mobile, 4 columns on md+ screens
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 justify-items-center">
-          {products.map((p) => (
-            <ProductCard key={p.id} product={p} />
-          ))}
-        </div>
+        <>
+          {/* 2 columns on mobile, 4 columns on md+ screens, smaller gap */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 justify-items-center">
+            {products.map((p) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

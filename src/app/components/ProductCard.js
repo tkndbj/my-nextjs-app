@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import Image from "next/image"; // Updated import
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import {
   FaStar,
@@ -23,7 +23,6 @@ import {
   updateDoc,
   increment,
   serverTimestamp,
-  addDoc, // Ensure addDoc is imported
 } from "firebase/firestore";
 import { db } from "../../../lib/firebase";
 
@@ -41,7 +40,7 @@ export default function ProductCard({ product }) {
     id,
     currency,
     userId,
-    isBoosted, // 1. Destructure isBoosted
+    isBoosted,
   } = product;
 
   const router = useRouter();
@@ -207,11 +206,9 @@ export default function ProductCard({ product }) {
     incrementClickCount(id).catch((error) => {
       console.error("Error incrementing click count:", error);
     });
-
     recordProductClick(product).catch((error) => {
       console.error("Error recording product click:", error);
     });
-
     router.push(`/products/${id}`);
   };
 
@@ -224,27 +221,22 @@ export default function ProductCard({ product }) {
 
   return (
     <div
-      className="relative w-72 h-96 font-figtree cursor-pointer"
+      className="relative w-full sm:w-64 md:w-72 h-auto font-figtree cursor-pointer"
       onClick={handleCardClick}
     >
       <div className="bg-background rounded-2xl shadow-md overflow-hidden border border-secondaryBackground dark:border-2 dark:border-secondaryBackground transition-transform hover:scale-105 flex flex-col h-full">
-        <div className="w-full h-48 relative">
+        {/* Keep a consistent aspect ratio so it nicely scales on mobile */}
+        <div className="w-full relative aspect-[4/3]">
           <Image
             src={selectedImage}
             alt={productName}
             fill
-            sizes="(max-width: 640px) 100vw, 
-                   (max-width: 768px) 50vw, 
-                   (max-width: 1024px) 33vw, 
-                   25vw"
             className="object-cover"
           />
           <button
             onClick={toggleFavorite}
             className="absolute top-2 right-2 p-1 w-6 h-6 bg-background/80 rounded-full flex items-center justify-center hover:bg-secondaryBackground transition-colors z-10"
-            aria-label={
-              isFavorite ? "Remove from favorites" : "Add to favorites"
-            }
+            aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
           >
             {isFavorite ? (
               <FaHeart className="text-red-500" />
@@ -254,54 +246,52 @@ export default function ProductCard({ product }) {
           </button>
         </div>
 
-        <div className="p-4 flex flex-col flex-grow">
-          <h2 className="text-lg font-semibold text-foreground">
+        <div className="p-2 flex flex-col flex-grow">
+          <h2 className="text-base font-semibold text-foreground line-clamp-1">
             {productName}
           </h2>
 
-          {/* 2. Modified Star Rating Section to include "Featured" */}
           <div className="flex items-center mt-1 justify-between">
             <div className="flex items-center space-x-1">
               {renderStars()}
-              <span className="text-gray-400 text-sm">({roundedRating})</span>
+              <span className="text-gray-400 text-xs">({roundedRating})</span>
             </div>
             {isBoosted && (
-              <span className="text-sm font-semibold text-blue-500">
+              <span className="text-xs font-semibold text-blue-500">
                 Featured
               </span>
             )}
           </div>
 
-          <p className="text-gray-600 dark:text-gray-300 text-sm mt-2 flex-grow line-clamp-2">
+          <p className="text-gray-600 dark:text-gray-300 text-xs mt-1 flex-grow line-clamp-2">
             {displayText}
           </p>
 
-          <div className="mt-2">
+          <div className="mt-1">
             {discountPercentage && discountPercentage > 0 ? (
-              <div className="flex items-center space-x-2">
-                <span className="text-lg font-semibold text-foreground">
+              <div className="flex items-center space-x-1">
+                <span className="text-sm font-semibold text-foreground">
                   {formatCurrency(price)}
                 </span>
-                <span className="text-sm text-gray-500 line-through">
+                <span className="text-xs text-gray-500 line-through">
                   {formatCurrency(originalPrice)}
                 </span>
-                <span className="text-sm text-jade-green dark:text-accent font-semibold">
+                <span className="text-xs text-jade-green dark:text-accent font-semibold">
                   %{discountPercentage}
                 </span>
               </div>
             ) : (
-              <div className="text-lg font-semibold text-foreground">
+              <div className="text-sm font-semibold text-foreground">
                 {formatCurrency(price)}
               </div>
             )}
           </div>
 
-          {/* CHANGED: pass both color + index to guarantee uniqueness */}
           {colors.length > 0 && (
-            <div className="flex items-center gap-1 my-2">
+            <div className="flex items-center gap-1 my-1">
               {colors.map((color, index) => (
                 <button
-                  key={`${color}-${index}`} // CHANGED: ensure unique key
+                  key={`${color}-${index}`}
                   className="w-4 h-4 rounded-full border border-gray-300 hover:scale-110 transition"
                   style={{ backgroundColor: colorNameToColor(color) }}
                   onClick={(e) => {
@@ -318,18 +308,14 @@ export default function ProductCard({ product }) {
 
       <button
         onClick={toggleCart}
-        className={`absolute bottom-3 right-3 flex items-center justify-center p-2 rounded-full border-2 ${
+        className={`absolute bottom-2 right-2 flex items-center justify-center p-1 rounded-full border-2 ${
           isInCart
             ? "bg-jade-green hover:bg-jade-green border-jade-green dark:bg-accent dark:hover:bg-accent dark:border-accent text-white dark:text-foreground"
             : "border-secondaryBackground text-foreground hover:bg-secondaryBackground hover:text-background"
         } transition`}
         aria-label={isInCart ? "Remove from cart" : "Add to cart"}
       >
-        {isInCart ? (
-          <FaCheck className="text-lg" />
-        ) : (
-          <FaShoppingCart className="text-lg" />
-        )}
+        {isInCart ? <FaCheck className="text-md" /> : <FaShoppingCart className="text-md" />}
       </button>
     </div>
   );
