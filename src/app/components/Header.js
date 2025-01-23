@@ -15,7 +15,7 @@ import FavoritesWindow from "./FavoritesWindow";
 import CartWindow from "./CartWindow";
 import { collection, getDocs } from "firebase/firestore";
 
-// 1) Import the Sidebar context so we can toggle it from the hamburger
+// Import the Sidebar context to toggle it from the hamburger
 import { useSidebar } from "../../../context/SidebarContext";
 
 export default function Header() {
@@ -31,7 +31,7 @@ export default function Header() {
   const [favoritesCount, setFavoritesCount] = useState(0);
   const [cartCount, setCartCount] = useState(0);
 
-  // 2) Access the sidebar context
+  // Access the sidebar context
   const { toggleSidebar } = useSidebar();
 
   useEffect(() => {
@@ -82,6 +82,7 @@ export default function Header() {
           <button
             onClick={toggleSidebar}
             className="bg-transparent text-white text-xl p-2"
+            aria-label="Toggle Sidebar"
           >
             <FaBars />
           </button>

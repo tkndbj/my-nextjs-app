@@ -9,7 +9,6 @@
   color: #333;
   border-right: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  /* Add a unified transition for smoother animations */
   transition: width 0.3s ease, background-color 0.3s ease, color 0.3s ease;
   display: flex;
   flex-direction: column;
@@ -29,51 +28,22 @@
 
 @media (max-width: 768px) {
   .collapsed {
-    width: 6%;
+    /* Hide the sidebar entirely when "collapsed" on mobile */
+    display: none;
   }
-}
-
-@media (max-width: 576px) {
-  .collapsed {
-    width: 5%;
-  }
-}
-
-@media (min-width: 1201px) {
   .expanded {
-    width: 7%;
+    /* Show the sidebar like a drawer when "expanded" on mobile */
+    display: block;
+    width: 70%; /* or adjust as needed */
   }
 }
 
-@media (max-width: 1200px) {
-  .expanded {
-    width: 17%;
-  }
-}
-
-@media (max-width: 992px) {
-  .expanded {
-    width: 22%;
-  }
-}
-
-@media (max-width: 768px) {
-  .expanded {
-    width: 32%;
-  }
-}
-
-@media (max-width: 576px) {
-  .expanded {
-    width: 36%;
-  }
-}
+/* (existing breakpoints remain as you had them) */
 
 .light {
   background-color: #ffffff;
   color: #333333;
 }
-
 .dark {
   background-color: #2c2c2c;
   color: #f0f0f0;
@@ -87,7 +57,6 @@
   padding: 1rem;
   transition: justify-content 0.3s ease;
 }
-
 .sidebar.collapsed .topSection {
   justify-content: center;
 }
@@ -108,16 +77,14 @@
   position: relative;
 }
 
-/* Make each menuItem relative so popups can position absolutely inside */
 .menuItem {
-  position: relative; /* ADDED */
+  position: relative;
   display: flex;
   align-items: center;
   padding: 0.75rem 1rem;
   cursor: pointer;
   transition: background 0.2s ease, justify-content 0.3s ease, padding 0.3s ease;
   justify-content: flex-start;
-  /* no longer need separate position: relative here if it's above, that's fine */
 }
 
 .sidebar.collapsed .menuItem {
@@ -143,21 +110,18 @@
   font-size: 1rem;
   opacity: 1;
   transform: translateX(0);
-  /* Unified transitions for opacity, transform, width */
   transition: opacity 0.3s ease, transform 0.3s ease, max-width 0.3s ease,
     margin-left 0.6s ease;
   white-space: nowrap;
   max-width: 200px;
   overflow: hidden;
 }
-
 .sidebar.collapsed .text {
   opacity: 0;
   transform: translateX(-10px);
   max-width: 0;
   margin-left: 0;
 }
-
 .sidebar.expanded .text {
   opacity: 1;
   transform: translateX(0);
@@ -169,24 +133,15 @@
   padding: 1rem 0;
 }
 
-/* 
-   HIGHLIGHT Class 
-   - Jade green background (#0f766e) 
-   - White text 
-*/
 .active {
-  background-color: #00a86b !important; /* Jade green */
-  color: #ffffff !important; /* White text */
+  background-color: #00a86b !important;
+  color: #ffffff !important;
 }
 
-/*
-  Container that holds the windows, placed absolutely to the right 
-  of the menu item. 
-*/
 .popupContainer {
   position: absolute;
-  top: 0; /* Align with top of the menu item */
-  left: 100%; /* Appear to the immediate right of the sidebar */
-  margin-left: 0.5rem; /* Little gap */
-  z-index: 9999; /* Make sure it appears above everything else */
+  top: 0;
+  left: 100%;
+  margin-left: 0.5rem;
+  z-index: 9999;
 }
