@@ -157,10 +157,10 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* Related Products at the bottom */}
+        {/* Related Products at the bottom
         <div className="mt-6">
           <RelatedProducts currentProduct={product} />
-        </div>
+        </div> */}
       </main>
     </div>
   );

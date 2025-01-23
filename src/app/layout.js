@@ -6,7 +6,7 @@ import Header from "./components/Header";
 import LayoutContent from "./components/LayoutContent";
 import "../app/components/Sidebar.module.css";
 import { SidebarProvider } from "../../context/SidebarContext";
-import Sidebar from "./components/Sidebar"; 
+import Sidebar from "./components/Sidebar";
 import { MarketProvider } from "../../context/MarketContext";
 
 export const metadata = {
@@ -16,16 +16,26 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className="font-figtree">
       <head>
-      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1"
+        />
+
+        {/* 1) Link to the Figtree font */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
       </head>
+
       <body>
         <ClientProviders>
           <SidebarProvider>
             <MarketProvider>
               <div className="flex">
-                {/* Removed `hidden md:block` to allow mobile display. */}
+                {/* Sidebar always visible (remove 'hidden md:block' if you want) */}
                 <Sidebar />
 
                 {/* Main content */}
