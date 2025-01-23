@@ -27,7 +27,7 @@ export default function Header() {
   const router = useRouter();
   const [user, setUser] = useState(null);
 
-  // Show/hide windows
+  // States for toggling windows
   const [showNotifications, setShowNotifications] = useState(false);
   const [showMessages, setShowMessages] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
@@ -40,7 +40,7 @@ export default function Header() {
   // Sidebar context
   const { toggleSidebar } = useSidebar();
 
-  // Track auth state
+  // Listen to auth state
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser || null);
@@ -71,7 +71,7 @@ export default function Header() {
     fetchCounts();
   }, [user]);
 
-  // Toggle logic
+  // Toggle handlers
   const handleNotificationsClick = (e) => {
     e.stopPropagation();
     setShowNotifications((prev) => !prev);
@@ -95,11 +95,10 @@ export default function Header() {
 
   return (
     <header className={`${styles.header} relative`}>
-      {/* MOBILE (< md) */}
-      <div className="flex md:hidden w-full items-center py-2">
-        {/* Group 1: Hamburger, Bell, Mail */}
-        <div className="flex items-center space-x-3 ml-2">
-          {/* Hamburger */}
+      {/* MOBILE SECTION (< md) */}
+      <div className="flex md:hidden items-center w-full py-2 px-2">
+        {/* LEFT GROUP: Hamburger, Bell, Mail */}
+        <div className="flex items-center space-x-5">
           <button
             onClick={toggleSidebar}
             className="text-white text-2xl"
@@ -108,7 +107,6 @@ export default function Header() {
             <FaBars />
           </button>
 
-          {/* Bell */}
           <button
             onClick={handleNotificationsClick}
             className={`text-xl ${
@@ -119,7 +117,6 @@ export default function Header() {
             <FaBell />
           </button>
 
-          {/* Mail */}
           <button
             onClick={handleMessagesClick}
             className={`text-xl ${
@@ -131,19 +128,18 @@ export default function Header() {
           </button>
         </div>
 
-        {/* Group 2: "Ada Express" (slightly left) */}
-        <div className="flex-1 flex justify-center ml-[-16px]">
+        {/* CENTER: Ada Express (no extra negative margin) */}
+        <div className="flex-1 flex justify-center">
           <h1
-            className="text-lg font-bold bg-clip-text text-transparent 
+            className="text-lg font-bold bg-clip-text text-transparent
                        bg-gradient-to-r from-red-500 to-orange-500"
           >
             Ada Express
           </h1>
         </div>
 
-        {/* Group 3: Favorites, Cart (slightly left via negative margin) */}
-        <div className="flex items-center space-x-3 mr-[-8px]">
-          {/* Favorites */}
+        {/* RIGHT GROUP: Favorites, Cart (slightly more left so not off-screen) */}
+        <div className="flex items-center space-x-5 mr-2">
           <button
             onClick={handleFavoritesClick}
             className="text-xl text-white relative"
@@ -158,7 +154,6 @@ export default function Header() {
             <FavoritesWindow user={user} onClose={() => setShowFavorites(false)} />
           )}
 
-          {/* Cart */}
           <button
             onClick={handleCartClick}
             className="text-xl text-white relative"
@@ -175,22 +170,25 @@ export default function Header() {
         </div>
       </div>
 
-      {/* DESKTOP (md+) */}
-      <div className="hidden md:flex items-center w-full py-2">
-        {/* "Ada Express" slightly to the right */}
-        <h1
-          className="text-xl font-bold bg-clip-text text-transparent 
-                     bg-gradient-to-r from-red-500 to-orange-500 ml-12"
-        >
-          Ada Express
-        </h1>
+      {/* DESKTOP SECTION (md+) */}
+      <div className="hidden md:flex items-center w-full py-2 px-4 relative">
+        {/* Approach: use 3 sections for perfect centering */}
 
-        {/* Spacer pushes icons to right, but not all the way */}
+        {/* LEFT spacer (could remain empty) */}
         <div className="flex-1"></div>
 
-        {/* Favorites + Cart with more spacing, but moved slightly left (mr-8) */}
-        <div className="flex items-center space-x-6 mr-8">
-          {/* Favorites */}
+        {/* CENTER: Ada Express (exact center horizontally) */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <h1
+            className="text-xl font-bold bg-clip-text text-transparent 
+                       bg-gradient-to-r from-red-500 to-orange-500"
+          >
+            Ada Express
+          </h1>
+        </div>
+
+        {/* RIGHT: Favorites + Cart with some spacing */}
+        <div className="ml-auto flex items-center space-x-8">
           <button
             onClick={handleFavoritesClick}
             className="text-xl text-white relative"
@@ -205,7 +203,6 @@ export default function Header() {
             <FavoritesWindow user={user} onClose={() => setShowFavorites(false)} />
           )}
 
-          {/* Cart */}
           <button
             onClick={handleCartClick}
             className="text-xl text-white relative"
@@ -222,9 +219,9 @@ export default function Header() {
         </div>
       </div>
 
-      {/* MOBILE Full-Width Windows (Notifications/Messages) */}
+      {/* MOBILE: Full-Width Windows (attached via top-full) */}
       {showNotifications && (
-        <div className="absolute top-[68px] left-0 right-0 bg-white text-black z-50 md:hidden">
+        <div className="md:hidden absolute top-full left-0 right-0 bg-white text-black z-50">
           <NotificationsWindow
             userId={user?.uid}
             onClose={() => setShowNotifications(false)}
@@ -233,7 +230,7 @@ export default function Header() {
         </div>
       )}
       {showMessages && (
-        <div className="absolute top-[68px] left-0 right-0 bg-white text-black z-50 md:hidden">
+        <div className="md:hidden absolute top-full left-0 right-0 bg-white text-black z-50">
           <MessagesWindow
             userId={user?.uid}
             onClose={() => setShowMessages(false)}
