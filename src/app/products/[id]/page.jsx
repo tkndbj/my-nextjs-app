@@ -51,7 +51,7 @@ export default function ProductDetailPage() {
         );
       } else {
         // If no such document, redirect to home
-        router.push("/"); // Redirect to home
+        router.push("/");
       }
     }
     if (id) {
@@ -149,7 +149,6 @@ export default function ProductDetailPage() {
       alert("Please log in to proceed with the purchase.");
       return;
     }
-
     // Navigate to the Product Payment Page
     router.push(`/productpayment/${product.id}`);
   };
@@ -212,10 +211,11 @@ export default function ProductDetailPage() {
       <div className="flex-1">
         <Header />
 
-        <main className="pt-16 sm:pt-20 p-4 sm:p-6 max-w-7xl mx-auto flex flex-col lg:flex-row gap-6">
+        <main className="pt-16 sm:pt-20 px-2 sm:px-6 max-w-7xl mx-auto flex flex-col lg:flex-row gap-6">
           {/* Product Images */}
           <div className="flex flex-col lg:w-1/2 gap-4">
-            <div className="w-full h-96 relative rounded-lg overflow-hidden shadow-md bg-secondaryBackground">
+            {/* Main Image: shorter on mobile, standard on desktop */}
+            <div className="w-full h-64 sm:h-96 relative rounded-lg overflow-hidden shadow-md bg-secondaryBackground">
               <Image
                 src={selectedImage}
                 alt={product.productName}
@@ -223,12 +223,13 @@ export default function ProductDetailPage() {
                 objectFit="cover"
               />
             </div>
-            {/* Thumbnails */}
+
+            {/* Thumbnails: smaller on mobile */}
             <div className="flex gap-2 overflow-x-auto bg-background p-2 rounded-lg">
               {product.imageUrls.map((img, index) => (
                 <div
                   key={index}
-                  className={`w-24 h-24 relative rounded-lg overflow-hidden cursor-pointer border ${
+                  className={`w-16 h-16 sm:w-24 sm:h-24 relative rounded-lg overflow-hidden cursor-pointer border ${
                     selectedImage === img
                       ? "border-accent"
                       : "border-secondaryBackground"
@@ -244,6 +245,7 @@ export default function ProductDetailPage() {
                 </div>
               ))}
             </div>
+
             {/* Product Details Component (Visible on Large Screens) */}
             <div className="mt-8 hidden lg:block">
               <ProductDetailDetails product={product} />
@@ -252,19 +254,22 @@ export default function ProductDetailPage() {
 
           {/* Product Details and Actions */}
           <div className="lg:w-1/2 flex flex-col gap-4 bg-background p-4 rounded-lg shadow-md">
-            <h1 className="text-3xl font-bold text-foreground">
+            <h1 className="text-xl sm:text-3xl font-bold text-foreground">
               {product.productName}
             </h1>
+
             <div className="flex items-center space-x-2">
               <StarRating rating={rating} />
-              <span className="text-gray-400 text-sm">
+              <span className="text-gray-400 text-xs sm:text-sm">
                 ({rating.toFixed(1)})
               </span>
             </div>
-            <p className="text-2xl font-semibold text-foreground">
+
+            <p className="text-lg sm:text-2xl font-semibold text-foreground">
               {formatCurrency(product.price)}
             </p>
-            <p className="text-gray-400">
+
+            <p className="text-sm sm:text-base text-gray-400">
               {product.description || "No description available."}
             </p>
 
@@ -288,8 +293,9 @@ export default function ProductDetailPage() {
               </div>
             )}
 
-            {/* Action Buttons */}
-            <div className="flex items-center gap-4 mt-4">
+            {/* Action Buttons (wrap on mobile, one line on desktop) */}
+            <div className="flex flex-wrap lg:flex-nowrap items-center gap-4 mt-4">
+              {/* Buy Now */}
               <button
                 onClick={toggleBuyNow}
                 className="flex items-center gap-2 px-4 py-2 bg-accent text-background rounded-full hover:bg-accent-hover transition"
@@ -298,6 +304,7 @@ export default function ProductDetailPage() {
                 Buy It Now
               </button>
 
+              {/* Add/Remove Cart */}
               <button
                 onClick={toggleCart}
                 className={`flex items-center gap-2 px-4 py-2 rounded-full border-2 ${
@@ -322,6 +329,7 @@ export default function ProductDetailPage() {
                 {isInCart ? "In Cart" : "Add to Cart"}
               </button>
 
+              {/* Favorite Icon */}
               <button
                 onClick={toggleFavorite}
                 className="p-2 rounded-full bg-secondaryBackground shadow-md hover:bg-secondaryBackground-hover transition-colors"
