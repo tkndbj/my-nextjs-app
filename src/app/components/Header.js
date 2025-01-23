@@ -71,7 +71,7 @@ export default function Header() {
     fetchCounts();
   }, [user]);
 
-  // Toggle logic for mobile icons
+  // Toggle logic
   const handleNotificationsClick = (e) => {
     e.stopPropagation();
     setShowNotifications((prev) => !prev);
@@ -95,23 +95,20 @@ export default function Header() {
 
   return (
     <header className={`${styles.header} relative`}>
-      {/* 
-        MOBILE SECTION (< md):
-        Hamburger - Bell - Mail - Ada Express - Favorites - Cart
-      */}
-      <div className="flex md:hidden w-full items-center justify-between px-2 py-2">
-        {/* GROUP 1: Hamburger, Bell, Mail */}
-        <div className="flex items-center space-x-4">
-          {/* Hamburger Icon (left) */}
+      {/* MOBILE (< md) */}
+      <div className="flex md:hidden w-full items-center py-2">
+        {/* Group 1: Hamburger, Bell, Mail */}
+        <div className="flex items-center space-x-3 ml-2">
+          {/* Hamburger */}
           <button
             onClick={toggleSidebar}
-            className="text-white text-2xl ml-[-8px]"
+            className="text-white text-2xl"
             aria-label="Toggle Sidebar"
           >
             <FaBars />
           </button>
 
-          {/* Bell (Notifications) */}
+          {/* Bell */}
           <button
             onClick={handleNotificationsClick}
             className={`text-xl ${
@@ -122,7 +119,7 @@ export default function Header() {
             <FaBell />
           </button>
 
-          {/* Mail (Messages) */}
+          {/* Mail */}
           <button
             onClick={handleMessagesClick}
             className={`text-xl ${
@@ -134,8 +131,8 @@ export default function Header() {
           </button>
         </div>
 
-        {/* GROUP 2: "Ada Express" (center) */}
-        <div className="flex-1 flex justify-center">
+        {/* Group 2: "Ada Express" (slightly left) */}
+        <div className="flex-1 flex justify-center ml-[-16px]">
           <h1
             className="text-lg font-bold bg-clip-text text-transparent 
                        bg-gradient-to-r from-red-500 to-orange-500"
@@ -144,9 +141,9 @@ export default function Header() {
           </h1>
         </div>
 
-        {/* GROUP 3: Favorites, Cart (right) */}
-        <div className="flex items-center space-x-4">
-          {/* Favorites Icon */}
+        {/* Group 3: Favorites, Cart (slightly left via negative margin) */}
+        <div className="flex items-center space-x-3 mr-[-8px]">
+          {/* Favorites */}
           <button
             onClick={handleFavoritesClick}
             className="text-xl text-white relative"
@@ -161,7 +158,7 @@ export default function Header() {
             <FavoritesWindow user={user} onClose={() => setShowFavorites(false)} />
           )}
 
-          {/* Cart Icon */}
+          {/* Cart */}
           <button
             onClick={handleCartClick}
             className="text-xl text-white relative"
@@ -178,24 +175,22 @@ export default function Header() {
         </div>
       </div>
 
-      {/* 
-        DESKTOP SECTION (md+):
-        Just "Ada Express" centered, Favorites + Cart on the right (more space)
-      */}
-      <div className="hidden md:flex items-center justify-center w-full px-4 py-2">
-        {/* "Ada Express" in center */}
-        <div className="flex-1 flex justify-center">
-          <h1
-            className="text-xl font-bold bg-clip-text text-transparent 
-                       bg-gradient-to-r from-red-500 to-orange-500"
-          >
-            Ada Express
-          </h1>
-        </div>
+      {/* DESKTOP (md+) */}
+      <div className="hidden md:flex items-center w-full py-2">
+        {/* "Ada Express" slightly to the right */}
+        <h1
+          className="text-xl font-bold bg-clip-text text-transparent 
+                     bg-gradient-to-r from-red-500 to-orange-500 ml-12"
+        >
+          Ada Express
+        </h1>
 
-        {/* Right group: Favorites + Cart (with extra space) */}
-        <div className="flex items-center space-x-6">
-          {/* Favorites icon */}
+        {/* Spacer pushes icons to right, but not all the way */}
+        <div className="flex-1"></div>
+
+        {/* Favorites + Cart with more spacing, but moved slightly left (mr-8) */}
+        <div className="flex items-center space-x-6 mr-8">
+          {/* Favorites */}
           <button
             onClick={handleFavoritesClick}
             className="text-xl text-white relative"
@@ -210,7 +205,7 @@ export default function Header() {
             <FavoritesWindow user={user} onClose={() => setShowFavorites(false)} />
           )}
 
-          {/* Cart icon */}
+          {/* Cart */}
           <button
             onClick={handleCartClick}
             className="text-xl text-white relative"
@@ -227,9 +222,9 @@ export default function Header() {
         </div>
       </div>
 
-      {/* MOBILE Full-Width Windows for Notifications/Messages */}
+      {/* MOBILE Full-Width Windows (Notifications/Messages) */}
       {showNotifications && (
-        <div className="absolute top-[80px] left-0 right-0 bg-white text-black z-50 md:hidden">
+        <div className="absolute top-[68px] left-0 right-0 bg-white text-black z-50 md:hidden">
           <NotificationsWindow
             userId={user?.uid}
             onClose={() => setShowNotifications(false)}
@@ -238,7 +233,7 @@ export default function Header() {
         </div>
       )}
       {showMessages && (
-        <div className="absolute top-[80px] left-0 right-0 bg-white text-black z-50 md:hidden">
+        <div className="absolute top-[68px] left-0 right-0 bg-white text-black z-50 md:hidden">
           <MessagesWindow
             userId={user?.uid}
             onClose={() => setShowMessages(false)}
