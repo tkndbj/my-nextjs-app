@@ -9,13 +9,13 @@ import { doc, getDoc } from "firebase/firestore";
 import Image from "next/legacy/image";
 import Header from "../../components/Header";
 
-// We'll reuse the temporary inline star rating
+// Temporary inline star rating
 function InlineStarRating({ rating }) {
   const rounded = Math.round(rating * 2) / 2;
   const stars = [];
   for (let i = 1; i <= 5; i++) {
     if (rounded >= i) {
-      stars.push("★"); // full star
+      stars.push("★"); // full
     } else if (rounded + 0.5 === i) {
       stars.push("☆"); // half star placeholder
     } else {
@@ -30,9 +30,12 @@ function InlineStarRating({ rating }) {
   );
 }
 
-// Import the two new components:
+// Additional detail components:
+import ProductDetailTracker from "../../components/ProductDetail/ProductDetailTracker";
 import ProductDetailSellerInfo from "../../components/ProductDetail/ProductDetailSellerInfo";
 import ProductDetailDetails from "../../components/ProductDetail/ProductDetailDetails";
+import ProductDetailDelivery from "../../components/ProductDetail/ProductDetailDelivery";
+import ProductDetailReviews from "../../components/ProductDetail/ProductDetailReviews";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -44,6 +47,7 @@ export default function ProductDetailPage() {
   // Fetch product
   useEffect(() => {
     if (!id) return;
+
     async function fetchProduct() {
       const docRef = doc(db, "products", id);
       const docSnap = await getDoc(docRef);
@@ -126,14 +130,29 @@ export default function ProductDetailPage() {
             <InlineStarRating rating={rating} />
           </div>
 
-          {/* Seller Info (under images + name/price/rating) */}
+          {/* Product Tracker (above seller info) */}
+          <div className="mt-4">
+            <ProductDetailTracker productId={product.id} />
+          </div>
+
+          {/* Seller Info */}
           <div className="mt-4">
             <ProductDetailSellerInfo sellerId={product.userId} />
           </div>
 
-          {/* Product Details (under seller info) */}
+          {/* Product Details */}
           <div className="mt-4">
             <ProductDetailDetails product={product} />
+          </div>
+
+          {/* Delivery */}
+          <div className="mt-4">
+            <ProductDetailDelivery deliveryOption={product.deliveryOption} />
+          </div>
+
+          {/* Reviews */}
+          <div className="mt-4">
+            <ProductDetailReviews productId={product.id} />
           </div>
         </div>
       </main>
