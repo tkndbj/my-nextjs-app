@@ -174,3 +174,10 @@ body.dark .toggle-switch .switch {
 .animate-slideOut {
   animation: slideOut 0.3s forwards;
 }
+
+/* --- IMPORTANT: Prevent Horizontal Scrolling --- */
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* disallow horizontal scroll */
+}
