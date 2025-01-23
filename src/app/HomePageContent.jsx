@@ -10,6 +10,7 @@ import {
   orderBy,
 } from "firebase/firestore";
 import ProductCard from "./components/ProductCard";
+import Header from "./components/Header"; // <-- Import Header
 import { useMarket } from "../../context/MarketContext";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -104,32 +105,37 @@ export default function HomePageContent() {
   }, [searchQuery, showDeals, showFeatured, specialFilter, sortOption]);
 
   return (
-    <div className="px-2 py-4 min-h-screen">
-      {products.length === 0 ? (
-        <p className="text-center text-foreground">No products found.</p>
-      ) : (
-        <div className="mx-auto w-full max-w-7xl">
-          {/* 
-            On mobile (<md): 2 cols, gap-x-2, gap-y-2
-            On md+ screens: 4 cols, gap-x-1 (smaller horizontal gap), gap-y-2
-          */}
-          <div
-            className="
-              grid
-              grid-cols-2
-              md:grid-cols-4
-              gap-x-2
-              gap-y-2
-              md:gap-x-1
-              justify-items-center
-            "
-          >
-            {products.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
+    <>
+      {/* Include Header at the top */}
+      <Header />
+
+      <div className="px-2 py-4 min-h-screen">
+        {products.length === 0 ? (
+          <p className="text-center text-foreground">No products found.</p>
+        ) : (
+          <div className="mx-auto w-full max-w-7xl">
+            {/* 
+              On mobile (<md): 2 cols, gap-x-2, gap-y-2
+              On md+ screens: 4 cols, gap-x-1 (smaller horizontal gap), gap-y-2
+            */}
+            <div
+              className="
+                grid
+                grid-cols-2
+                md:grid-cols-4
+                gap-x-2
+                gap-y-2
+                md:gap-x-1
+                justify-items-center
+              "
+            >
+              {products.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 }
