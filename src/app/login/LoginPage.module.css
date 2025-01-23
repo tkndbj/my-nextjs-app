@@ -1,18 +1,17 @@
 /* src/app/login/LoginPage.module.css */
 
-/* Outer container covers entire viewport, can scroll if needed */
+/* 1) Outer container uses 100vh, no scrolling */
 .container {
   position: relative;
   width: 100%;
-  min-height: 100vh; 
+  height: 100vh; /* fill the viewport height */
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Allow vertical scrolling if content is taller than screen */
-  overflow-y: auto;
+  overflow: hidden; /* No scrolling */
 }
 
-/* Background video behind everything */
+/* 2) Background video behind everything */
 .backgroundVideo {
   position: absolute;
   top: 0;
@@ -23,19 +22,17 @@
   z-index: -1; /* behind container */
 }
 
-/* The main box containing the forms */
+/* 3) The main box containing forms; 400x600 for desktop */
 .loginContainer {
   position: relative;
-  /* Keep desktop layout: 400px wide, 600px tall */
-  width: 400px; 
+  width: 400px;
   height: 600px;
-  /* On narrower screens, allow up to 90% */
-  max-width: 90%; 
   background: transparent;
-  z-index: 2; /* ensures it's above the video */
+  z-index: 2; /* above video */
+  max-width: 90%; 
 }
 
-/* Common Form Styles */
+/* Common form styles */
 .form {
   position: absolute;
   top: 0;
@@ -52,7 +49,6 @@
   opacity: 1;
   z-index: 2;
 }
-
 .signInHidden {
   transform: translateX(-100%);
   opacity: 0;
@@ -65,7 +61,6 @@
   opacity: 1;
   z-index: 2;
 }
-
 .registerHidden {
   transform: translateX(100%);
   opacity: 0;
@@ -88,18 +83,17 @@
   transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
   z-index: 3;
 }
-
 .showOverlay {
   opacity: 1;
   visibility: visible;
 }
-
 .successMessage {
   text-align: center;
   padding: 20px;
   border-radius: 8px;
 }
 
+/* Spinner */
 .spinner {
   border: 4px solid rgba(0, 0, 0, 0.1);
   width: 24px;
@@ -107,27 +101,27 @@
   border-radius: 50%;
   border-left-color: #512da8;
   animation: spin 1s linear infinite;
-  margin-top: 12px; /* Align with button spacing */
+  margin-top: 12px;
 }
-
 @keyframes spin {
   to {
     transform: rotate(360deg);
   }
 }
 
-/* 
-  --- MOBILE (max-width: 600px) ---
-  Make the container & forms auto-height, 
-  so everything stays visible & scrollable if needed.
-*/
+/* 4) MOBILE OVERRIDE: Force a smaller box, no scrolling */
 @media (max-width: 600px) {
   .loginContainer {
+    /* Occupies 90% of screen width, 90% of screen height */
     width: 90%;
-    height: auto; /* remove fixed 600px so it can shrink or expand */
+    height: 90%;
+    /* Remove fixed 400x600 constraints */
+    max-width: none;
+    max-height: none;
   }
+
   .form {
-    height: auto; /* let the form expand as needed */
-    min-height: 500px; /* ensure enough space for content */
+    /* Fill the container's height on mobile */
+    height: 100%;
   }
 }
