@@ -9,11 +9,11 @@ import {
   where,
   orderBy,
 } from "firebase/firestore";
-import { db } from "../../../lib/firebase"; // Adjust the path as needed
-import ProductCard from "../components/ProductCard"; // Your ProductCard component
-import PropertyCard from "../components/PropertyCard"; // Your PropertyCard component
+import { db } from "../../../lib/firebase";
+import ProductCard from "../components/ProductCard";
+import PropertyCard from "../components/PropertyCard";
 import { FaEye, FaMousePointer, FaPercent } from "react-icons/fa";
-import { useUser } from "../../../context/UserContext"; // Ensure this context provides the current user
+import { useUser } from "../../../context/UserContext";
 
 // Colors
 const coralColor = "#FF7F50";
@@ -26,8 +26,7 @@ export default function PastBoosts({ filterType }) {
   const user = useUser();
   const uid = user?.uid;
 
-  // Fetch boost history from /users/{uid}/boostHistory where boostEndTime < now,
-  // ordered descending by boostEndTime.
+  // Fetch boost history from /users/{uid}/boostHistory
   useEffect(() => {
     if (!uid) return;
     const fetchBoostHistory = async () => {
@@ -94,8 +93,13 @@ export default function PastBoosts({ filterType }) {
   return (
     <section className="p-4 border rounded-md shadow-sm bg-background">
       <h2 className="text-xl font-semibold mb-4">Past Boosts</h2>
-      {/* Responsive grid: 1 column on small screens; 2 on sm, 3 on md, 4 on lg */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+
+      {/* 
+        Updated to 2 columns on <640px (mobile).
+        sm:grid-cols-2 => at 640px+ you have 2 columns,
+        md:grid-cols-3, lg:grid-cols-4 => same as before
+      */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {filteredBoostHistory.map((boostDoc) => {
           const itemType = boostDoc.itemType || "Unknown";
           if (itemType === "product") {
@@ -170,11 +174,9 @@ function PastBoostProductCard({ boostDoc }) {
 
   return (
     <div>
-      {/* Card */}
       <div className="mb-2">
         <ProductCard product={productData} />
       </div>
-      {/* Metrics row underneath */}
       <MetricsRow
         impressions={impressionsDuringBoost}
         clicks={clicksDuringBoost}
@@ -202,7 +204,6 @@ function PastBoostPropertyCard({ boostDoc }) {
         const propertyRef = doc(db, "properties", itemId);
         const docSnap = await getDoc(propertyRef);
         if (docSnap.exists()) {
-          // Pass the whole document data to PropertyCard as "property"
           setPropertyData({ id: docSnap.id, ...docSnap.data() });
         }
       } catch (error) {
@@ -236,11 +237,9 @@ function PastBoostPropertyCard({ boostDoc }) {
 
   return (
     <div>
-      {/* Card */}
       <div className="mb-2">
         <PropertyCard property={propertyData} />
       </div>
-      {/* Metrics row */}
       <MetricsRow
         impressions={impressionsDuringBoost}
         clicks={clicksDuringBoost}
@@ -301,7 +300,6 @@ function PastBoostCarCard({ boostDoc }) {
 
   return (
     <div>
-      {/* Inline Car Card */}
       <div className="mb-2 border rounded-md shadow-sm overflow-hidden">
         {carData.imageUrls && carData.imageUrls.length > 0 ? (
           <img
@@ -327,7 +325,6 @@ function PastBoostCarCard({ boostDoc }) {
           </p>
         </div>
       </div>
-      {/* Metrics row */}
       <MetricsRow
         impressions={impressionsDuringBoost}
         clicks={clicksDuringBoost}
@@ -385,7 +382,6 @@ function FallbackPastBoostCard({ boostDoc }) {
    =============================================================== */
 function MetricsRow({ impressions, clicks, ctr }) {
   return (
-    // Added a small negative left margin to shift the entire row slightly left.
     <div className="flex items-center justify-center text-sm text-gray-700 gap-1 -ml-1">
       <div className="flex items-center gap-1">
         <FaEye size={17} color={coralColor} />

@@ -35,8 +35,7 @@ export default function OngoingBoosts() {
       try {
         const boostItems = [];
 
-        // PRODUCTS query:
-        // Query only products that belong to the current user and have boostStartTime set.
+        // PRODUCTS
         const productsRef = collection(db, "products");
         const qProducts = query(
           productsRef,
@@ -48,7 +47,7 @@ export default function OngoingBoosts() {
           const data = docSnap.data();
           if (data.boostStartTime && data.boostEndTime) {
             const boostEnd = data.boostEndTime.toDate();
-            // Only consider active boosts (boostEndTime is in the future)
+            // Only consider active boosts
             if (boostEnd.getTime() > now.getTime()) {
               boostItems.push({
                 id: docSnap.id,
@@ -59,7 +58,7 @@ export default function OngoingBoosts() {
           }
         });
 
-        // PROPERTIES query:
+        // PROPERTIES
         const propertiesRef = collection(db, "properties");
         const qProperties = query(
           propertiesRef,
@@ -81,7 +80,7 @@ export default function OngoingBoosts() {
           }
         });
 
-        // CARS query:
+        // CARS
         const carsRef = collection(db, "cars");
         const qCars = query(
           carsRef,
@@ -103,7 +102,7 @@ export default function OngoingBoosts() {
           }
         });
 
-        // Optionally, sort boostItems by boostStartTime descending:
+        // Optionally, sort by boostStartTime descending
         boostItems.sort(
           (a, b) => b.boostStartTime.toDate() - a.boostStartTime.toDate()
         );
@@ -117,7 +116,7 @@ export default function OngoingBoosts() {
     };
 
     fetchBoosts();
-  }, [uid]); // "now" is defined inside so no need to add it here.
+  }, [uid]);
 
   if (!uid) {
     return (
@@ -152,7 +151,13 @@ export default function OngoingBoosts() {
   return (
     <section className="p-4 border rounded-md shadow-sm bg-background">
       <h2 className="text-xl font-semibold mb-2">Ongoing Boosts</h2>
-      <div className="flex flex-col gap-4">
+
+      {/* 
+        Change from flex-col to a grid:
+        - 2 columns by default (<640px)
+        - 1 column at sm:640px+ (which keeps the original single-col "PC" look)
+      */}
+      <div className="grid grid-cols-2 sm:grid-cols-1 gap-4">
         {ongoingBoosts.map((item) => {
           if (item.itemType === "product") {
             return (
@@ -404,7 +409,6 @@ function OngoingBoostCarCard({ boostedItem }) {
 }
 
 // --- MetricRow Component ---
-// Centers the metrics underneath each card and nudges the group slightly left.
 function MetricRow({ icon, label }) {
   return (
     <div className="flex items-center justify-center text-sm text-gray-700 gap-1 -ml-1">
