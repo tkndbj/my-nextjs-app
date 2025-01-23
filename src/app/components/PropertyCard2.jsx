@@ -42,16 +42,21 @@ export default function PropertyCard2({ property, onEdit, onBoost, onRemove }) {
     <div
       onClick={handleCardClick}
       className="
-        relative w-72 h-[400px] font-figtree flex flex-col
-        transition-transform hover:scale-105 cursor-pointer
+        relative w-full sm:w-64 md:w-72 h-auto font-figtree cursor-pointer
       "
     >
-      <div className="bg-background rounded-2xl shadow-md overflow-hidden border border-secondaryBackground dark:border-2 dark:border-secondaryBackground flex flex-col h-full">
-        {/* Image */}
-        <div className="w-full h-52 relative">
+      <div
+        className="
+          bg-background rounded-2xl shadow-md overflow-hidden
+          border border-secondaryBackground dark:border-2 dark:border-secondaryBackground
+          transition-transform hover:scale-105 flex flex-col h-full
+        "
+      >
+        {/* Image container with aspect ratio */}
+        <div className="w-full relative aspect-[4/3]">
           <Image
             src={imageSrc}
-            alt={propertyName || "Property Image"}
+            alt={propertyName || 'Property Image'}
             fill
             sizes="(max-width: 640px) 100vw,
                   (max-width: 768px) 50vw,
@@ -124,11 +129,11 @@ export default function PropertyCard2({ property, onEdit, onBoost, onRemove }) {
                   e.stopPropagation();
                   onBoost();
                 }}
-                className={`flex-1 text-center py-1 rounded text-white ${
-                  isBoosted
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-[#FF7F50] hover:bg-[#FF6347]"
-                } transition`}
+                className={`
+                  flex-1 text-center py-1 rounded text-white
+                  transition
+                  ${isBoosted ? "bg-gray-400 cursor-not-allowed" : "bg-[#FF7F50] hover:bg-[#FF6347]"}
+                `}
                 disabled={isBoosted}
               >
                 Boost
@@ -141,7 +146,10 @@ export default function PropertyCard2({ property, onEdit, onBoost, onRemove }) {
                   e.stopPropagation();
                   onRemove();
                 }}
-                className="flex-1 text-center py-1 rounded text-white bg-red-600 hover:bg-red-700 transition"
+                className="
+                  flex-1 text-center py-1 rounded text-white
+                  bg-red-600 hover:bg-red-700 transition
+                "
               >
                 Remove
               </button>

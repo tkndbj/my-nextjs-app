@@ -4,9 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Image from "next/image";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
-
-// 1. Import the Countdown component
-import Countdown from "../components/Countdown";
+import Countdown from "../components/Countdown"; // For boosted countdown
 
 /**
  * For use in the "Listed" products sub-tab.
@@ -27,7 +25,7 @@ export default function ProductCard2({ product, onEdit, onBoost, onRemove }) {
     colorImages,
     brandModel,
     isBoosted,
-    boostEndTime, // <-- We'll access this to pass into Countdown
+    boostEndTime,
   } = product;
 
   // For color swatches
@@ -123,13 +121,18 @@ export default function ProductCard2({ product, onEdit, onBoost, onRemove }) {
     <div
       onClick={handleCardClick}
       className="
-        relative w-72 h-[420px] font-figtree flex flex-col
-        transition-transform hover:scale-105 cursor-pointer
+        relative w-full sm:w-64 md:w-72 h-auto font-figtree cursor-pointer
       "
     >
-      <div className="bg-background rounded-2xl shadow-md overflow-hidden border border-secondaryBackground dark:border-2 dark:border-secondaryBackground flex flex-col h-full">
-        {/* Image container: position is relative for the countdown */}
-        <div className="w-full h-52 relative">
+      <div
+        className="
+          bg-background rounded-2xl shadow-md overflow-hidden
+          border border-secondaryBackground dark:border-2 dark:border-secondaryBackground
+          transition-transform hover:scale-105 flex flex-col h-full
+        "
+      >
+        {/* Image container with aspect ratio for responsive scaling */}
+        <div className="w-full relative aspect-[4/3]">
           <Image
             src={selectedImage}
             alt={productName}
@@ -141,14 +144,14 @@ export default function ProductCard2({ product, onEdit, onBoost, onRemove }) {
             className="object-cover"
           />
 
-          {/* If boosted, show the "Featured" label */}
+          {/* Featured label if boosted */}
           {isBoosted && (
             <span className="absolute top-2 left-2 bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded">
               Featured
             </span>
           )}
 
-          {/* 2. If boosted and we have a boostEndTime, show the Countdown at bottom-right */}
+          {/* Countdown if boosted has an end time */}
           {isBoosted && boostEndTime && (
             <Countdown boostEndTime={boostEndTime} />
           )}
@@ -163,12 +166,10 @@ export default function ProductCard2({ product, onEdit, onBoost, onRemove }) {
           {/* Rating */}
           <div className="flex items-center mt-1">
             {renderStars()}
-            <span className="text-gray-400 text-sm ml-1">
-              ({roundedRating})
-            </span>
+            <span className="text-gray-400 text-sm ml-1">({roundedRating})</span>
           </div>
 
-          {/* Description / brandModel */}
+          {/* Description */}
           <p className="text-gray-600 dark:text-gray-300 text-sm mt-2 flex-grow line-clamp-2">
             {displayText}
           </p>
@@ -232,11 +233,11 @@ export default function ProductCard2({ product, onEdit, onBoost, onRemove }) {
                 e.stopPropagation();
                 onBoost?.();
               }}
-              className={`flex-1 text-center py-1 rounded text-white ${
-                isBoosted
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-[#FF7F50] hover:bg-[#FF6347]"
-              } transition`}
+              className={`
+                flex-1 text-center py-1 rounded text-white
+                transition
+                ${isBoosted ? "bg-gray-400 cursor-not-allowed" : "bg-[#FF7F50] hover:bg-[#FF6347]"}
+              `}
               disabled={isBoosted}
             >
               Boost
@@ -248,7 +249,10 @@ export default function ProductCard2({ product, onEdit, onBoost, onRemove }) {
                 e.stopPropagation();
                 onRemove?.();
               }}
-              className="flex-1 text-center py-1 rounded text-white bg-red-600 hover:bg-red-700 transition"
+              className="
+                flex-1 text-center py-1 rounded text-white
+                bg-red-600 hover:bg-red-700 transition
+              "
             >
               Remove
             </button>

@@ -12,7 +12,6 @@ export default function SoldProductCard({ soldItem, formatDate }) {
 
   // We assume 'soldItem.productImage' is the main image
   // and 'soldItem.id' is the transaction doc id.
-  // If you want to show the product's doc id, adjust accordingly.
   const {
     id,
     productImage,
@@ -35,16 +34,21 @@ export default function SoldProductCard({ soldItem, formatDate }) {
     <div
       onClick={handleCardClick}
       className="
-        relative w-72 h-[420px] font-figtree flex flex-col
-        transition-transform hover:scale-105 cursor-pointer
+        relative w-full sm:w-64 md:w-72 h-auto font-figtree cursor-pointer
       "
     >
-      <div className="bg-background rounded-2xl shadow-md overflow-hidden border border-secondaryBackground dark:border-2 dark:border-secondaryBackground flex flex-col h-full">
-        {/* Image */}
-        <div className="w-full h-52 relative">
+      <div
+        className="
+          bg-background rounded-2xl shadow-md overflow-hidden
+          border border-secondaryBackground dark:border-2 dark:border-secondaryBackground
+          transition-transform hover:scale-105 flex flex-col h-full
+        "
+      >
+        {/* Image container with aspect ratio */}
+        <div className="w-full relative aspect-[4/3]">
           <Image
             src={imageSrc}
-            alt={productName || "Sold Product"}
+            alt={productName || 'Sold Product'}
             fill
             sizes="(max-width: 640px) 100vw,
                   (max-width: 768px) 50vw,
