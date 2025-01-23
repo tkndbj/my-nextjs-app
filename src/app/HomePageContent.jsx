@@ -10,98 +10,83 @@ import {
   orderBy,
 } from "firebase/firestore";
 import ProductCard from "./components/ProductCard";
-import Header from "./components/Header";
-import Categories from "./components/Categories";
-import MarketBanner from "./components/MarketBanner";
-import FilterSortRow from "./components/FilterSortRow";
 import { useMarket } from "../../context/MarketContext";
-import Sidebar from "./components/Sidebar";
-import { useSidebar } from "../../context/SidebarContext";
-import { useRouter, useSearchParams } from "next/navigation"; // This hook is used here
-import { FaPlus } from "react-icons/fa";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function HomePageContent() {
   const [products, setProducts] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [selectedSubcategory, setSelectedSubcategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
   // Access contexts and navigation
-  const { showDeals, showFeatured, specialFilter, sortOption } = useMarket();
-  const { isCollapsed } = useSidebar();
+  const {
+    showDeals,
+    showFeatured,
+    specialFilter,
+    sortOption,
+  } = useMarket();
   const router = useRouter();
-  const searchParams = useSearchParams(); // Initialize useSearchParams
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    // Get the 'query' parameter from the URL
+    // Get 'query' from URL if using search
     const queryParam = searchParams.get("query") || "";
     setSearchQuery(queryParam);
   }, [searchParams]);
 
   useEffect(() => {
     async function fetchProducts() {
-      let qRef = collection(db, "products");
-      let qConstraints = [];
-
-      // Search Query Filter using Algolia
-      if (searchQuery.trim()) {
-        qConstraints.push(where("name", ">=", searchQuery));
-        qConstraints.push(where("name", "<=", searchQuery + "\uf8ff"));
-      }
-
-      // Category Filter
-      if (selectedCategory) {
-        qConstraints.push(where("category", "==", selectedCategory));
-      }
-
-      // Subcategory Filter
-      if (selectedSubcategory) {
-        qConstraints.push(where("subcategory", "==", selectedSubcategory));
-      }
-
-      // Deals Filter
-      if (showDeals) {
-        qConstraints.push(where("discountPercentage", ">", 0));
-      }
-
-      // Featured Filter
-      if (showFeatured) {
-        qConstraints.push(where("isBoosted", "==", true));
-      }
-
-      // Special Filters
-      if (specialFilter) {
-        if (specialFilter === "Trending") {
-          qConstraints.push(where("dailyClickCount", ">", 10));
-        } else if (specialFilter === "5-Star") {
-          qConstraints.push(where("averageRating", "==", 5));
-        }
-      }
-
-      // Sorting based on sortOption
-      if (sortOption) {
-        switch (sortOption) {
-          case "date":
-            qConstraints.push(orderBy("createdAt", "desc"));
-            break;
-          case "alphabetical":
-            qConstraints.push(orderBy("name", "asc"));
-            break;
-          case "price_asc":
-            qConstraints.push(orderBy("price", "asc"));
-            break;
-          case "price_desc":
-            qConstraints.push(orderBy("price", "desc"));
-            break;
-          case "best_sellers":
-            qConstraints.push(orderBy("purchaseCount", "desc"));
-            break;
-          default:
-            break;
-        }
-      }
-
       try {
+        let qRef = collection(db, "products");
+        let qConstraints = [];
+
+        // If you want a text-based filter (simple)
+        if (searchQuery.trim()) {
+          qConstraints.push(where("name", ">=", searchQuery));
+          qConstraints.push(where("name", "<=", searchQuery + "\uf8ff"));
+        }
+
+        // Deals
+        if (showDeals) {
+          qConstraints.push(where("discountPercentage", ">", 0));
+        }
+
+        // Featured
+        if (showFeatured) {
+          qConstraints.push(where("isBoosted", "==", true));
+        }
+
+        // Special filter
+        if (specialFilter) {
+          if (specialFilter === "Trending") {
+            qConstraints.push(where("dailyClickCount", ">", 10));
+          } else if (specialFilter === "5-Star") {
+            qConstraints.push(where("averageRating", "==", 5));
+          }
+        }
+
+        // Sorting
+        if (sortOption) {
+          switch (sortOption) {
+            case "date":
+              qConstraints.push(orderBy("createdAt", "desc"));
+              break;
+            case "alphabetical":
+              qConstraints.push(orderBy("name", "asc"));
+              break;
+            case "price_asc":
+              qConstraints.push(orderBy("price", "asc"));
+              break;
+            case "price_desc":
+              qConstraints.push(orderBy("price", "desc"));
+              break;
+            case "best_sellers":
+              qConstraints.push(orderBy("purchaseCount", "desc"));
+              break;
+            default:
+              break;
+          }
+        }
+
         const qFinal = query(qRef, ...qConstraints);
         const querySnapshot = await getDocs(qFinal);
         const items = querySnapshot.docs.map((doc) => ({
@@ -109,96 +94,33 @@ export default function HomePageContent() {
           ...doc.data(),
         }));
 
-        // Sort products: boosted products first
-        const boostedProducts = items.filter((product) => product.isBoosted);
-        const otherProducts = items.filter((product) => !product.isBoosted);
+        // Show boosted products first, if that logic is still desired
+        const boostedProducts = items.filter((p) => p.isBoosted);
+        const otherProducts = items.filter((p) => !p.isBoosted);
         const sortedProducts = [...boostedProducts, ...otherProducts];
 
         setProducts(sortedProducts);
-        console.log("Fetched and Sorted Products:", sortedProducts);
       } catch (error) {
         console.error("Error fetching products:", error);
         setProducts([]);
       }
     }
+
     fetchProducts();
-  }, [
-    selectedCategory,
-    selectedSubcategory,
-    showDeals,
-    showFeatured,
-    specialFilter,
-    sortOption,
-    searchQuery,
-  ]);
-
-  const handleCategorySelect = (category) => {
-    setSelectedCategory(category);
-    setSelectedSubcategory(null);
-    console.log("Selected Category:", category);
-  };
-
-  const handleSubcategorySelect = (subcategory) => {
-    setSelectedSubcategory(subcategory);
-    console.log("Selected Subcategory:", subcategory);
-  };
-
-  const handleListProduct = () => {
-    router.push("/listproduct");
-  };
+  }, [searchQuery, showDeals, showFeatured, specialFilter, sortOption]);
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Sidebar */}
-      <Sidebar />
-
-      {/* Content Area */}
-      <div className="flex-1 flex flex-col">
-        {/* Fixed Header */}
-        <Header />
-
-        {/* Main Content */}
-        <main className="pt-16 sm:pt-20 p-4 sm:p-6 mx-auto max-w-7xl bg-background">
-          {/* Categories */}
-          <Categories
-            onCategorySelect={handleCategorySelect}
-            onSubcategorySelect={handleSubcategorySelect}
-            selectedCategory={selectedCategory}
-            selectedSubcategory={selectedSubcategory}
-          />
-
-          {/* Market Banner */}
-          <MarketBanner />
-
-          {/* Gap */}
-          <div className="my-4">
-            <FilterSortRow />
-          </div>
-
-          {/* Products */}
-          {products.length === 0 ? (
-            <p className="text-center text-foreground">No products found.</p>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-y-6 gap-x-4 justify-items-center">
-              {products.map((p, index) => (
-                <ProductCard
-                  key={p.id || `product-${index}`}
-                  product={p}
-                />
-              ))}
-            </div>
-          )}
-        </main>
-      </div>
-
-      {/* Floating Action Button */}
-      <button
-        onClick={handleListProduct}
-        className="fixed bottom-6 right-6 bg-jade-green hover:scale-105 transition-transform text-white p-4 rounded-md shadow-lg flex items-center justify-center"
-        aria-label="List a Product"
-      >
-        <FaPlus size={20} />
-      </button>
+    <div className="p-4 min-h-screen">
+      {products.length === 0 ? (
+        <p className="text-center text-foreground">No products found.</p>
+      ) : (
+        // 2 columns on mobile, 4 columns on md+ screens
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 justify-items-center">
+          {products.map((p) => (
+            <ProductCard key={p.id} product={p} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

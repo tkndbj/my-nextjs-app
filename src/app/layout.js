@@ -42,14 +42,17 @@ export default function RootLayout({ children }) {
       <body>
         <ClientProviders>
           <SidebarProvider>
-            <MarketProvider> {/* Wrap with MarketProvider */}
+            <MarketProvider>
+              {/* Main wrapper: Sidebar + Content */}
               <div className="flex">
-                {/* Sidebar */}
-                <Sidebar className="hidden md:block w-64" /> {/* Hide on mobile */}
+                {/* SIDEBAR: hidden on screens < md, visible on md and above */}
+                <div className="hidden md:block">
+                  <Sidebar />
+                </div>
 
-                {/* Main Content */}
+                {/* Main Content Area */}
                 <div className="flex-1 flex flex-col">
-                  <LayoutContent>{children}</LayoutContent> {/* Use LayoutContent */}
+                  <LayoutContent>{children}</LayoutContent>
                 </div>
               </div>
             </MarketProvider>
