@@ -22,11 +22,12 @@ import { useOutsideAlerter } from "../../hooks/useOutsideAlerter";
  * MessagesWindow Component
  *
  * Props:
- * - userId: Current user's ID
- * - onClose: Callback to close the MessagesWindow
- * - preselectedChatId: Optional chatId to auto-open
+ * - userId (string): Current user's ID
+ * - onClose (function): Callback to close the MessagesWindow
+ * - preselectedChatId (string): optional chatId to auto-open
+ * - isMobile (boolean): toggles the overlay vs. direct window
  */
-const MessagesWindow = ({ userId, onClose, preselectedChatId }) => {
+const MessagesWindow = ({ userId, onClose, preselectedChatId, isMobile = false }) => {
   const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [usersMap, setUsersMap] = useState({});
@@ -62,7 +63,7 @@ const MessagesWindow = ({ userId, onClose, preselectedChatId }) => {
         setChats(items);
         setLoading(false);
 
-        // Build a map of other participant's displayName
+        // Build a map of other participants' displayNames
         const participantIds = new Set();
         items.forEach((c) => {
           c.participants?.forEach((pid) => {
@@ -78,8 +79,7 @@ const MessagesWindow = ({ userId, onClose, preselectedChatId }) => {
             const p = getDoc(userDocRef)
               .then((userSnap) => {
                 if (userSnap.exists()) {
-                  newUsersMap[pid] =
-                    userSnap.data().displayName || "Unnamed User";
+                  newUsersMap[pid] = userSnap.data().displayName || "Unnamed User";
                 } else {
                   newUsersMap[pid] = "Unknown User";
                 }
@@ -107,12 +107,11 @@ const MessagesWindow = ({ userId, onClose, preselectedChatId }) => {
   // If preselectedChatId is passed, auto-open that chat (if it’s in the list)
   useEffect(() => {
     if (!preselectedChatId || !chats.length) return;
-    // Find the chat in the loaded list
     const found = chats.find((c) => c.id === preselectedChatId);
     if (found) {
       setSelectedChat(found);
     } else {
-      // Possibly the doc isn't in the 20 most recent. Let's fetch it directly.
+      // Possibly fetch directly
       (async () => {
         try {
           const chatDocRef = doc(db, "chats", preselectedChatId);
@@ -125,9 +124,7 @@ const MessagesWindow = ({ userId, onClose, preselectedChatId }) => {
               chatData.visibleTo.includes(userId)
             ) {
               setSelectedChat(chatData);
-
-              // optionally, you can prepend it to your local chats if desired
-              // setChats((prev) => [chatData, ...prev]);
+              // optionally prepend to local chats
             }
           }
         } catch (err) {
@@ -147,84 +144,77 @@ const MessagesWindow = ({ userId, onClose, preselectedChatId }) => {
     setSelectedChat(null);
   }
 
-  if (loading) {
-    return (
-      <div className={styles.overlay}>
-        <div className={styles.messagesWindow} ref={windowRef}>
-          <div className={styles.titleBar}>
-            <h3 className={styles.title}>Inbox</h3>
-          </div>
-          <p className={styles.loading}>Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className={styles.overlay}>
-      <div className={styles.messagesWindow} ref={windowRef}>
-        {/* Title Bar */}
-        <div className={styles.titleBar}>
-          {selectedChat ? (
-            <button
-              type="button"
-              className={styles.backButton}
-              onClick={handleBackToInbox}
-              aria-label="Back to Inbox"
-            >
-              &larr; Inbox
-            </button>
-          ) : (
-            <h3 className={styles.title}>Inbox</h3>
-          )}
-        </div>
-
-        {/* Content */}
+  // The main content (both for mobile & PC)
+  const content = (
+    <div className={styles.messagesWindow} ref={windowRef}>
+      <div className={styles.titleBar}>
         {selectedChat ? (
-          <ChatBox
-            userId={userId}
-            chat={selectedChat}
-            otherName={
-              usersMap[
-                selectedChat.participants.find((pid) => pid !== userId)
-              ] || "Unknown User"
-            }
-          />
+          <button
+            type="button"
+            className={styles.backButton}
+            onClick={handleBackToInbox}
+            aria-label="Back to Inbox"
+          >
+            &larr; Inbox
+          </button>
         ) : (
-          <ul className={styles.messagesList}>
-            {chats.length === 0 ? (
-              <li className={styles.empty}>No messages.</li>
-            ) : (
-              chats.map((chat) => {
-                const otherId = chat.participants?.find((id) => id !== userId);
-                const otherName = usersMap[otherId] || "Unknown User";
-
-                return (
-                  <li
-                    key={chat.id}
-                    className={styles.messageItem}
-                    onClick={(e) => handleChatClick(e, chat)}
-                  >
-                    <h4 className={styles.recipientName}>{otherName}</h4>
-                    <p className={styles.lastMessage}>
-                      {chat.lastMessage?.length > 50
-                        ? chat.lastMessage.substring(0, 50) + "..."
-                        : chat.lastMessage || ""}
-                    </p>
-                    <span className={styles.timestamp}>
-                      {chat.lastTimestamp?.toDate
-                        ? new Date(chat.lastTimestamp.toDate()).toLocaleString()
-                        : ""}
-                    </span>
-                  </li>
-                );
-              })
-            )}
-          </ul>
+          <h3 className={styles.title}>Inbox</h3>
         )}
       </div>
+
+      {loading ? (
+        <p className={styles.loading}>Loading...</p>
+      ) : selectedChat ? (
+        <ChatBox
+          userId={userId}
+          chat={selectedChat}
+          otherName={
+            usersMap[selectedChat.participants.find((pid) => pid !== userId)] ||
+            "Unknown User"
+          }
+        />
+      ) : (
+        <ul className={styles.messagesList}>
+          {chats.length === 0 ? (
+            <li className={styles.empty}>No messages.</li>
+          ) : (
+            chats.map((chat) => {
+              const otherId = chat.participants?.find((id) => id !== userId);
+              const otherName = usersMap[otherId] || "Unknown User";
+
+              return (
+                <li
+                  key={chat.id}
+                  className={styles.messageItem}
+                  onClick={(e) => handleChatClick(e, chat)}
+                >
+                  <h4 className={styles.recipientName}>{otherName}</h4>
+                  <p className={styles.lastMessage}>
+                    {chat.lastMessage?.length > 50
+                      ? chat.lastMessage.substring(0, 50) + "..."
+                      : chat.lastMessage || ""}
+                  </p>
+                  <span className={styles.timestamp}>
+                    {chat.lastTimestamp?.toDate
+                      ? new Date(chat.lastTimestamp.toDate()).toLocaleString()
+                      : ""}
+                  </span>
+                </li>
+              );
+            })
+          )}
+        </ul>
+      )}
     </div>
   );
+
+  // If NOT mobile, wrap in .overlay to appear to the right in sidebar
+  if (!isMobile) {
+    return <div className={styles.overlay}>{content}</div>;
+  }
+
+  // If mobile, return just the window (no overlay)
+  return content;
 };
 
 export default MessagesWindow;
