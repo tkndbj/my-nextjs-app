@@ -8,7 +8,13 @@ import { auth, db } from "../../../lib/firebase";
 import { useRouter } from "next/navigation";
 import styles from "./Header.module.css";
 
-import { FaBars, FaBell, FaEnvelope, FaHeart, FaShoppingCart } from "react-icons/fa";
+import {
+  FaBars,
+  FaBell,
+  FaEnvelope,
+  FaHeart,
+  FaShoppingCart,
+} from "react-icons/fa";
 
 import FavoritesWindow from "./FavoritesWindow";
 import CartWindow from "./CartWindow";
@@ -65,28 +71,22 @@ export default function Header() {
     fetchCounts();
   }, [user]);
 
-  // Toggling notifications
+  // Toggle logic for mobile icons
   const handleNotificationsClick = (e) => {
     e.stopPropagation();
     setShowNotifications((prev) => !prev);
     if (showMessages) setShowMessages(false);
   };
-
-  // Toggling messages
   const handleMessagesClick = (e) => {
     e.stopPropagation();
     setShowMessages((prev) => !prev);
     if (showNotifications) setShowNotifications(false);
   };
-
-  // Toggling favorites
   const handleFavoritesClick = (e) => {
     e.stopPropagation();
     setShowFavorites((prev) => !prev);
     if (showCart) setShowCart(false);
   };
-
-  // Toggling cart
   const handleCartClick = (e) => {
     e.stopPropagation();
     setShowCart((prev) => !prev);
@@ -95,19 +95,23 @@ export default function Header() {
 
   return (
     <header className={`${styles.header} relative`}>
-      <nav className="max-w-full w-full px-3 py-2 flex items-center justify-between">
-        {/* Left Group: Hamburger, Bell, Mail */}
-        <div className="flex items-center space-x-3">
-          {/* Hamburger Icon, pushed further left */}
+      {/* 
+        MOBILE SECTION (< md):
+        Hamburger - Bell - Mail - Ada Express - Favorites - Cart
+      */}
+      <div className="flex md:hidden w-full items-center justify-between px-2 py-2">
+        {/* GROUP 1: Hamburger, Bell, Mail */}
+        <div className="flex items-center space-x-4">
+          {/* Hamburger Icon (left) */}
           <button
             onClick={toggleSidebar}
-            className="text-white text-2xl ml-[-10px]"
+            className="text-white text-2xl ml-[-8px]"
             aria-label="Toggle Sidebar"
           >
             <FaBars />
           </button>
 
-          {/* Bell Icon (Notifications) */}
+          {/* Bell (Notifications) */}
           <button
             onClick={handleNotificationsClick}
             className={`text-xl ${
@@ -118,7 +122,7 @@ export default function Header() {
             <FaBell />
           </button>
 
-          {/* Mail Icon (Messages) */}
+          {/* Mail (Messages) */}
           <button
             onClick={handleMessagesClick}
             className={`text-xl ${
@@ -130,7 +134,56 @@ export default function Header() {
           </button>
         </div>
 
-        {/* Center: "Ada Express" with gradient text */}
+        {/* GROUP 2: "Ada Express" (center) */}
+        <div className="flex-1 flex justify-center">
+          <h1
+            className="text-lg font-bold bg-clip-text text-transparent 
+                       bg-gradient-to-r from-red-500 to-orange-500"
+          >
+            Ada Express
+          </h1>
+        </div>
+
+        {/* GROUP 3: Favorites, Cart (right) */}
+        <div className="flex items-center space-x-4">
+          {/* Favorites Icon */}
+          <button
+            onClick={handleFavoritesClick}
+            className="text-xl text-white relative"
+            title="Favorites"
+          >
+            <FaHeart />
+            {favoritesCount > 0 && (
+              <span className={styles.badge}>{favoritesCount}</span>
+            )}
+          </button>
+          {showFavorites && (
+            <FavoritesWindow user={user} onClose={() => setShowFavorites(false)} />
+          )}
+
+          {/* Cart Icon */}
+          <button
+            onClick={handleCartClick}
+            className="text-xl text-white relative"
+            title="Cart"
+          >
+            <FaShoppingCart />
+            {cartCount > 0 && (
+              <span className={styles.badge}>{cartCount}</span>
+            )}
+          </button>
+          {showCart && (
+            <CartWindow user={user} onClose={() => setShowCart(false)} />
+          )}
+        </div>
+      </div>
+
+      {/* 
+        DESKTOP SECTION (md+):
+        Just "Ada Express" centered, Favorites + Cart on the right (more space)
+      */}
+      <div className="hidden md:flex items-center justify-center w-full px-4 py-2">
+        {/* "Ada Express" in center */}
         <div className="flex-1 flex justify-center">
           <h1
             className="text-xl font-bold bg-clip-text text-transparent 
@@ -140,12 +193,12 @@ export default function Header() {
           </h1>
         </div>
 
-        {/* Right Group: Favorites, Cart */}
-        <div className="flex items-center space-x-3">
-          {/* Favorites Icon */}
+        {/* Right group: Favorites + Cart (with extra space) */}
+        <div className="flex items-center space-x-6">
+          {/* Favorites icon */}
           <button
             onClick={handleFavoritesClick}
-            className={`text-xl text-white relative`}
+            className="text-xl text-white relative"
             title="Favorites"
           >
             <FaHeart />
@@ -153,18 +206,14 @@ export default function Header() {
               <span className={styles.badge}>{favoritesCount}</span>
             )}
           </button>
-
           {showFavorites && (
-            <FavoritesWindow
-              user={user}
-              onClose={() => setShowFavorites(false)}
-            />
+            <FavoritesWindow user={user} onClose={() => setShowFavorites(false)} />
           )}
 
-          {/* Cart Icon */}
+          {/* Cart icon */}
           <button
             onClick={handleCartClick}
-            className={`text-xl text-white relative`}
+            className="text-xl text-white relative"
             title="Cart"
           >
             <FaShoppingCart />
@@ -172,19 +221,15 @@ export default function Header() {
               <span className={styles.badge}>{cartCount}</span>
             )}
           </button>
-
           {showCart && (
             <CartWindow user={user} onClose={() => setShowCart(false)} />
           )}
         </div>
-      </nav>
+      </div>
 
-      {/** 
-        Mobile Full-Width Windows (Notifications/Messages)
-        Appear below the header (absolute) 
-      */}
+      {/* MOBILE Full-Width Windows for Notifications/Messages */}
       {showNotifications && (
-        <div className="absolute top-full left-0 right-0 bg-white text-black z-50 md:hidden">
+        <div className="absolute top-[80px] left-0 right-0 bg-white text-black z-50 md:hidden">
           <NotificationsWindow
             userId={user?.uid}
             onClose={() => setShowNotifications(false)}
@@ -193,7 +238,7 @@ export default function Header() {
         </div>
       )}
       {showMessages && (
-        <div className="absolute top-full left-0 right-0 bg-white text-black z-50 md:hidden">
+        <div className="absolute top-[80px] left-0 right-0 bg-white text-black z-50 md:hidden">
           <MessagesWindow
             userId={user?.uid}
             onClose={() => setShowMessages(false)}
