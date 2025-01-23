@@ -326,7 +326,7 @@ export default function MyProductsPage() {
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex">
       <Sidebar />
 
-      {/* Reduced padding on mobile */}
+      {/* Container matches your home page approach (padding, etc.) */}
       <div className="flex-1 p-2 sm:p-6 max-w-7xl mx-auto transition-all duration-300">
         {!isOwnPage ? (
           <div className="flex justify-center items-center h-full">
@@ -370,26 +370,24 @@ export default function MyProductsPage() {
               </button>
             </div>
 
+            {/* If "products" is selected => show the sub-tabs */}
             {activeMainTab === "products" && (
-              <>
-                {/* SUB tabs for PRODUCTS */}
-                <div className="flex space-x-2 border-b mb-6 transition-all duration-300">
-                  {subTabs.map((sub) => (
-                    <button
-                      key={sub}
-                      onClick={() => setActiveSubTab(sub)}
-                      className={`px-4 py-2 focus:outline-none transition-all duration-300
-                        ${
-                          activeSubTab === sub
-                            ? "bg-jade-green text-white"
-                            : "bg-secondaryBackground text-foreground hover:bg-secondaryBackground/80"
-                        }`}
-                    >
-                      {sub} Products
-                    </button>
-                  ))}
-                </div>
-              </>
+              <div className="flex space-x-2 border-b mb-6 transition-all duration-300">
+                {subTabs.map((sub) => (
+                  <button
+                    key={sub}
+                    onClick={() => setActiveSubTab(sub)}
+                    className={`px-4 py-2 focus:outline-none transition-all duration-300
+                      ${
+                        activeSubTab === sub
+                          ? "bg-jade-green text-white"
+                          : "bg-secondaryBackground text-foreground hover:bg-secondaryBackground/80"
+                      }`}
+                  >
+                    {sub} Products
+                  </button>
+                ))}
+              </div>
             )}
 
             {/* MAIN TAB CONTENT */}
@@ -412,8 +410,17 @@ export default function MyProductsPage() {
                         <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                       </div>
                     ) : listedProducts.length > 0 ? (
-                      /* Updated grid classes for mobile: 2 columns, gap-2 */
-                      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                      <div
+                        className="
+                          grid 
+                          grid-cols-2 
+                          md:grid-cols-4 
+                          gap-x-2 
+                          gap-y-2 
+                          md:gap-x-1 
+                          justify-items-center
+                        "
+                      >
                         {listedProducts.map((product) => (
                           <ProductCard2
                             key={product.id}
@@ -449,7 +456,17 @@ export default function MyProductsPage() {
                         <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                       </div>
                     ) : soldTransactions.length > 0 ? (
-                      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                      <div
+                        className="
+                          grid 
+                          grid-cols-2 
+                          md:grid-cols-4 
+                          gap-x-2 
+                          gap-y-2 
+                          md:gap-x-1 
+                          justify-items-center
+                        "
+                      >
                         {soldTransactions.map((t) => (
                           <SoldProductCard
                             key={t.id}
@@ -481,7 +498,17 @@ export default function MyProductsPage() {
                         <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                       </div>
                     ) : boughtTransactions.length > 0 ? (
-                      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                      <div
+                        className="
+                          grid 
+                          grid-cols-2 
+                          md:grid-cols-4 
+                          gap-x-2 
+                          gap-y-2 
+                          md:gap-x-1 
+                          justify-items-center
+                        "
+                      >
                         {boughtTransactions.map((t) => (
                           <BoughtProductCard
                             key={t.id}
@@ -513,16 +540,22 @@ export default function MyProductsPage() {
                     <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                   </div>
                 ) : userProperties.length > 0 ? (
-                  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                  <div
+                    className="
+                      grid 
+                      grid-cols-2 
+                      md:grid-cols-4 
+                      gap-x-2 
+                      gap-y-2 
+                      md:gap-x-1 
+                      justify-items-center
+                    "
+                  >
                     {userProperties.map((prop) => (
                       <PropertyCard2
                         key={prop.id}
                         property={prop}
-                        // If you want to enable remove/edit/boost for properties,
-                        // define or reuse similar handlers:
-                        // onEdit={() => handleEditProperty(prop.id)}
-                        // onBoost={() => handleBoostProperty(prop.id, prop.isBoosted)}
-                        // onRemove={() => handleRemoveProperty(prop.id)}
+                        // Optionally define remove/edit/boost for properties
                       />
                     ))}
                   </div>
