@@ -45,11 +45,10 @@ export default function RootLayout({ children }) {
             <MarketProvider> {/* Wrap with MarketProvider */}
               <div className="flex">
                 {/* Sidebar */}
-                <Sidebar />
+                <Sidebar className="hidden md:block w-64" /> {/* Hide on mobile */}
 
                 {/* Main Content */}
                 <div className="flex-1 flex flex-col">
-                 
                   <LayoutContent>{children}</LayoutContent> {/* Use LayoutContent */}
                 </div>
               </div>
