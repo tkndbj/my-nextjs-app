@@ -19,6 +19,7 @@ import {
 
 import FavoritesWindow from "./FavoritesWindow";
 import CartWindow from "./CartWindow";
+// Updated NotificationsWindow & MessagesWindow
 import NotificationsWindow from "./NotificationsWindow";
 import MessagesWindow from "./MessagesWindow";
 import { collection, getDocs } from "firebase/firestore";
@@ -107,7 +108,7 @@ export default function Header() {
               <FaBars />
             </button>
 
-            {/* Bell Icon (Notifications) - smaller icon */}
+            {/* Bell Icon (Notifications) */}
             {user && (
               <div className="relative">
                 <button
@@ -123,16 +124,18 @@ export default function Header() {
                                transition-all duration-300 ease-in-out"
                     style={{ minWidth: "200px" }}
                   >
+                    {/* Pass isMobile to skip .overlay */}
                     <NotificationsWindow
-                      userId={user.uid} // Pass the user ID here
+                      userId={user.uid}
                       onClose={() => setShowNotifications(false)}
+                      isMobile
                     />
                   </div>
                 )}
               </div>
             )}
 
-            {/* Mail Icon (Messages) - smaller icon */}
+            {/* Mail Icon (Messages) */}
             {user && (
               <div className="relative">
                 <button
@@ -148,9 +151,11 @@ export default function Header() {
                                transition-all duration-300 ease-in-out"
                     style={{ minWidth: "200px" }}
                   >
+                    {/* Pass isMobile to skip .overlay */}
                     <MessagesWindow
-                      userId={user.uid} // Pass the user ID here
+                      userId={user.uid}
                       onClose={() => setShowMessages(false)}
+                      isMobile
                     />
                   </div>
                 )}
@@ -313,7 +318,10 @@ export default function Header() {
                     )}
                   </button>
                   {showCart && (
-                    <CartWindow user={user} onClose={() => setShowCart(false)} />
+                    <CartWindow
+                      user={user}
+                      onClose={() => setShowCart(false)}
+                    />
                   )}
                 </li>
               </>
