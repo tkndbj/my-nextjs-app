@@ -34,7 +34,7 @@
   .expanded {
     /* Show the sidebar like a drawer when "expanded" on mobile */
     display: block;
-    width: 70%; /* or adjust as needed */
+    width: 40%; /* or adjust as needed */
   }
 }
 

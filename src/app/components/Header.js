@@ -74,8 +74,7 @@ export default function Header() {
       <nav className={styles.navContainer}>
         {/* 
           MOBILE VIEW (< md):
-          - Show hamburger + search input
-          - Hide everything else 
+          - Hamburger + shorter search + Favorites & Cart icons
         */}
         <div className="flex md:hidden w-full items-center justify-between">
           {/* Hamburger Icon */}
@@ -87,20 +86,64 @@ export default function Header() {
             <FaBars />
           </button>
 
-          {/* Search Input */}
-          <div className="flex-1 ml-2">
+          {/* Shrinked Search Input */}
+          <div className="ml-2 mr-2">
             <input
               type="text"
               placeholder="Search..."
-              className={styles.searchInput}
+              className={`${styles.searchInput} w-28`} 
             />
+          </div>
+
+          {/* Favorites & Cart (or Login if user not logged in) */}
+          <div className="flex items-center space-x-4">
+            {user ? (
+              <>
+                {/* Favorites Icon */}
+                <button
+                  className={styles.linkButton}
+                  title="Favorites"
+                  onClick={() => setShowFavorites(!showFavorites)}
+                >
+                  <FaHeart />
+                  {favoritesCount > 0 && (
+                    <span className={styles.badge}>{favoritesCount}</span>
+                  )}
+                </button>
+                {showFavorites && (
+                  <FavoritesWindow
+                    user={user}
+                    onClose={() => setShowFavorites(false)}
+                  />
+                )}
+
+                {/* Cart Icon */}
+                <button
+                  className={styles.linkButton}
+                  title="Cart"
+                  onClick={() => setShowCart(!showCart)}
+                >
+                  <FaShoppingCart />
+                  {cartCount > 0 && (
+                    <span className={styles.badge}>{cartCount}</span>
+                  )}
+                </button>
+                {showCart && (
+                  <CartWindow user={user} onClose={() => setShowCart(false)} />
+                )}
+              </>
+            ) : (
+              // If not logged in, show a Login link
+              <Link href="/login" className={styles.link}>
+                Login
+              </Link>
+            )}
           </div>
         </div>
 
         {/* 
           DESKTOP VIEW (md+):
-          - Show logo, full menu, search, etc.
-          - Hide on mobile
+          - Show logo, full menu, bigger search, etc.
         */}
         <div className="hidden md:flex w-full items-center justify-between">
           {/* Left: Logo */}
@@ -110,7 +153,7 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Middle: Search box */}
+          {/* Middle: Full Search box */}
           <div className={styles.searchContainer}>
             <input
               type="text"
@@ -171,7 +214,6 @@ export default function Header() {
             {/* If user is logged in, show Favorites & Cart */}
             {user ? (
               <>
-                {/* Favorites Icon */}
                 <li className={styles.menuItem}>
                   <button
                     className={styles.linkButton}
@@ -191,7 +233,6 @@ export default function Header() {
                   )}
                 </li>
 
-                {/* Cart Icon */}
                 <li className={styles.menuItem}>
                   <button
                     className={styles.linkButton}
