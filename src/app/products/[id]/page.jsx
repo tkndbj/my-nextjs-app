@@ -26,7 +26,7 @@ import ProductDetailSellerInfo from "../../components/ProductDetail/ProductDetai
 import ProductDetailReviews from "../../components/ProductDetail/ProductDetailReviews";
 import RelatedProducts from "../../components/ProductDetail/RelatedProducts";
 import ProductDetailDetails from "../../components/ProductDetail/ProductDetailDetails";
-import Sidebar from "../../components/Sidebar"; // Import Sidebar
+import Sidebar from "../../components/Sidebar";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -42,21 +42,20 @@ export default function ProductDetailPage() {
 
   useEffect(() => {
     async function fetchProduct() {
+      if (!id) return;
       const docRef = doc(db, "products", id);
       const docSnap = await getDoc(docRef);
+
       if (docSnap.exists()) {
-        setProduct({ id: docSnap.id, ...docSnap.data() });
-        setSelectedImage(
-          docSnap.data().imageUrls[0] || "https://via.placeholder.com/600x400"
-        );
+        const data = docSnap.data();
+        setProduct({ id: docSnap.id, ...data });
+        setSelectedImage(data.imageUrls?.[0] || "https://via.placeholder.com/600x400");
       } else {
-        // If no such document, redirect to home
+        // No such document => redirect to home
         router.push("/");
       }
     }
-    if (id) {
-      fetchProduct();
-    }
+    fetchProduct();
   }, [id, router]);
 
   useEffect(() => {
@@ -94,18 +93,13 @@ export default function ProductDetailPage() {
 
     try {
       if (isFavorite) {
+        // Remove from favorites
         await deleteDoc(favDocRef);
-        await updateDoc(productRef, {
-          favoritesCount: increment(-1),
-        });
+        await updateDoc(productRef, { favoritesCount: increment(-1) });
       } else {
-        await setDoc(favDocRef, {
-          productId: product.id,
-          addedAt: new Date(),
-        });
-        await updateDoc(productRef, {
-          favoritesCount: increment(1),
-        });
+        // Add to favorites
+        await setDoc(favDocRef, { productId: product.id, addedAt: new Date() });
+        await updateDoc(productRef, { favoritesCount: increment(1) });
       }
     } catch (error) {
       console.error("Error updating favorites:", error);
@@ -125,18 +119,13 @@ export default function ProductDetailPage() {
 
     try {
       if (isInCart) {
+        // Remove from cart
         await deleteDoc(cartDocRef);
-        await updateDoc(productRef, {
-          cartCount: increment(-1),
-        });
+        await updateDoc(productRef, { cartCount: increment(-1) });
       } else {
-        await setDoc(cartDocRef, {
-          productId: product.id,
-          addedAt: new Date(),
-        });
-        await updateDoc(productRef, {
-          cartCount: increment(1),
-        });
+        // Add to cart
+        await setDoc(cartDocRef, { productId: product.id, addedAt: new Date() });
+        await updateDoc(productRef, { cartCount: increment(1) });
       }
     } catch (error) {
       console.error("Error updating cart:", error);
@@ -149,7 +138,6 @@ export default function ProductDetailPage() {
       alert("Please log in to proceed with the purchase.");
       return;
     }
-    // Navigate to the Product Payment Page
     router.push(`/productpayment/${product.id}`);
   };
 
@@ -203,169 +191,170 @@ export default function ProductDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex">
-      {/* Sidebar */}
+    // 1) Use a full-width, overflow-x-hidden wrapper to prevent horizontal scroll
+    <div className="w-full min-h-screen overflow-x-hidden bg-background flex">
       <Sidebar />
 
-      {/* Main Content */}
-      <div className="flex-1">
+      <div className="flex-1 flex flex-col">
         <Header />
 
-        <main className="pt-16 sm:pt-20 px-2 sm:px-6 max-w-7xl mx-auto flex flex-col lg:flex-row gap-6">
-          {/* Product Images */}
-          <div className="flex flex-col lg:w-1/2 gap-4">
-            {/* Main Image: shorter on mobile, standard on desktop */}
-            <div className="w-full h-64 sm:h-96 relative rounded-lg overflow-hidden shadow-md bg-secondaryBackground">
-              <Image
-                src={selectedImage}
-                alt={product.productName}
-                layout="fill"
-                objectFit="cover"
-              />
-            </div>
+        <main className="pt-16 sm:pt-20 px-2 sm:px-6 max-w-7xl mx-auto w-full">
+          {/* 2) Container for product content, 
+                using flex-col for mobile, row for lg */}
+          <div className="w-full flex flex-col lg:flex-row gap-6">
+            {/* Left Column: images */}
+            <div className="flex flex-col lg:w-1/2 gap-4">
+              {/* Main Image */}
+              <div className="w-full h-64 sm:h-96 relative rounded-lg overflow-hidden shadow-md bg-secondaryBackground">
+                <Image
+                  src={selectedImage}
+                  alt={product.productName}
+                  layout="fill"
+                  objectFit="cover"
+                />
+              </div>
 
-            {/* Thumbnails: smaller on mobile */}
-            <div className="flex gap-2 overflow-x-auto bg-background p-2 rounded-lg">
-              {product.imageUrls.map((img, index) => (
-                <div
-                  key={index}
-                  className={`w-16 h-16 sm:w-24 sm:h-24 relative rounded-lg overflow-hidden cursor-pointer border ${
-                    selectedImage === img
-                      ? "border-accent"
-                      : "border-secondaryBackground"
-                  }`}
-                  onClick={() => setSelectedImage(img)}
-                >
-                  <Image
-                    src={img}
-                    alt={`${product.productName} ${index + 1}`}
-                    layout="fill"
-                    objectFit="cover"
-                  />
-                </div>
-              ))}
-            </div>
-
-            {/* Product Details Component (Visible on Large Screens) */}
-            <div className="mt-8 hidden lg:block">
-              <ProductDetailDetails product={product} />
-            </div>
-          </div>
-
-          {/* Product Details and Actions */}
-          <div className="lg:w-1/2 flex flex-col gap-4 bg-background p-4 rounded-lg shadow-md">
-            <h1 className="text-xl sm:text-3xl font-bold text-foreground">
-              {product.productName}
-            </h1>
-
-            <div className="flex items-center space-x-2">
-              <StarRating rating={rating} />
-              <span className="text-gray-400 text-xs sm:text-sm">
-                ({rating.toFixed(1)})
-              </span>
-            </div>
-
-            <p className="text-lg sm:text-2xl font-semibold text-foreground">
-              {formatCurrency(product.price)}
-            </p>
-
-            <p className="text-sm sm:text-base text-gray-400">
-              {product.description || "No description available."}
-            </p>
-
-            {/* Color Options */}
-            {product.colorImages && (
-              <div className="flex items-center gap-2 mt-2">
-                {Object.keys(product.colorImages).map((color) => (
-                  <button
-                    key={color}
-                    className="w-6 h-6 rounded-full border border-gray-300 hover:scale-110 transition"
-                    style={{ backgroundColor: colorNameToColor(color) }}
-                    onClick={() => {
-                      const imgs = product.colorImages[color];
-                      if (imgs && imgs.length > 0) {
-                        setSelectedImage(imgs[0]);
-                      }
-                    }}
-                    aria-label={`Select color ${color}`}
-                  />
+              {/* Thumbnails */}
+              <div className="flex gap-2 overflow-x-auto bg-background p-2 rounded-lg">
+                {product.imageUrls.map((img, index) => (
+                  <div
+                    key={index}
+                    className={`w-16 h-16 sm:w-24 sm:h-24 relative rounded-lg overflow-hidden cursor-pointer border ${
+                      selectedImage === img
+                        ? "border-accent"
+                        : "border-secondaryBackground"
+                    }`}
+                    onClick={() => setSelectedImage(img)}
+                  >
+                    <Image
+                      src={img}
+                      alt={`${product.productName} ${index + 1}`}
+                      layout="fill"
+                      objectFit="cover"
+                    />
+                  </div>
                 ))}
               </div>
-            )}
 
-            {/* Action Buttons (wrap on mobile, one line on desktop) */}
-            <div className="flex flex-wrap lg:flex-nowrap items-center gap-4 mt-4">
-              {/* Buy Now */}
-              <button
-                onClick={toggleBuyNow}
-                className="flex items-center gap-2 px-4 py-2 bg-accent text-background rounded-full hover:bg-accent-hover transition"
-                aria-label="Buy It Now"
-              >
-                Buy It Now
-              </button>
+              {/* Product Details (desktop) */}
+              <div className="mt-8 hidden lg:block">
+                <ProductDetailDetails product={product} />
+              </div>
+            </div>
 
-              {/* Add/Remove Cart */}
-              <button
-                onClick={toggleCart}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full border-2 ${
-                  isInCart
-                    ? "border-accent bg-accent text-background hover:bg-accent-hover hover:border-accent-hover"
-                    : "border-secondaryBackground text-foreground hover:bg-secondaryBackground hover:text-background"
-                } transition`}
-                aria-label={isInCart ? "Remove from cart" : "Add to cart"}
-              >
-                <span className="icon-wrapper relative w-6 h-6">
-                  <FaShoppingCart
-                    className={`text-lg transition-opacity duration-300 ${
-                      isInCart ? "opacity-0" : "opacity-100"
-                    }`}
-                  />
-                  <FaCheck
-                    className={`text-lg transition-opacity duration-300 ${
-                      isInCart ? "opacity-100" : "opacity-0"
-                    } absolute top-0 left-0`}
-                  />
+            {/* Right Column: details & actions */}
+            <div className="lg:w-1/2 flex flex-col gap-4 bg-background p-4 rounded-lg shadow-md">
+              <h1 className="text-xl sm:text-3xl font-bold text-foreground">
+                {product.productName}
+              </h1>
+
+              <div className="flex items-center space-x-2">
+                <StarRating rating={rating} />
+                <span className="text-gray-400 text-xs sm:text-sm">
+                  ({rating.toFixed(1)})
                 </span>
-                {isInCart ? "In Cart" : "Add to Cart"}
-              </button>
+              </div>
 
-              {/* Favorite Icon */}
-              <button
-                onClick={toggleFavorite}
-                className="p-2 rounded-full bg-secondaryBackground shadow-md hover:bg-secondaryBackground-hover transition-colors"
-                aria-label={
-                  isFavorite ? "Remove from favorites" : "Add to favorites"
-                }
-              >
-                {isFavorite ? (
-                  <FaHeart className="text-red-500" />
-                ) : (
-                  <FaRegHeart className="text-gray-700" />
-                )}
-              </button>
+              <p className="text-lg sm:text-2xl font-semibold text-foreground">
+                {formatCurrency(product.price)}
+              </p>
+
+              <p className="text-sm sm:text-base text-gray-400">
+                {product.description || "No description available."}
+              </p>
+
+              {/* Color Options */}
+              {product.colorImages && (
+                <div className="flex items-center gap-2 mt-2">
+                  {Object.keys(product.colorImages).map((color) => (
+                    <button
+                      key={color}
+                      className="w-6 h-6 rounded-full border border-gray-300 hover:scale-110 transition"
+                      style={{ backgroundColor: colorNameToColor(color) }}
+                      onClick={() => {
+                        const imgs = product.colorImages[color];
+                        if (imgs?.length) {
+                          setSelectedImage(imgs[0]);
+                        }
+                      }}
+                      aria-label={`Select color ${color}`}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap lg:flex-nowrap items-center gap-4 mt-4">
+                {/* Buy Now */}
+                <button
+                  onClick={toggleBuyNow}
+                  className="flex items-center gap-2 px-4 py-2 bg-accent text-background rounded-full hover:bg-accent-hover transition"
+                  aria-label="Buy It Now"
+                >
+                  Buy It Now
+                </button>
+
+                {/* Cart */}
+                <button
+                  onClick={toggleCart}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full border-2 ${
+                    isInCart
+                      ? "border-accent bg-accent text-background hover:bg-accent-hover hover:border-accent-hover"
+                      : "border-secondaryBackground text-foreground hover:bg-secondaryBackground hover:text-background"
+                  } transition`}
+                  aria-label={isInCart ? "Remove from cart" : "Add to cart"}
+                >
+                  <span className="icon-wrapper relative w-6 h-6">
+                    <FaShoppingCart
+                      className={`text-lg transition-opacity duration-300 ${
+                        isInCart ? "opacity-0" : "opacity-100"
+                      }`}
+                    />
+                    <FaCheck
+                      className={`text-lg transition-opacity duration-300 ${
+                        isInCart ? "opacity-100" : "opacity-0"
+                      } absolute top-0 left-0`}
+                    />
+                  </span>
+                  {isInCart ? "In Cart" : "Add to Cart"}
+                </button>
+
+                {/* Favorite */}
+                <button
+                  onClick={toggleFavorite}
+                  className="p-2 rounded-full bg-secondaryBackground shadow-md hover:bg-secondaryBackground-hover transition-colors"
+                  aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+                >
+                  {isFavorite ? (
+                    <FaHeart className="text-red-500" />
+                  ) : (
+                    <FaRegHeart className="text-gray-700" />
+                  )}
+                </button>
+              </div>
+
+              {/* Product Details (mobile) */}
+              <div className="mt-8 lg:hidden">
+                <ProductDetailDetails product={product} />
+              </div>
+
+              {/* Trackers */}
+              <ProductDetailTracker productId={product.id} />
+
+              {/* Delivery Options */}
+              <ProductDetailDelivery deliveryOption={product.deliveryOption} />
+
+              {/* Seller Info */}
+              <ProductDetailSellerInfo sellerId={product.userId} />
+
+              {/* Reviews */}
+              <ProductDetailReviews productId={product.id} />
             </div>
-
-            {/* Product Details Component (Visible on Small Screens) */}
-            <div className="mt-8 lg:hidden">
-              <ProductDetailDetails product={product} />
-            </div>
-
-            {/* Trackers */}
-            <ProductDetailTracker productId={product.id} />
-
-            {/* Delivery Options */}
-            <ProductDetailDelivery deliveryOption={product.deliveryOption} />
-
-            {/* Seller Information */}
-            <ProductDetailSellerInfo sellerId={product.userId} />
-
-            {/* Reviews */}
-            <ProductDetailReviews productId={product.id} />
           </div>
         </main>
 
         {/* Related Products */}
-        <div className="flex justify-center">
+        <div className="w-full flex justify-center">
           <RelatedProducts currentProduct={product} />
         </div>
       </div>
