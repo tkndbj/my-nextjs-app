@@ -33,7 +33,6 @@ export default function Header() {
   const { toggleSidebar } = useSidebar();
 
   useEffect(() => {
-    // Listen for authentication state changes
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser || null);
     });
@@ -69,10 +68,10 @@ export default function Header() {
       <nav className={styles.navContainer}>
         {/* MOBILE VIEW (< md) */}
         <div className="flex md:hidden w-full items-center justify-between">
-          {/* Hamburger Icon: slightly left, bigger */}
+          {/* Hamburger Icon: move further left, keep bigger */}
           <button
             onClick={toggleSidebar}
-            className="bg-transparent text-white text-2xl p-2 ml-1"
+            className="bg-transparent text-white text-2xl p-2 ml-0"
             aria-label="Toggle Sidebar"
           >
             <FaBars />
@@ -83,7 +82,7 @@ export default function Header() {
             <input
               type="text"
               placeholder="Search..."
-              className={`${styles.searchInput} w-36`}
+              className={`${styles.searchInput} w-44`}
             />
           </div>
 

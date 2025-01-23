@@ -134,7 +134,7 @@
 /* Badge for counters */
 .badge {
   position: absolute;
-  top: -4px; /* Adjust as needed */
+  top: -2px; /* Adjust as needed */
   right: -10px; /* Adjust as needed */
   background-color: #ff6060; /* Red color for the badge */
   color: #fff;
