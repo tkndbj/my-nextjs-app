@@ -1,3 +1,5 @@
+// src/app/components/HomePageContent.jsx
+
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -110,7 +112,7 @@ export default function HomePageContent() {
       }
     }
 
-    // IMPORTANT: force each dependency to a stable type
+    // IMPORTANT: Force each dependency to a stable type
     fetchProducts();
   }, [
     searchQuery ?? "",
@@ -126,7 +128,8 @@ export default function HomePageContent() {
     <>
       <Header />
 
-      <div className="max-w-full overflow-x-hidden py-4">
+      {/* Categories Section */}
+      <div className="w-full overflow-x-hidden py-4">
         <Categories
           selectedCategory={selectedCategory}
           selectedSubcategory={selectedSubcategory}
@@ -135,6 +138,7 @@ export default function HomePageContent() {
         />
       </div>
 
+      {/* Product Grid */}
       <div className="px-2 py-4 min-h-screen">
         {products.length === 0 ? (
           <p className="text-center text-foreground">No products found.</p>
