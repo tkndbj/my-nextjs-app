@@ -59,7 +59,7 @@ export default function PropertiesPage() {
           ) : (
             <div className="mx-auto w-full max-w-7xl">
               {/* Responsive Grid Layout */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {properties.map((prop) => (
                   <PropertyCard key={prop.id} property={prop} />
                 ))}
