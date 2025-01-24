@@ -118,7 +118,7 @@ export default function PropertyCard({ property }) {
     >
       <div className="bg-background rounded-2xl shadow-md overflow-hidden border border-secondaryBackground dark:border-2 dark:border-secondaryBackground transition-transform hover:scale-105 flex flex-col h-full">
         {/* Property Image */}
-        <div className="w-full relative aspect-[4/3] md:aspect-video">
+        <div className="w-full relative aspect-[4/3] md:aspect-[5/4]">
           <Image
             src={selectedImage}
             alt={propertyName || "Property Image"}
