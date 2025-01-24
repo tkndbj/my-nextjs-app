@@ -29,9 +29,9 @@ export default function Categories({
   };
 
   return (
-    <div className="px-4">
+    <div className="flex flex-col">
       {/* Main categories row */}
-      <div className="flex flex-nowrap items-center gap-4">
+      <div className="flex flex-nowrap items-center gap-4 px-4">
         {categories.map((category, index) => (
           <div
             key={category.key}
@@ -41,7 +41,7 @@ export default function Categories({
               onClick={() => handleCategoryClick(category.key)}
               className={`
                 w-20 h-20 relative rounded-full overflow-hidden shadow-md 
-                hover:scale-105 transition-transform flex items-center justify-center
+                transition-transform flex items-center justify-center
                 ${
                   selectedCategory === category.key
                     ? "border-4 border-jade-green dark:border-accent"
@@ -79,7 +79,7 @@ export default function Categories({
 
       {/* Subcategories row (only visible if a category is selected) */}
       {selectedCategory && (
-        <div className="mt-4 flex flex-nowrap items-center gap-3">
+        <div className="mt-4 flex flex-nowrap items-center gap-3 px-4">
           {subcategories[selectedCategory]?.map((subcat) => (
             <button
               key={subcat}

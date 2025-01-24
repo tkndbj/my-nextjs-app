@@ -131,7 +131,7 @@ export default function HomePageContent() {
       {/* Categories Section */}
       <div className="w-full py-4">
         {/* Dedicated Scrollable Container */}
-        <div className="w-full overflow-x-auto px-4">
+        <div className="w-full overflow-x-auto">
           <Categories
             selectedCategory={selectedCategory}
             selectedSubcategory={selectedSubcategory}
