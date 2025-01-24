@@ -176,20 +176,21 @@ body.dark .toggle-switch .switch {
 }
 
 /* --- IMPORTANT: Prevent Horizontal Scrolling --- */
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
-  overflow-x: hidden; 
-  scroll-behavior: smooth; 
+  overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 
 .no-scrollbar {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 .no-scrollbar::-webkit-scrollbar {
-  display: none;  /* Chrome, Safari and Opera */
+  display: none; /* Chrome, Safari and Opera */
 }
 
 .scrollbar-hide {
@@ -201,25 +202,13 @@ html, body {
   display: none;
 }
 
-/* Improved touch scrolling */
-.touch-pan-x {
-  touch-action: pan-x pan-y pinch-zoom;
-}
-
-/* Transition utilities */
-.transition-all {
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* For smoother animations */
-* {
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Improved scrolling performance */
 .scroll-smooth {
-  scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
+  /* Consider removing scroll-behavior: smooth; */
+}
+
+/* Prevent tap highlight on all elements */
+* {
+  -webkit-tap-highlight-color: transparent;
 }

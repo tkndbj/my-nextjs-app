@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React from "react";
 import Image from "next/image";
 import { categories, subcategories } from "../data/categoriesData";
 
@@ -10,62 +10,17 @@ export default function Categories({
   selectedCategory,
   selectedSubcategory,
 }) {
-  const containerRef = useRef(null);
-  const subcategoriesRef = useRef(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-
-  const handleTouchStart = (e, ref) => {
-    setIsDragging(true);
-    setStartX(e.touches[0].pageX - ref.current.offsetLeft);
-    setScrollLeft(ref.current.scrollLeft);
-  };
-
-  const handleTouchMove = (e, ref) => {
-    if (!isDragging) return;
-    const x = e.touches[0].pageX - ref.current.offsetLeft;
-    const walk = x - startX;
-    ref.current.scrollLeft = scrollLeft - walk;
-  };
-
-  const handleMouseDown = (e, ref) => {
-    setIsDragging(true);
-    setStartX(e.pageX - ref.current.offsetLeft);
-    setScrollLeft(ref.current.scrollLeft);
-    ref.current.style.cursor = "grabbing";
-  };
-
-  const handleMouseMove = (e, ref) => {
-    if (!isDragging) return;
-    e.preventDefault();
-    const x = e.pageX - ref.current.offsetLeft;
-    const walk = x - startX;
-    ref.current.scrollLeft = scrollLeft - walk;
-  };
-
-  const handleMouseUpOrLeave = (ref) => {
-    setIsDragging(false);
-    if (ref.current) {
-      ref.current.style.cursor = "grab";
-    }
-  };
-
   const handleCategoryClick = (categoryKey) => {
-    if (!isDragging) {
-      const isCurrentlySelected = selectedCategory === categoryKey;
-      onCategorySelect?.(isCurrentlySelected ? null : categoryKey);
-      if (isCurrentlySelected) {
-        onSubcategorySelect?.(null);
-      }
+    const isCurrentlySelected = selectedCategory === categoryKey;
+    onCategorySelect?.(isCurrentlySelected ? null : categoryKey);
+    if (isCurrentlySelected) {
+      onSubcategorySelect?.(null);
     }
   };
 
   const handleSubcategoryClick = (subcategory) => {
-    if (!isDragging) {
-      const isCurrentlySelected = selectedSubcategory === subcategory;
-      onSubcategorySelect?.(isCurrentlySelected ? null : subcategory);
-    }
+    const isCurrentlySelected = selectedSubcategory === subcategory;
+    onSubcategorySelect?.(isCurrentlySelected ? null : subcategory);
   };
 
   return (
@@ -73,22 +28,13 @@ export default function Categories({
       {/* Main categories row */}
       <div className="relative">
         <div
-          ref={containerRef}
           className="
             flex items-center gap-4
             overflow-x-auto
             px-4 py-4
             no-scrollbar
-            cursor-grab
-            scroll-smooth
             md:justify-center
           "
-          onTouchStart={(e) => handleTouchStart(e, containerRef)}
-          onTouchMove={(e) => handleTouchMove(e, containerRef)}
-          onMouseDown={(e) => handleMouseDown(e, containerRef)}
-          onMouseMove={(e) => handleMouseMove(e, containerRef)}
-          onMouseUp={() => handleMouseUpOrLeave(containerRef)}
-          onMouseLeave={() => handleMouseUpOrLeave(containerRef)}
         >
           {categories.map((category, index) => (
             <div key={category.key} className="flex-shrink-0">
@@ -138,22 +84,13 @@ export default function Categories({
       {selectedCategory && (
         <div className="relative mt-4">
           <div
-            ref={subcategoriesRef}
             className="
               flex gap-3 
               overflow-x-auto
               px-4 py-2
               no-scrollbar
-              cursor-grab
-              scroll-smooth
               md:justify-center
             "
-            onTouchStart={(e) => handleTouchStart(e, subcategoriesRef)}
-            onTouchMove={(e) => handleTouchMove(e, subcategoriesRef)}
-            onMouseDown={(e) => handleMouseDown(e, subcategoriesRef)}
-            onMouseMove={(e) => handleMouseMove(e, subcategoriesRef)}
-            onMouseUp={() => handleMouseUpOrLeave(subcategoriesRef)}
-            onMouseLeave={() => handleMouseUpOrLeave(subcategoriesRef)}
           >
             {subcategories[selectedCategory]?.map((subcat) => (
               <button
@@ -165,7 +102,7 @@ export default function Categories({
                   ${
                     selectedSubcategory === subcat
                       ? "bg-jade-green dark:bg-accent text-white border-jade-green dark:border-accent"
-                      : "bg-transparent border-gray-300 dark:border-gray-600 text-foreground hover:bg-gray-100 dark:hover:bg-transparent" /* Updated hover class */
+                      : "bg-transparent border-gray-300 dark:border-gray-600 text-foreground hover:bg-gray-100 dark:hover:bg-transparent"
                   }
                 `}
               >
