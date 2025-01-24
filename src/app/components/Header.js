@@ -94,7 +94,7 @@ export default function Header() {
   };
 
   return (
-    <header className={`${styles.header} relative`}>
+    <header className={styles.header}>
       {/* MOBILE SECTION (< md) */}
       <div
         className={`flex md:hidden items-center w-full py-2 px-2 ${styles.mobileSection}`}
