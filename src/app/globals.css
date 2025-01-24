@@ -179,7 +179,7 @@ body.dark .toggle-switch .switch {
 html, body {
   margin: 0;
   padding: 0;
-  overflow-x: hidden; /* disallow horizontal scroll */
+  /* overflow-x: hidden;  */
 }
 
 .hide-scrollbar::-webkit-scrollbar {

@@ -31,7 +31,7 @@ export default function Categories({
   return (
     <div className="px-4">
       {/* Main categories row */}
-      <div className="flex flex-nowrap items-center gap-4 overflow-x-auto hide-scrollbar bg-background w-full max-w-full">
+      <div className="flex flex-nowrap items-center gap-4 overflow-x-auto hide-scrollbar bg-background w-full">
         {categories.map((category, index) => (
           <div
             key={category.key}
@@ -80,7 +80,7 @@ export default function Categories({
       {/* Subcategories row (only visible if a category is selected) */}
       {selectedCategory && (
         <div className="mt-4 flex justify-center bg-background">
-          <div className="flex flex-nowrap justify-center gap-3 overflow-x-auto hide-scrollbar w-full max-w-full">
+          <div className="flex flex-nowrap justify-center gap-3 overflow-x-auto hide-scrollbar w-full">
             {subcategories[selectedCategory]?.map((subcat) => (
               <button
                 key={subcat}
