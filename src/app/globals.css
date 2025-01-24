@@ -209,7 +209,7 @@ html, body {
 /* Transition utilities */
 .transition-all {
   transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 12);
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* For smoother animations */
