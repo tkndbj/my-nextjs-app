@@ -29,7 +29,8 @@
 }
 
 /* Responsive Design for Mobile Devices */
-@media (max-width: 768px) {
+@media (max-width: 640px) {
+  /* Changed from 768px to 640px */
   .sidebar {
     /* Ensure transform transitions are applied on mobile */
     transition: transform 0.5s ease, width 0.5s ease, background-color 0.5s ease,

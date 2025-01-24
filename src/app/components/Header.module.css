@@ -106,7 +106,7 @@
   left: 0;
   background-color: #111;
   border-radius: 4px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   overflow: hidden;
   padding: 4px 0;
   width: 180px;
@@ -256,4 +256,44 @@
 /* Highlighting for Accessibility */
 .aa-ItemActive {
   background-color: #444;
+}
+
+/* Responsive Adjustments */
+
+/* Mobile Styles */
+@media (max-width: 640px) {
+  /* Changed from 768px to 640px */
+  .header {
+    padding: 0;
+  }
+
+  .navContainer {
+    padding: 0 10px;
+  }
+
+  .logo {
+    font-size: 1rem;
+  }
+
+  .searchContainer {
+    margin: 0 10px;
+  }
+
+  .searchInput {
+    max-width: 250px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+
+  .menu {
+    display: none; /* Hide desktop menu on mobile */
+  }
+
+  /* Badge Adjustments */
+  .badge {
+    top: -4px; /* Adjusted for smaller icons */
+    right: -8px;
+    font-size: 0.65rem;
+    padding: 1px 4px;
+  }
 }
