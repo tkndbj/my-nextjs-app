@@ -3,7 +3,14 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Image from "next/image";
-import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
+import {
+  FaStar,
+  FaStarHalfAlt,
+  FaRegStar,
+  FaEdit,
+  FaRocket,
+  FaTrash,
+} from "react-icons/fa";
 import Countdown from "../components/Countdown"; // For boosted countdown
 
 /**
@@ -166,7 +173,9 @@ export default function ProductCard2({ product, onEdit, onBoost, onRemove }) {
           {/* Rating */}
           <div className="flex items-center mt-1">
             {renderStars()}
-            <span className="text-gray-400 text-sm ml-1">({roundedRating})</span>
+            <span className="text-gray-400 text-sm ml-1">
+              ({roundedRating})
+            </span>
           </div>
 
           {/* Description */}
@@ -216,46 +225,54 @@ export default function ProductCard2({ product, onEdit, onBoost, onRemove }) {
           {/* Bottom buttons: Edit / Boost / Remove */}
           <div className="flex mt-auto gap-2">
             {/* Edit */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit?.();
-              }}
-              className="flex-1 text-center py-1 rounded text-white"
-              style={{ backgroundColor: "#00A86B" }} // Jade green
-            >
-              Edit
-            </button>
+            {onEdit && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit?.();
+                }}
+                className="p-2 rounded hover:bg-gray-100 transition"
+                aria-label="Edit Product"
+              >
+                <FaEdit className="text-blue-500 w-5 h-5" />
+              </button>
+            )}
 
             {/* Boost */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onBoost?.();
-              }}
-              className={`
-                flex-1 text-center py-1 rounded text-white
-                transition
-                ${isBoosted ? "bg-gray-400 cursor-not-allowed" : "bg-[#FF7F50] hover:bg-[#FF6347]"}
-              `}
-              disabled={isBoosted}
-            >
-              Boost
-            </button>
+            {onBoost && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onBoost?.();
+                }}
+                className={`
+                  p-2 rounded hover:bg-gray-100 transition
+                  ${isBoosted ? "cursor-not-allowed" : ""}
+                `}
+                disabled={isBoosted}
+                aria-label="Boost Product"
+              >
+                <FaRocket
+                  className={`w-5 h-5 ${
+                    isBoosted ? "text-gray-400" : "text-orange-500"
+                  }`}
+                />
+              </button>
+            )}
 
             {/* Remove */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onRemove?.();
-              }}
-              className="
-                flex-1 text-center py-1 rounded text-white
-                bg-red-600 hover:bg-red-700 transition
-              "
-            >
-              Remove
-            </button>
+            {onRemove && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRemove?.();
+                }}
+                className="p-2 rounded hover:bg-gray-100 transition"
+                aria-label="Remove Product"
+              >
+                <FaTrash className="text-red-500 w-5 h-5" />
+              </button>
+            )}
           </div>
         </div>
       </div>

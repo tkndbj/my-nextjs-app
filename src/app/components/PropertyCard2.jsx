@@ -1,9 +1,15 @@
-// src/app/components/components/PropertyCard2.jsx
-
 "use client";
 
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import {
+  FaEdit,
+  FaRocket,
+  FaTrash,
+  FaBed,
+  FaBath,
+  FaRulerCombined,
+} from "react-icons/fa";
 
 /**
  * For use in the "Properties" tab.
@@ -43,7 +49,7 @@ export default function PropertyCard2({ property, onEdit, onBoost, onRemove }) {
   return (
     <div
       onClick={handleCardClick}
-      className="relative w-full h-auto font-figtree cursor-pointer"
+      className="relative w-full sm:w-64 md:w-72 h-auto font-figtree cursor-pointer"
     >
       <div className="bg-background rounded-2xl shadow-md overflow-hidden border border-secondaryBackground dark:border-2 dark:border-secondaryBackground transition-transform hover:scale-105 flex flex-col h-full">
         {/* Image container with aspect ratio */}
@@ -79,19 +85,19 @@ export default function PropertyCard2({ property, onEdit, onBoost, onRemove }) {
           <div className="flex items-center gap-4 mt-2 text-sm sm:text-xs text-foreground">
             {typeof bedrooms === "number" && (
               <div className="flex items-center gap-1">
-                <span className="font-semibold">Beds:</span>
+                <FaBed className="text-gray-500" />
                 <span>{bedrooms}</span>
               </div>
             )}
             {typeof bathrooms === "number" && (
               <div className="flex items-center gap-1">
-                <span className="font-semibold">Baths:</span>
+                <FaBath className="text-gray-500" />
                 <span>{bathrooms}</span>
               </div>
             )}
             {typeof houseSize === "number" && (
               <div className="flex items-center gap-1">
-                <span className="font-semibold">Size:</span>
+                <FaRulerCombined className="text-gray-500" />
                 <span>{houseSize} m²</span>
               </div>
             )}
@@ -103,53 +109,53 @@ export default function PropertyCard2({ property, onEdit, onBoost, onRemove }) {
           </div>
 
           {/* Bottom buttons */}
-          <div className="flex flex-wrap mt-auto gap-2">
+          <div className="flex mt-auto gap-4">
+            {/* Edit */}
             {onEdit && (
               <button
                 onClick={(e) => {
-                  e.stopPropagation(); // stop card click
+                  e.stopPropagation(); // Prevent card click
                   onEdit();
                 }}
-                className="flex-1 min-w-[80px] text-center py-1 rounded text-white text-sm sm:text-xs"
-                style={{ backgroundColor: "#00A86B" }} // Jade green
+                className="p-2 rounded hover:opacity-75 transition"
+                aria-label="Edit Property"
               >
-                Edit
+                <FaEdit className="text-blue-500 w-5 h-5" />
               </button>
             )}
 
+            {/* Boost */}
             {onBoost && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onBoost();
                 }}
-                className={`
-                  flex-1 min-w-[80px] text-center py-1 rounded text-white text-sm sm:text-xs
-                  transition
-                  ${
-                    isBoosted
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-[#FF7F50] hover:bg-[#FF6347]"
-                  }
-                `}
+                className={`p-2 rounded hover:opacity-75 transition ${
+                  isBoosted ? "cursor-not-allowed" : ""
+                }`}
                 disabled={isBoosted}
+                aria-label="Boost Property"
               >
-                Boost
+                <FaRocket
+                  className={`w-5 h-5 ${
+                    isBoosted ? "text-gray-400" : "text-orange-500"
+                  }`}
+                />
               </button>
             )}
 
+            {/* Remove */}
             {onRemove && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onRemove();
                 }}
-                className="
-                  flex-1 min-w-[80px] text-center py-1 rounded text-white text-sm sm:text-xs
-                  bg-red-600 hover:bg-red-700 transition
-                "
+                className="p-2 rounded hover:opacity-75 transition"
+                aria-label="Remove Property"
               >
-                Remove
+                <FaTrash className="text-red-500 w-5 h-5" />
               </button>
             )}
           </div>

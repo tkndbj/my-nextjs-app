@@ -6,7 +6,6 @@ import React, { useEffect, useState } from "react";
 import { db } from "../../lib/firebase";
 import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
 import ProductCard from "./components/ProductCard";
-import Header from "./components/Header";
 import Categories from "./components/Categories";
 import { useMarket } from "../../context/MarketContext";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -120,8 +119,6 @@ export default function HomePageContent() {
 
   return (
     <>
-      <Header />
-
       {/* Categories Section */}
       <div className="w-full">
         <div className="max-w-7xl mx-auto overflow-hidden">

@@ -2,7 +2,7 @@
 
 import "./globals.css";
 import ClientProviders from "./components/ClientProviders";
-import Header from "./components/Header";
+import HeaderWrapper from "./components/HeaderWrapper"; // Import HeaderWrapper
 import LayoutContent from "./components/LayoutContent";
 import "../app/components/Sidebar.module.css";
 import { SidebarProvider } from "../../context/SidebarContext";
@@ -40,6 +40,10 @@ export default function RootLayout({ children }) {
 
                 {/* Main content */}
                 <div className="flex-1 flex flex-col">
+                  {/* Include HeaderWrapper here */}
+                  <HeaderWrapper />
+
+                  {/* LayoutContent wraps the page's children */}
                   <LayoutContent>{children}</LayoutContent>
                 </div>
               </div>

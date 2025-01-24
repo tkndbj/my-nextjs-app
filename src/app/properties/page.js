@@ -9,7 +9,6 @@ import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { FaPlus } from "react-icons/fa";
 import PropertyCard from "../components/PropertyCard";
 import Sidebar from "../components/Sidebar";
-import Header from "../components/Header";
 
 export default function PropertiesPage() {
   const router = useRouter(); // Initialize the router
@@ -50,7 +49,6 @@ export default function PropertiesPage() {
       {/* Content Area */}
       <div className="flex-1 transition-all duration-300 bg-background">
         {/* Fixed Header */}
-        <Header />
 
         {/* Main Content */}
         <main className="pt-16 sm:pt-20 px-2 sm:px-4 md:px-6 mx-auto max-w-7xl bg-background">

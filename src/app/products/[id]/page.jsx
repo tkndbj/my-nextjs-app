@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 import { db } from "../../../../lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import Image from "next/legacy/image";
-import Header from "../../components/Header";
 
 // Temporary inline star rating
 function InlineStarRating({ rating }) {
@@ -58,7 +57,9 @@ export default function ProductDetailPage() {
       }
       const data = docSnap.data();
       setProduct({ id: docSnap.id, ...data });
-      setSelectedImage(data.imageUrls?.[0] || "https://via.placeholder.com/600x400");
+      setSelectedImage(
+        data.imageUrls?.[0] || "https://via.placeholder.com/600x400"
+      );
     }
     fetchProduct();
   }, [id, router]);
@@ -83,8 +84,6 @@ export default function ProductDetailPage() {
 
   return (
     <div className="w-full min-h-screen overflow-x-hidden bg-background">
-      <Header />
-
       <main className="pt-16 sm:pt-20 px-2 sm:px-6 max-w-7xl mx-auto w-full">
         {/* Main Content Container */}
         <div className="flex flex-col gap-4">
@@ -105,7 +104,9 @@ export default function ProductDetailPage() {
                 key={i}
                 onClick={() => setSelectedImage(img)}
                 className={`w-16 h-16 sm:w-24 sm:h-24 relative rounded-lg overflow-hidden cursor-pointer border ${
-                  selectedImage === img ? "border-accent" : "border-secondaryBackground"
+                  selectedImage === img
+                    ? "border-accent"
+                    : "border-secondaryBackground"
                 }`}
               >
                 <Image
