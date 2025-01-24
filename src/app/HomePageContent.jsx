@@ -121,7 +121,7 @@ export default function HomePageContent() {
     specialFilter ?? "",
     sortOption ?? "",
     selectedCategory ?? "",
-    selectedSubcategory ?? "",
+    selectedSubcategory ?? ""
   ]);
 
   return (

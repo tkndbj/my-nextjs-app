@@ -5,11 +5,6 @@
 import React from "react";
 import Image from "next/image";
 import { categories, subcategories } from "../data/categoriesData";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import "swiper/css/navigation";
-import { Navigation } from "swiper/modules"; // Correct import for Swiper v10
-import "./Categories.css";
 
 export default function Categories({
   onCategorySelect,
@@ -35,27 +30,14 @@ export default function Categories({
 
   return (
     <div className="px-4">
-      {/* Main categories row using Swiper */}
-      <Swiper
-        modules={[Navigation]}
-        spaceBetween={16}
-        slidesPerView="auto"
-        navigation
-        className="mySwiper"
-        // Optional: Customize navigation buttons
-        // e.g., enable navigation buttons only on larger screens
-        breakpoints={{
-          640: {
-            navigation: true,
-          },
-          0: {
-            navigation: false,
-          },
-        }}
-      >
-        {categories.map((category, index) => (
-          <SwiperSlide key={category.key} style={{ width: "auto" }}>
-            <div className="flex flex-col items-center">
+      {/* Main categories row with scroll snap */}
+      <div className="w-full overflow-x-auto hide-scrollbar">
+        <div className="flex flex-nowrap items-center gap-4 snap-x snap-mandatory">
+          {categories.map((category, index) => (
+            <div
+              key={category.key}
+              className="flex flex-col items-center flex-shrink-0 snap-start"
+            >
               <button
                 onClick={() => handleCategoryClick(category.key)}
                 className={`
@@ -93,46 +75,32 @@ export default function Categories({
                 {category.key}
               </span>
             </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+          ))}
+        </div>
+      </div>
 
       {/* Subcategories row (only visible if a category is selected) */}
       {selectedCategory && (
-        <div className="mt-4 flex justify-center bg-background">
-          <Swiper
-            modules={[Navigation]}
-            spaceBetween={12}
-            slidesPerView="auto"
-            navigation
-            className="mySwiperSub"
-            breakpoints={{
-              640: {
-                navigation: true,
-              },
-              0: {
-                navigation: false,
-              },
-            }}
-          >
+        <div className="mt-4 w-full overflow-x-auto hide-scrollbar">
+          <div className="flex flex-nowrap items-center gap-3 snap-x snap-mandatory">
             {subcategories[selectedCategory]?.map((subcat) => (
-              <SwiperSlide key={subcat} style={{ width: "auto" }}>
-                <button
-                  onClick={() => handleSubcategoryClick(subcat)}
-                  className={`
-                    px-4 py-2 rounded-full border text-sm transition
-                    ${
-                      selectedSubcategory === subcat
-                        ? "bg-jade-green dark:bg-accent text-background border-jade-green dark:border-accent"
-                        : "bg-transparent border-foreground text-foreground hover:bg-jade-green hover:text-background dark:hover:bg-accent"
-                    }
-                  `}
-                >
-                  {subcat}
-                </button>
-              </SwiperSlide>
+              <button
+                key={subcat}
+                onClick={() => handleSubcategoryClick(subcat)}
+                className={`
+                  px-4 py-2 rounded-full border text-sm transition
+                  ${
+                    selectedSubcategory === subcat
+                      ? "bg-jade-green dark:bg-accent text-background border-jade-green dark:border-accent"
+                      : "bg-transparent border-foreground text-foreground hover:bg-jade-green hover:text-background dark:hover:bg-accent"
+                  }
+                snap-start
+                `}
+              >
+                {subcat}
+              </button>
             ))}
-          </Swiper>
+          </div>
         </div>
       )}
     </div>
