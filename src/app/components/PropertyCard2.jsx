@@ -1,3 +1,5 @@
+// src/app/components/components/PropertyCard2.jsx
+
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -41,27 +43,19 @@ export default function PropertyCard2({ property, onEdit, onBoost, onRemove }) {
   return (
     <div
       onClick={handleCardClick}
-      className="
-        relative w-full sm:w-64 md:w-72 h-auto font-figtree cursor-pointer
-      "
+      className="relative w-full h-auto font-figtree cursor-pointer"
     >
-      <div
-        className="
-          bg-background rounded-2xl shadow-md overflow-hidden
-          border border-secondaryBackground dark:border-2 dark:border-secondaryBackground
-          transition-transform hover:scale-105 flex flex-col h-full
-        "
-      >
+      <div className="bg-background rounded-2xl shadow-md overflow-hidden border border-secondaryBackground dark:border-2 dark:border-secondaryBackground transition-transform hover:scale-105 flex flex-col h-full">
         {/* Image container with aspect ratio */}
         <div className="w-full relative aspect-[4/3]">
           <Image
             src={imageSrc}
-            alt={propertyName || 'Property Image'}
+            alt={propertyName || "Property Image"}
             fill
             sizes="(max-width: 640px) 100vw,
-                  (max-width: 768px) 50vw,
-                  (max-width: 1024px) 33vw,
-                  25vw"
+                   (max-width: 768px) 50vw,
+                   (max-width: 1024px) 33vw,
+                   25vw"
             className="object-cover"
           />
           {isBoosted && (
@@ -72,17 +66,17 @@ export default function PropertyCard2({ property, onEdit, onBoost, onRemove }) {
         </div>
 
         {/* Body */}
-        <div className="p-4 flex flex-col flex-grow">
-          <h2 className="text-lg font-semibold text-foreground line-clamp-1">
+        <div className="p-4 sm:p-3 flex flex-col flex-grow">
+          <h2 className="text-lg sm:text-base font-semibold text-foreground line-clamp-1">
             {propertyName ?? "Untitled Property"}
           </h2>
-          <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-1">
+          <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-xs line-clamp-1">
             {region ? region : ""}
             {saleType ? ` • ${saleType}` : ""}
           </p>
 
           {/* Icon row: bedrooms, bathrooms, houseSize */}
-          <div className="flex items-center gap-4 mt-2 text-sm text-foreground">
+          <div className="flex items-center gap-4 mt-2 text-sm sm:text-xs text-foreground">
             {typeof bedrooms === "number" && (
               <div className="flex items-center gap-1">
                 <span className="font-semibold">Beds:</span>
@@ -104,19 +98,19 @@ export default function PropertyCard2({ property, onEdit, onBoost, onRemove }) {
           </div>
 
           {/* Price */}
-          <div className="mt-2 text-lg font-semibold text-foreground">
+          <div className="mt-2 text-lg sm:text-base font-semibold text-foreground">
             {formatPrice(price)}
           </div>
 
           {/* Bottom buttons */}
-          <div className="flex mt-auto gap-2">
+          <div className="flex flex-wrap mt-auto gap-2">
             {onEdit && (
               <button
                 onClick={(e) => {
                   e.stopPropagation(); // stop card click
                   onEdit();
                 }}
-                className="flex-1 text-center py-1 rounded text-white"
+                className="flex-1 min-w-[80px] text-center py-1 rounded text-white text-sm sm:text-xs"
                 style={{ backgroundColor: "#00A86B" }} // Jade green
               >
                 Edit
@@ -130,9 +124,13 @@ export default function PropertyCard2({ property, onEdit, onBoost, onRemove }) {
                   onBoost();
                 }}
                 className={`
-                  flex-1 text-center py-1 rounded text-white
+                  flex-1 min-w-[80px] text-center py-1 rounded text-white text-sm sm:text-xs
                   transition
-                  ${isBoosted ? "bg-gray-400 cursor-not-allowed" : "bg-[#FF7F50] hover:bg-[#FF6347]"}
+                  ${
+                    isBoosted
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-[#FF7F50] hover:bg-[#FF6347]"
+                  }
                 `}
                 disabled={isBoosted}
               >
@@ -147,7 +145,7 @@ export default function PropertyCard2({ property, onEdit, onBoost, onRemove }) {
                   onRemove();
                 }}
                 className="
-                  flex-1 text-center py-1 rounded text-white
+                  flex-1 min-w-[80px] text-center py-1 rounded text-white text-sm sm:text-xs
                   bg-red-600 hover:bg-red-700 transition
                 "
               >

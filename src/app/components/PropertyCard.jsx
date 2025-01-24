@@ -1,3 +1,5 @@
+// src/app/components/components/PropertyCard.jsx
+
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -111,12 +113,12 @@ export default function PropertyCard({ property }) {
 
   return (
     <div
-      className="relative w-72 h-[400px] font-figtree cursor-pointer"
+      className="relative w-full h-auto font-figtree cursor-pointer"
       onClick={handleCardClick}
     >
       <div className="bg-background rounded-2xl shadow-md overflow-hidden border border-secondaryBackground dark:border-2 dark:border-secondaryBackground transition-transform hover:scale-105 flex flex-col h-full">
         {/* Property Image */}
-        <div className="w-full h-52 relative">
+        <div className="w-full relative aspect-[4/3]">
           <Image
             src={selectedImage}
             alt={propertyName || "Property Image"}
@@ -132,14 +134,28 @@ export default function PropertyCard({ property }) {
               Featured
             </span>
           )}
+          {/* Favorite Button */}
+          <button
+            onClick={toggleFavorite}
+            className="absolute top-2 right-2 p-1 w-6 h-6 bg-background/80 rounded-full flex items-center justify-center hover:bg-secondaryBackground transition-colors z-10"
+            aria-label={
+              isFavorite ? "Remove from favorites" : "Add to favorites"
+            }
+          >
+            {isFavorite ? (
+              <FaHeart className="text-red-500" />
+            ) : (
+              <FaRegHeart className="text-gray-700" />
+            )}
+          </button>
         </div>
 
         {/* Property Info */}
         <div className="p-4 flex flex-col flex-grow">
-          <h2 className="text-lg font-semibold text-foreground line-clamp-1">
+          <h2 className="text-lg sm:text-base font-semibold text-foreground line-clamp-1">
             {propertyName ?? "Untitled Property"}
           </h2>
-          <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-1">
+          <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-xs line-clamp-1">
             {region ? region : ""}
             {saleType ? ` • ${saleType}` : ""}
           </p>
@@ -147,19 +163,19 @@ export default function PropertyCard({ property }) {
           {/* Icon Row: Bedrooms, Bathrooms, House Size */}
           <div className="flex items-center gap-4 mt-2">
             {typeof bedrooms === "number" && (
-              <div className="flex items-center gap-1 text-sm">
+              <div className="flex items-center gap-1 text-sm sm:text-xs">
                 <FaBed className="text-jade-green" />
                 <span className="text-foreground">{bedrooms}</span>
               </div>
             )}
             {typeof bathrooms === "number" && (
-              <div className="flex items-center gap-1 text-sm">
+              <div className="flex items-center gap-1 text-sm sm:text-xs">
                 <FaBath className="text-jade-green" />
                 <span className="text-foreground">{bathrooms}</span>
               </div>
             )}
             {typeof houseSize === "number" && (
-              <div className="flex items-center gap-1 text-sm">
+              <div className="flex items-center gap-1 text-sm sm:text-xs">
                 <FaRulerCombined className="text-jade-green" />
                 <span className="text-foreground">{houseSize} m²</span>
               </div>
@@ -167,24 +183,11 @@ export default function PropertyCard({ property }) {
           </div>
 
           {/* Price */}
-          <div className="mt-2 text-lg font-semibold text-foreground">
+          <div className="mt-2 text-lg sm:text-base font-semibold text-foreground">
             {formatPrice(price)}
           </div>
         </div>
       </div>
-
-      {/* Favorite Button (Bottom-right) */}
-      <button
-        onClick={toggleFavorite}
-        className={`absolute bottom-3 right-3 flex items-center justify-center p-2 rounded-full border-2 ${
-          isFavorite
-            ? "bg-jade-green hover:bg-jade-green border-jade-green text-white"
-            : "border-secondaryBackground text-foreground hover:bg-secondaryBackground hover:text-background"
-        } transition`}
-        aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
-      >
-        {isFavorite ? <FaHeart /> : <FaRegHeart />}
-      </button>
     </div>
   );
 }
