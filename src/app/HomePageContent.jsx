@@ -112,7 +112,6 @@ export default function HomePageContent() {
       }
     }
 
-    // IMPORTANT: Force each dependency to a stable type
     fetchProducts();
   }, [
     searchQuery ?? "",
@@ -130,15 +129,15 @@ export default function HomePageContent() {
 
       {/* Categories Section */}
       <div className="w-full">
-  <div className="max-w-full overflow-hidden">
-    <Categories
-      selectedCategory={selectedCategory}
-      selectedSubcategory={selectedSubcategory}
-      onCategorySelect={setSelectedCategory}
-      onSubcategorySelect={setSelectedSubcategory}
-    />
-  </div>
-</div>
+        <div className="max-w-7xl mx-auto overflow-hidden">
+          <Categories
+            selectedCategory={selectedCategory}
+            selectedSubcategory={selectedSubcategory}
+            onCategorySelect={setSelectedCategory}
+            onSubcategorySelect={setSelectedSubcategory}
+          />
+        </div>
+      </div>
 
       {/* Product Grid */}
       <div className="px-2 py-4 min-h-screen">

@@ -25,7 +25,7 @@ export default function Categories({
   const handleTouchMove = (e, ref) => {
     if (!isDragging) return;
     const x = e.touches[0].pageX - ref.current.offsetLeft;
-    const walk = (x - startX); // Removed multiplier for natural scrolling speed
+    const walk = (x - startX);
     ref.current.scrollLeft = scrollLeft - walk;
   };
 
@@ -40,7 +40,7 @@ export default function Categories({
     if (!isDragging) return;
     e.preventDefault();
     const x = e.pageX - ref.current.offsetLeft;
-    const walk = (x - startX); // Removed multiplier for natural scrolling speed
+    const walk = (x - startX);
     ref.current.scrollLeft = scrollLeft - walk;
   };
 
@@ -52,12 +52,19 @@ export default function Categories({
   };
 
   const handleCategoryClick = (categoryKey) => {
-    if (!isDragging) { // Only trigger click if not dragging
+    if (!isDragging) {
       const isCurrentlySelected = selectedCategory === categoryKey;
       onCategorySelect?.(isCurrentlySelected ? null : categoryKey);
       if (isCurrentlySelected) {
         onSubcategorySelect?.(null);
       }
+    }
+  };
+
+  const handleSubcategoryClick = (subcategory) => {
+    if (!isDragging) {
+      const isCurrentlySelected = selectedSubcategory === subcategory;
+      onSubcategorySelect?.(isCurrentlySelected ? null : subcategory);
     }
   };
 
@@ -73,6 +80,7 @@ export default function Categories({
             px-4 py-4
             no-scrollbar
             cursor-grab
+            md:justify-center
           "
           onTouchStart={(e) => handleTouchStart(e, containerRef)}
           onTouchMove={(e) => handleTouchMove(e, containerRef)}
@@ -139,6 +147,7 @@ export default function Categories({
               px-4 py-2
               no-scrollbar
               cursor-grab
+              md:justify-center
             "
             onTouchStart={(e) => handleTouchStart(e, subcategoriesRef)}
             onTouchMove={(e) => handleTouchMove(e, subcategoriesRef)}
@@ -153,11 +162,11 @@ export default function Categories({
                 onClick={() => handleSubcategoryClick(subcat)}
                 className={`
                   px-4 py-2 rounded-full text-sm whitespace-nowrap
-                  flex-shrink-0 border
+                  flex-shrink-0 border transition-all duration-200
                   ${
                     selectedSubcategory === subcat
                       ? "bg-jade-green dark:bg-accent text-white border-jade-green dark:border-accent"
-                      : "bg-transparent border-gray-300 dark:border-gray-600 text-foreground"
+                      : "bg-transparent border-gray-300 dark:border-gray-600 text-foreground hover:bg-gray-100 dark:hover:bg-gray-800"
                   }
                 `}
               >
