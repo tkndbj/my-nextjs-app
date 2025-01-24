@@ -151,7 +151,10 @@ export default function Header() {
             )}
           </button>
           {showFavorites && (
-            <FavoritesWindow user={user} onClose={() => setShowFavorites(false)} />
+            <FavoritesWindow
+              user={user}
+              onClose={() => setShowFavorites(false)}
+            />
           )}
 
           <button
@@ -160,9 +163,7 @@ export default function Header() {
             title="Cart"
           >
             <FaShoppingCart />
-            {cartCount > 0 && (
-              <span className={styles.badge}>{cartCount}</span>
-            )}
+            {cartCount > 0 && <span className={styles.badge}>{cartCount}</span>}
           </button>
           {showCart && (
             <CartWindow user={user} onClose={() => setShowCart(false)} />
@@ -200,7 +201,10 @@ export default function Header() {
             )}
           </button>
           {showFavorites && (
-            <FavoritesWindow user={user} onClose={() => setShowFavorites(false)} />
+            <FavoritesWindow
+              user={user}
+              onClose={() => setShowFavorites(false)}
+            />
           )}
 
           <button
@@ -209,9 +213,7 @@ export default function Header() {
             title="Cart"
           >
             <FaShoppingCart />
-            {cartCount > 0 && (
-              <span className={styles.badge}>{cartCount}</span>
-            )}
+            {cartCount > 0 && <span className={styles.badge}>{cartCount}</span>}
           </button>
           {showCart && (
             <CartWindow user={user} onClose={() => setShowCart(false)} />

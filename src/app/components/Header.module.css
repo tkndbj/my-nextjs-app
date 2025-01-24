@@ -261,8 +261,8 @@
 /* Responsive Adjustments */
 
 /* Mobile Styles */
-@media (max-width: 640px) {
-  /* Changed from 768px to 640px */
+@media (max-width: 768px) {
+  /* Changed from 640px to 768px */
   .header {
     padding: 0;
   }
