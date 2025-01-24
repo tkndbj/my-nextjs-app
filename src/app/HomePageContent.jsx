@@ -4,18 +4,13 @@
 
 import React, { useEffect, useState } from "react";
 import { db } from "../../lib/firebase";
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-  orderBy,
-} from "firebase/firestore";
+import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
 import ProductCard from "./components/ProductCard";
 import Header from "./components/Header";
 import Categories from "./components/Categories";
 import { useMarket } from "../../context/MarketContext";
 import { useRouter, useSearchParams } from "next/navigation";
+import styles from "./components/HomePageContent.module.css"; // Import the CSS module
 
 export default function HomePageContent() {
   const [products, setProducts] = useState([]);
@@ -120,7 +115,7 @@ export default function HomePageContent() {
     specialFilter ?? "",
     sortOption ?? "",
     selectedCategory ?? "",
-    selectedSubcategory ?? ""
+    selectedSubcategory ?? "",
   ]);
 
   return (
@@ -145,17 +140,7 @@ export default function HomePageContent() {
           <p className="text-center text-foreground">No products found.</p>
         ) : (
           <div className="mx-auto w-full max-w-7xl">
-            <div
-              className="
-                grid
-                grid-cols-2
-                md:grid-cols-4
-                gap-x-2
-                gap-y-2
-                md:gap-x-1
-                justify-items-center
-              "
-            >
+            <div className={styles.productGrid}>
               {products.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}

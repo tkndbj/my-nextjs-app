@@ -1,0 +1,11 @@
+/* src/app/components/HomePageContent.module.css */
+
+.productGrid {
+  @apply grid grid-cols-2 md:grid-cols-4 gap-x-2 gap-y-2 md:gap-x-1 justify-items-center;
+}
+
+@media only screen and (orientation: landscape) and (max-width: 768px) {
+  .productGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

@@ -1,3 +1,5 @@
+// src/app/components/components/ProductCard.jsx
+
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -221,10 +223,10 @@ export default function ProductCard({ product }) {
 
   return (
     <div
-      className="relative w-full sm:w-64 md:w-72 h-auto font-figtree cursor-pointer"
+      className="relative w-full h-auto font-figtree cursor-pointer"
       onClick={handleCardClick}
     >
-      <div className="bg-background rounded-2xl shadow-md overflow-hidden border border-secondaryBackground dark:border-2 dark:border-secondaryBackground transition-transform sm:hover:scale-105 flex flex-col h-full">
+      <div className="bg-background rounded-2xl shadow-md overflow-hidden border border-secondaryBackground dark:border-2 dark:border-secondaryBackground transition-transform hover:scale-105 flex flex-col h-full">
         {/* Keep a consistent aspect ratio so it nicely scales on mobile */}
         <div className="w-full relative aspect-[4/3]">
           <Image
