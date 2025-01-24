@@ -182,29 +182,28 @@ html, body {
   overflow-x: hidden;  
 }
 
-.hide-scrollbar::-webkit-scrollbar {
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
 
-.hide-scrollbar {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
-}
-/* Snap scrolling utilities */
-.snap-x {
-  scroll-snap-type: x mandatory;
+.touch-pan-x {
+  touch-action: pan-x;
 }
 
-.snap-center {
-  scroll-snap-align: center;
-}
-
-/* Ensure content doesn't overflow the viewport */
-.overflow-x-auto {
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Optional: Add smooth scrolling behavior */
-.smooth-scroll {
+.scroll-smooth {
   scroll-behavior: smooth;
 }

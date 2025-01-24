@@ -129,8 +129,8 @@ export default function HomePageContent() {
       <Header />
 
       {/* Categories Section */}
-      <div className="w-full relative">
-  <div className="w-full overflow-x-auto">
+      <div className="w-full">
+  <div className="max-w-full overflow-hidden">
     <Categories
       selectedCategory={selectedCategory}
       selectedSubcategory={selectedSubcategory}
