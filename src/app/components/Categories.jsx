@@ -25,7 +25,7 @@ export default function Categories({
   const handleTouchMove = (e, ref) => {
     if (!isDragging) return;
     const x = e.touches[0].pageX - ref.current.offsetLeft;
-    const walk = (x - startX);
+    const walk = x - startX;
     ref.current.scrollLeft = scrollLeft - walk;
   };
 
@@ -33,21 +33,21 @@ export default function Categories({
     setIsDragging(true);
     setStartX(e.pageX - ref.current.offsetLeft);
     setScrollLeft(ref.current.scrollLeft);
-    ref.current.style.cursor = 'grabbing';
+    ref.current.style.cursor = "grabbing";
   };
 
   const handleMouseMove = (e, ref) => {
     if (!isDragging) return;
     e.preventDefault();
     const x = e.pageX - ref.current.offsetLeft;
-    const walk = (x - startX);
+    const walk = x - startX;
     ref.current.scrollLeft = scrollLeft - walk;
   };
 
   const handleMouseUpOrLeave = (ref) => {
     setIsDragging(false);
     if (ref.current) {
-      ref.current.style.cursor = 'grab';
+      ref.current.style.cursor = "grab";
     }
   };
 
@@ -80,6 +80,7 @@ export default function Categories({
             px-4 py-4
             no-scrollbar
             cursor-grab
+            scroll-smooth
             md:justify-center
           "
           onTouchStart={(e) => handleTouchStart(e, containerRef)}
@@ -90,10 +91,7 @@ export default function Categories({
           onMouseLeave={() => handleMouseUpOrLeave(containerRef)}
         >
           {categories.map((category, index) => (
-            <div 
-              key={category.key} 
-              className="flex-shrink-0"
-            >
+            <div key={category.key} className="flex-shrink-0">
               <div className="flex flex-col items-center w-20">
                 <button
                   onClick={() => handleCategoryClick(category.key)}
@@ -147,6 +145,7 @@ export default function Categories({
               px-4 py-2
               no-scrollbar
               cursor-grab
+              scroll-smooth
               md:justify-center
             "
             onTouchStart={(e) => handleTouchStart(e, subcategoriesRef)}
@@ -166,7 +165,7 @@ export default function Categories({
                   ${
                     selectedSubcategory === subcat
                       ? "bg-jade-green dark:bg-accent text-white border-jade-green dark:border-accent"
-                      : "bg-transparent border-gray-300 dark:border-gray-600 text-foreground hover:bg-gray-100 dark:hover:bg-gray-800"
+                      : "bg-transparent border-gray-300 dark:border-gray-600 text-foreground hover:bg-gray-100 dark:hover:bg-transparent" /* Updated hover class */
                   }
                 `}
               >
