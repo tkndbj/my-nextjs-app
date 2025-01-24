@@ -129,7 +129,7 @@ export default function HomePageContent() {
       <Header />
 
       {/* Categories Section */}
-      <div className="w-full overflow-x-hidden py-4">
+      <div className="w-full py-4">
         <Categories
           selectedCategory={selectedCategory}
           selectedSubcategory={selectedSubcategory}

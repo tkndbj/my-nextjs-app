@@ -1,6 +1,8 @@
+// src/app/components/Categories.jsx
+
 "use client";
 
-import React, { useRef, useState } from "react";
+import React from "react";
 import Image from "next/image";
 import { categories, subcategories } from "../data/categoriesData";
 
@@ -10,34 +12,6 @@ export default function Categories({
   selectedCategory,
   selectedSubcategory,
 }) {
-  const containerRef = useRef(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-
-  // Mouse events for drag-to-scroll
-  const handleMouseDown = (e) => {
-    setIsDragging(true);
-    setStartX(e.pageX - containerRef.current.offsetLeft);
-    setScrollLeft(containerRef.current.scrollLeft);
-  };
-
-  const handleMouseLeave = () => {
-    setIsDragging(false);
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  const handleMouseMove = (e) => {
-    if (!isDragging) return;
-    e.preventDefault();
-    const x = e.pageX - containerRef.current.offsetLeft;
-    const walk = (x - startX) * 2; // speed factor
-    containerRef.current.scrollLeft = scrollLeft - walk;
-  };
-
   // Toggle the category
   const handleCategoryClick = (categoryKey) => {
     const isCurrentlySelected = selectedCategory === categoryKey;
@@ -57,33 +31,12 @@ export default function Categories({
   return (
     <div className="px-4">
       {/* Main categories row */}
-      <div
-        ref={containerRef}
-        className="
-          flex flex-nowrap items-center gap-4 
-          overflow-x-auto hide-scrollbar cursor-grab bg-background
-          touch-pan-x
-        "
-        onMouseDown={handleMouseDown}
-        onMouseLeave={handleMouseLeave}
-        onMouseUp={handleMouseUp}
-        onMouseMove={handleMouseMove}
-        // Optional: Add touch events for better mobile support
-        onTouchStart={(e) => {
-          setIsDragging(true);
-          setStartX(e.touches[0].pageX - containerRef.current.offsetLeft);
-          setScrollLeft(containerRef.current.scrollLeft);
-        }}
-        onTouchEnd={handleMouseUp}
-        onTouchMove={(e) => {
-          if (!isDragging) return;
-          const x = e.touches[0].pageX - containerRef.current.offsetLeft;
-          const walk = (x - startX) * 2; // speed factor
-          containerRef.current.scrollLeft = scrollLeft - walk;
-        }}
-      >
+      <div className="flex flex-nowrap items-center gap-4 overflow-x-auto hide-scrollbar bg-background w-full max-w-full">
         {categories.map((category, index) => (
-          <div key={category.key} className="flex flex-col items-center">
+          <div
+            key={category.key}
+            className="flex flex-col items-center flex-shrink-0"
+          >
             <button
               onClick={() => handleCategoryClick(category.key)}
               className={`
@@ -99,7 +52,7 @@ export default function Categories({
               <Image
                 src={`/images/categories/${category.image}`}
                 alt={category.key}
-                layout="fill"
+                fill
                 sizes="(max-width: 640px) 20vw,
                        (max-width: 768px) 15vw,
                        (max-width: 1024px) 10vw,
@@ -127,29 +80,7 @@ export default function Categories({
       {/* Subcategories row (only visible if a category is selected) */}
       {selectedCategory && (
         <div className="mt-4 flex justify-center bg-background">
-          <div
-            className="
-              flex flex-nowrap justify-center gap-3 
-              overflow-x-auto hide-scrollbar cursor-grab
-            "
-            onMouseDown={handleMouseDown}
-            onMouseLeave={handleMouseLeave}
-            onMouseUp={handleMouseUp}
-            onMouseMove={handleMouseMove}
-            // Optional: Add touch events for better mobile support
-            onTouchStart={(e) => {
-              setIsDragging(true);
-              setStartX(e.touches[0].pageX - containerRef.current.offsetLeft);
-              setScrollLeft(containerRef.current.scrollLeft);
-            }}
-            onTouchEnd={handleMouseUp}
-            onTouchMove={(e) => {
-              if (!isDragging) return;
-              const x = e.touches[0].pageX - containerRef.current.offsetLeft;
-              const walk = (x - startX) * 2; // speed factor
-              containerRef.current.scrollLeft = scrollLeft - walk;
-            }}
-          >
+          <div className="flex flex-nowrap justify-center gap-3 overflow-x-auto hide-scrollbar w-full max-w-full">
             {subcategories[selectedCategory]?.map((subcat) => (
               <button
                 key={subcat}
@@ -158,10 +89,8 @@ export default function Categories({
                   px-4 py-2 rounded-full border text-sm transition
                   ${
                     selectedSubcategory === subcat
-                      ? // Selected style
-                        "bg-jade-green dark:bg-accent text-background border-jade-green dark:border-accent"
-                      : // Unselected style
-                        "bg-transparent border-foreground text-foreground hover:bg-jade-green hover:text-background dark:hover:bg-accent"
+                      ? "bg-jade-green dark:bg-accent text-background border-jade-green dark:border-accent"
+                      : "bg-transparent border-foreground text-foreground hover:bg-jade-green hover:text-background dark:hover:bg-accent"
                   }
                 `}
               >
