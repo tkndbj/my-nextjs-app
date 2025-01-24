@@ -216,7 +216,9 @@ const Sidebar = () => {
 
               {showNotifications && userId && (
                 <div
-                  className={styles.popupContainer}
+                  className={`${styles.popupContainer} ${
+                    showNotifications ? "" : styles.hidden
+                  }`}
                   onClick={(e) => e.stopPropagation()}
                 >
                   <NotificationsWindow
@@ -241,7 +243,9 @@ const Sidebar = () => {
 
               {showMessages && userId && (
                 <div
-                  className={styles.popupContainer}
+                  className={`${styles.popupContainer} ${
+                    showMessages ? "" : styles.hidden
+                  }`}
                   onClick={(e) => e.stopPropagation()}
                 >
                   {/* Pass preselectedChatId to auto-open that chat */}
