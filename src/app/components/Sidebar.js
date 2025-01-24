@@ -202,11 +202,9 @@ const Sidebar = () => {
               <span className={styles.text}>My Products</span>
             </div>
 
-            {/* Notifications */}
+            {/* Notifications - Desktop Only */}
             <div
-              className={`${styles.menuItem} ${
-                showNotifications ? styles.active : ""
-              }`}
+              className={`${styles.menuItem} ${styles.desktopOnly}`}
               onClick={handleNotificationsClick}
             >
               <div className={styles.icon}>
@@ -229,11 +227,9 @@ const Sidebar = () => {
               )}
             </div>
 
-            {/* Messages */}
+            {/* Messages - Desktop Only */}
             <div
-              className={`${styles.menuItem} ${
-                showMessages ? styles.active : ""
-              }`}
+              className={`${styles.menuItem} ${styles.desktopOnly}`}
               onClick={handleMessagesClick}
             >
               <div className={styles.icon}>

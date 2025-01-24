@@ -48,9 +48,23 @@
     transform: translateX(0);
   }
 
-  /* Hide popups on mobile devices */
-  .popupContainer {
+  /* Show the menu on mobile */
+  .menu {
+    display: flex; /* Change from 'none' to 'flex' to display the menu */
+    flex-direction: column;
+  }
+
+  /* Hide specific menu items on mobile */
+  .desktopOnly {
     display: none;
+  }
+
+  /* Badge Adjustments */
+  .badge {
+    top: -4px; /* Adjusted for smaller icons */
+    right: -8px;
+    font-size: 0.65rem;
+    padding: 1px 4px;
   }
 }
 
@@ -73,9 +87,23 @@
     transform: translateX(0);
   }
 
-  /* Hide popups on mobile devices */
-  .popupContainer {
+  /* Show the menu on mobile */
+  .menu {
+    display: flex; /* Change from 'none' to 'flex' to display the menu */
+    flex-direction: column;
+  }
+
+  /* Hide specific menu items on mobile */
+  .desktopOnly {
     display: none;
+  }
+
+  /* Badge Adjustments */
+  .badge {
+    top: -4px; /* Adjusted for smaller icons */
+    right: -8px;
+    font-size: 0.65rem;
+    padding: 1px 4px;
   }
 }
 
@@ -199,7 +227,7 @@
 }
 
 /* Hidden State for Popups */
-.popupContainer.hidden {
+.hidden {
   opacity: 0;
   transform: translateY(-10px);
 }
@@ -251,10 +279,6 @@
     font-size: 0.8rem;
   }
 
-  .menu {
-    display: none; /* Hide desktop menu on mobile */
-  }
-
   /* Badge Adjustments */
   .badge {
     top: -4px; /* Adjusted for smaller icons */
@@ -287,10 +311,6 @@
     max-width: 250px;
     padding: 6px 12px;
     font-size: 0.8rem;
-  }
-
-  .menu {
-    display: none; /* Hide desktop menu on mobile */
   }
 
   /* Badge Adjustments */
