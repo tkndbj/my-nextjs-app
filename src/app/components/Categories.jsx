@@ -34,7 +34,7 @@ export default function Categories({
     if (!isDragging) return;
     e.preventDefault();
     const x = e.pageX - containerRef.current.offsetLeft;
-    const walk = (x - startX) * 2; // speed factor
+    const walk = (x - startX) * 2;
     containerRef.current.scrollLeft = scrollLeft - walk;
   };
 
@@ -42,7 +42,6 @@ export default function Categories({
   const handleCategoryClick = (categoryKey) => {
     const isCurrentlySelected = selectedCategory === categoryKey;
     onCategorySelect?.(isCurrentlySelected ? null : categoryKey);
-    // Clear subcategory if category is deselected
     if (isCurrentlySelected) {
       onSubcategorySelect?.(null);
     }
@@ -55,13 +54,14 @@ export default function Categories({
   };
 
   return (
-    <div className="px-4">
+    <div className="w-full">
       {/* Main categories row */}
       <div
         ref={containerRef}
         className="
-          flex items-center justify-center gap-4 
-          overflow-x-auto hide-scrollbar cursor-grab bg-background
+          flex flex-nowrap items-center gap-4 
+          overflow-x-auto hide-scrollbar cursor-grab 
+          bg-background
         "
         onMouseDown={handleMouseDown}
         onMouseLeave={handleMouseLeave}
@@ -69,7 +69,10 @@ export default function Categories({
         onMouseMove={handleMouseMove}
       >
         {categories.map((category, index) => (
-          <div key={category.key} className="flex flex-col items-center">
+          <div
+            key={category.key}
+            className="flex-shrink-0 flex flex-col items-center"
+          >
             <button
               onClick={() => handleCategoryClick(category.key)}
               className={`
@@ -112,11 +115,12 @@ export default function Categories({
 
       {/* Subcategories row (only visible if a category is selected) */}
       {selectedCategory && (
-        <div className="mt-4 flex justify-center bg-background">
+        <div className="mt-4">
           <div
             className="
-              flex flex-nowrap justify-center gap-3 
-              overflow-x-auto hide-scrollbar cursor-grab
+              flex flex-nowrap items-center gap-3 
+              overflow-x-auto hide-scrollbar cursor-grab 
+              bg-background
             "
             onMouseDown={handleMouseDown}
             onMouseLeave={handleMouseLeave}
@@ -128,7 +132,7 @@ export default function Categories({
                 key={subcat}
                 onClick={() => handleSubcategoryClick(subcat)}
                 className={`
-                  px-4 py-2 rounded-full border text-sm transition
+                  flex-shrink-0 px-4 py-2 rounded-full border text-sm transition
                   ${
                     selectedSubcategory === subcat
                       ? // Selected style
