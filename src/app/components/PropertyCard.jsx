@@ -118,14 +118,7 @@ export default function PropertyCard({ property }) {
     >
       <div className="bg-background rounded-2xl shadow-md overflow-hidden border border-secondaryBackground dark:border-2 dark:border-secondaryBackground transition-transform hover:scale-105 flex flex-col h-full">
         {/* Property Image */}
-        <div
-          className="
-            w-full relative 
-            aspect-[4/3] 
-            sm:aspect-[4/3] 
-            mobile-image-height
-          "
-        >
+        <div className="w-full relative aspect-video md:aspect-[4/3]">
           <Image
             src={selectedImage}
             alt={propertyName || "Property Image"}
@@ -166,31 +159,31 @@ export default function PropertyCard({ property }) {
         </div>
 
         {/* Property Info */}
-        <div className="p-4 sm:p-3 flex flex-col flex-grow">
-          <h2 className="text-lg sm:text-base font-semibold text-foreground line-clamp-1">
+        <div className="p-2 sm:p-3 flex flex-col flex-grow">
+          <h2 className="text-base sm:text-lg font-semibold text-foreground line-clamp-1">
             {propertyName ?? "Untitled Property"}
           </h2>
-          <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-xs line-clamp-1">
+          <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm line-clamp-1">
             {region ? region : ""}
             {saleType ? ` • ${saleType}` : ""}
           </p>
 
           {/* Icon Row: Bedrooms, Bathrooms, House Size */}
-          <div className="flex items-center gap-4 mt-2">
+          <div className="flex items-center gap-2 mt-1">
             {typeof bedrooms === "number" && (
-              <div className="flex items-center gap-1 text-sm sm:text-xs">
+              <div className="flex items-center gap-1 text-xs sm:text-sm">
                 <FaBed className="text-jade-green" />
                 <span className="text-foreground">{bedrooms}</span>
               </div>
             )}
             {typeof bathrooms === "number" && (
-              <div className="flex items-center gap-1 text-sm sm:text-xs">
+              <div className="flex items-center gap-1 text-xs sm:text-sm">
                 <FaBath className="text-jade-green" />
                 <span className="text-foreground">{bathrooms}</span>
               </div>
             )}
             {typeof houseSize === "number" && (
-              <div className="flex items-center gap-1 text-sm sm:text-xs">
+              <div className="flex items-center gap-1 text-xs sm:text-sm">
                 <FaRulerCombined className="text-jade-green" />
                 <span className="text-foreground">{houseSize} m²</span>
               </div>
@@ -198,7 +191,7 @@ export default function PropertyCard({ property }) {
           </div>
 
           {/* Price */}
-          <div className="mt-2 text-lg sm:text-base font-semibold text-foreground">
+          <div className="mt-1 text-base sm:text-lg font-semibold text-foreground">
             {formatPrice(price)}
           </div>
         </div>

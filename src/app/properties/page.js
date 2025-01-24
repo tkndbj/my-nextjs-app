@@ -53,13 +53,13 @@ export default function PropertiesPage() {
         <Header />
 
         {/* Main Content */}
-        <main className="pt-16 sm:pt-20 p-4 sm:p-6 mx-auto max-w-7xl bg-background">
+        <main className="pt-16 sm:pt-20 px-2 sm:px-4 md:px-6 mx-auto max-w-7xl bg-background">
           {properties.length === 0 ? (
             <p className="text-center text-foreground">No properties found.</p>
           ) : (
-            <div className="mx-auto w-full max-w-7xl">
+            <div className="w-full">
               {/* Responsive Grid Layout */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
                 {properties.map((prop) => (
                   <PropertyCard key={prop.id} property={prop} />
                 ))}
