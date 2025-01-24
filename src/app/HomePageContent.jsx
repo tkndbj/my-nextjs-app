@@ -10,7 +10,8 @@ import {
   orderBy,
 } from "firebase/firestore";
 import ProductCard from "./components/ProductCard";
-import Header from "./components/Header"; // <-- Import Header
+import Header from "./components/Header";
+import Categories from "./components/Categories";
 import { useMarket } from "../../context/MarketContext";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -18,12 +19,15 @@ export default function HomePageContent() {
   const [products, setProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
+  // State for categories
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedSubcategory, setSelectedSubcategory] = useState(null);
+
   const { showDeals, showFeatured, specialFilter, sortOption } = useMarket();
   const router = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    // Retrieve 'query' from URL if available
     const queryParam = searchParams.get("query") || "";
     setSearchQuery(queryParam);
   }, [searchParams]);
@@ -31,32 +35,36 @@ export default function HomePageContent() {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        let qRef = collection(db, "products");
-        let qConstraints = [];
+        const qRef = collection(db, "products");
+        const qConstraints = [];
 
-        // Simple text-based filter
+        // Text-based search
         if (searchQuery.trim()) {
           qConstraints.push(where("name", ">=", searchQuery));
           qConstraints.push(where("name", "<=", searchQuery + "\uf8ff"));
         }
 
-        // Deals
+        // Deals / Featured / Special filter
         if (showDeals) {
           qConstraints.push(where("discountPercentage", ">", 0));
         }
-
-        // Featured
         if (showFeatured) {
           qConstraints.push(where("isBoosted", "==", true));
         }
-
-        // Special filter
         if (specialFilter) {
           if (specialFilter === "Trending") {
             qConstraints.push(where("dailyClickCount", ">", 10));
           } else if (specialFilter === "5-Star") {
             qConstraints.push(where("averageRating", "==", 5));
           }
+        }
+
+        // Category / Subcategory filters
+        if (selectedCategory) {
+          qConstraints.push(where("category", "==", selectedCategory));
+        }
+        if (selectedSubcategory) {
+          qConstraints.push(where("subcategory", "==", selectedSubcategory));
         }
 
         // Sorting
@@ -82,6 +90,7 @@ export default function HomePageContent() {
           }
         }
 
+        // Execute Firestore query
         const qFinal = query(qRef, ...qConstraints);
         const querySnapshot = await getDocs(qFinal);
         const items = querySnapshot.docs.map((doc) => ({
@@ -101,23 +110,36 @@ export default function HomePageContent() {
       }
     }
 
+    // IMPORTANT: force each dependency to a stable type
     fetchProducts();
-  }, [searchQuery, showDeals, showFeatured, specialFilter, sortOption]);
+  }, [
+    searchQuery ?? "",
+    showDeals ?? false,
+    showFeatured ?? false,
+    specialFilter ?? "",
+    sortOption ?? "",
+    selectedCategory ?? "",
+    selectedSubcategory ?? ""
+  ]);
 
   return (
     <>
-      {/* Include Header at the top */}
       <Header />
+
+      <div className="max-w-full overflow-x-hidden py-4">
+        <Categories
+          selectedCategory={selectedCategory}
+          selectedSubcategory={selectedSubcategory}
+          onCategorySelect={setSelectedCategory}
+          onSubcategorySelect={setSelectedSubcategory}
+        />
+      </div>
 
       <div className="px-2 py-4 min-h-screen">
         {products.length === 0 ? (
           <p className="text-center text-foreground">No products found.</p>
         ) : (
           <div className="mx-auto w-full max-w-7xl">
-            {/* 
-              On mobile (<md): 2 cols, gap-x-2, gap-y-2
-              On md+ screens: 4 cols, gap-x-1 (smaller horizontal gap), gap-y-2
-            */}
             <div
               className="
                 grid
