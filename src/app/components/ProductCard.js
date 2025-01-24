@@ -224,7 +224,7 @@ export default function ProductCard({ product }) {
       className="relative w-full sm:w-64 md:w-72 h-auto font-figtree cursor-pointer"
       onClick={handleCardClick}
     >
-      <div className="bg-background rounded-2xl shadow-md overflow-hidden border border-secondaryBackground dark:border-2 dark:border-secondaryBackground transition-transform hover:scale-105 flex flex-col h-full">
+      <div className="bg-background rounded-2xl shadow-md overflow-hidden border border-secondaryBackground dark:border-2 dark:border-secondaryBackground transition-transform sm:hover:scale-105 flex flex-col h-full">
         {/* Keep a consistent aspect ratio so it nicely scales on mobile */}
         <div className="w-full relative aspect-[4/3]">
           <Image
@@ -236,7 +236,9 @@ export default function ProductCard({ product }) {
           <button
             onClick={toggleFavorite}
             className="absolute top-2 right-2 p-1 w-6 h-6 bg-background/80 rounded-full flex items-center justify-center hover:bg-secondaryBackground transition-colors z-10"
-            aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            aria-label={
+              isFavorite ? "Remove from favorites" : "Add to favorites"
+            }
           >
             {isFavorite ? (
               <FaHeart className="text-red-500" />
@@ -315,7 +317,11 @@ export default function ProductCard({ product }) {
         } transition`}
         aria-label={isInCart ? "Remove from cart" : "Add to cart"}
       >
-        {isInCart ? <FaCheck className="text-md" /> : <FaShoppingCart className="text-md" />}
+        {isInCart ? (
+          <FaCheck className="text-md" />
+        ) : (
+          <FaShoppingCart className="text-md" />
+        )}
       </button>
     </div>
   );
