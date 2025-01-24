@@ -1,8 +1,6 @@
-// src/app/components/Categories.jsx
-
 "use client";
 
-import React from "react";
+import React, { useRef, useState } from "react";
 import Image from "next/image";
 import { categories, subcategories } from "../data/categoriesData";
 
@@ -12,52 +10,75 @@ export default function Categories({
   selectedCategory,
   selectedSubcategory,
 }) {
+  const containerRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
+  // Mouse events for drag-to-scroll
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    setStartX(e.pageX - containerRef.current.offsetLeft);
+    setScrollLeft(containerRef.current.scrollLeft);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.pageX - containerRef.current.offsetLeft;
+    const walk = (x - startX) * 2; // speed factor
+    containerRef.current.scrollLeft = scrollLeft - walk;
+  };
 
   // Toggle the category
   const handleCategoryClick = (categoryKey) => {
     const isCurrentlySelected = selectedCategory === categoryKey;
-    onCategorySelect(isCurrentlySelected ? null : categoryKey);
+    onCategorySelect?.(isCurrentlySelected ? null : categoryKey);
+    // Clear subcategory if category is deselected
     if (isCurrentlySelected) {
-      onSubcategorySelect(null);
+      onSubcategorySelect?.(null);
     }
   };
 
   // Toggle the subcategory
   const handleSubcategoryClick = (subcategory) => {
     const isCurrentlySelected = selectedSubcategory === subcategory;
-    onSubcategorySelect(isCurrentlySelected ? null : subcategory);
+    onSubcategorySelect?.(isCurrentlySelected ? null : subcategory);
   };
 
   return (
-    <div className="w-full">
-      {/* Main Categories Row */}
+    <div className="px-4">
+      {/* Main categories row */}
       <div
+        ref={containerRef}
         className="
-          flex flex-nowrap items-center justify-start md:justify-center gap-4 
-          overflow-x-auto hide-scrollbar 
-          bg-background
-          px-2 sm:px-4
-          max-w-full
-          w-full
-          min-w-0
+          flex items-center justify-center gap-4 
+          overflow-x-auto hide-scrollbar cursor-grab bg-background
         "
+        onMouseDown={handleMouseDown}
+        onMouseLeave={handleMouseLeave}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
       >
         {categories.map((category, index) => (
-          <div
-            key={category.key}
-            className="flex-shrink-0 flex flex-col items-center"
-          >
+          <div key={category.key} className="flex flex-col items-center">
             <button
               onClick={() => handleCategoryClick(category.key)}
               className={`
-                w-16 h-16 sm:w-20 sm:h-20 relative rounded-full overflow-hidden shadow-md 
+                w-20 h-20 relative rounded-full overflow-hidden shadow-md 
                 hover:scale-105 transition-transform flex items-center justify-center
-                box-border
-                border-2 border-secondaryBackground dark:border-secondaryBackground
                 ${
                   selectedCategory === category.key
-                    ? "ring-2 ring-jade-green dark:ring-accent"
-                    : ""
+                    ? "border-4 border-jade-green dark:border-accent"
+                    : "border border-secondaryBackground dark:border-secondaryBackground"
                 }
               `}
             >
@@ -69,19 +90,18 @@ export default function Categories({
                        (max-width: 768px) 15vw,
                        (max-width: 1024px) 10vw,
                        5vw"
-                className="object-contain"
+                className="object-cover"
                 priority={index === 0}
               />
             </button>
             <span
               className={`
-                mt-2 text-center text-xs sm:text-sm 
+                mt-2 text-center text-sm 
                 ${
                   selectedCategory === category.key
                     ? "text-jade-green dark:text-accent font-semibold"
                     : "text-foreground"
                 }
-                max-w-full truncate
               `}
             >
               {category.key}
@@ -90,30 +110,31 @@ export default function Categories({
         ))}
       </div>
 
-      {/* Subcategories Row */}
+      {/* Subcategories row (only visible if a category is selected) */}
       {selectedCategory && (
-        <div className="mt-4">
+        <div className="mt-4 flex justify-center bg-background">
           <div
             className="
-              flex flex-nowrap items-center justify-start md:justify-center gap-3 
-              overflow-x-auto hide-scrollbar 
-              bg-background
-              px-2 sm:px-4
-              max-w-full
-              w-full
-              min-w-0
+              flex flex-nowrap justify-center gap-3 
+              overflow-x-auto hide-scrollbar cursor-grab
             "
+            onMouseDown={handleMouseDown}
+            onMouseLeave={handleMouseLeave}
+            onMouseUp={handleMouseUp}
+            onMouseMove={handleMouseMove}
           >
             {subcategories[selectedCategory]?.map((subcat) => (
               <button
                 key={subcat}
                 onClick={() => handleSubcategoryClick(subcat)}
                 className={`
-                  flex-shrink-0 px-3 sm:px-4 py-2 rounded-full border-2 border-foreground text-xs sm:text-sm transition
+                  px-4 py-2 rounded-full border text-sm transition
                   ${
                     selectedSubcategory === subcat
-                      ? "bg-jade-green dark:bg-accent text-background ring-2 ring-jade-green dark:ring-accent"
-                      : "bg-transparent border-foreground text-foreground hover:bg-jade-green hover:text-background dark:hover:bg-accent"
+                      ? // Selected style
+                        "bg-jade-green dark:bg-accent text-background border-jade-green dark:border-accent"
+                      : // Unselected style
+                        "bg-transparent border-foreground text-foreground hover:bg-jade-green hover:text-background dark:hover:bg-accent"
                   }
                 `}
               >
