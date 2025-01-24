@@ -118,7 +118,14 @@ export default function PropertyCard({ property }) {
     >
       <div className="bg-background rounded-2xl shadow-md overflow-hidden border border-secondaryBackground dark:border-2 dark:border-secondaryBackground transition-transform hover:scale-105 flex flex-col h-full">
         {/* Property Image */}
-        <div className="w-full relative aspect-[4/3]">
+        <div
+          className="
+            w-full relative 
+            aspect-[4/3] 
+            sm:aspect-[4/3] 
+            mobile-image-height
+          "
+        >
           <Image
             src={selectedImage}
             alt={propertyName || "Property Image"}
@@ -137,7 +144,15 @@ export default function PropertyCard({ property }) {
           {/* Favorite Button */}
           <button
             onClick={toggleFavorite}
-            className="absolute top-2 right-2 p-1 w-6 h-6 bg-background/80 rounded-full flex items-center justify-center hover:bg-secondaryBackground transition-colors z-10"
+            className="
+              absolute top-2 right-2 p-1 w-6 h-6 
+              bg-background/80 rounded-full 
+              flex items-center justify-center 
+              hover:bg-secondaryBackground 
+              transition-colors 
+              z-10
+              sm:p-2 sm:w-8 sm:h-8
+            "
             aria-label={
               isFavorite ? "Remove from favorites" : "Add to favorites"
             }
@@ -151,7 +166,7 @@ export default function PropertyCard({ property }) {
         </div>
 
         {/* Property Info */}
-        <div className="p-4 flex flex-col flex-grow">
+        <div className="p-4 sm:p-3 flex flex-col flex-grow">
           <h2 className="text-lg sm:text-base font-semibold text-foreground line-clamp-1">
             {propertyName ?? "Untitled Property"}
           </h2>
