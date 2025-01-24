@@ -1,7 +1,9 @@
+// src/app/pages/properties/PropertiesPage.jsx
+
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; // <-- Import useRouter
+import { useRouter } from "next/navigation"; // Import useRouter
 import { db } from "../../../lib/firebase";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { FaPlus } from "react-icons/fa";
@@ -10,7 +12,7 @@ import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 
 export default function PropertiesPage() {
-  const router = useRouter(); // <-- Initialize the router
+  const router = useRouter(); // Initialize the router
   const [properties, setProperties] = useState([]);
 
   useEffect(() => {
@@ -41,7 +43,7 @@ export default function PropertiesPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex">
       {/* Sidebar */}
       <Sidebar />
 
@@ -50,14 +52,18 @@ export default function PropertiesPage() {
         {/* Fixed Header */}
         <Header />
 
+        {/* Main Content */}
         <main className="pt-16 sm:pt-20 p-4 sm:p-6 mx-auto max-w-7xl bg-background">
           {properties.length === 0 ? (
             <p className="text-center text-foreground">No properties found.</p>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-y-6 gap-x-2 justify-items-center">
-              {properties.map((prop) => (
-                <PropertyCard key={prop.id} property={prop} />
-              ))}
+            <div className="mx-auto w-full max-w-7xl">
+              {/* Responsive Grid Layout */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {properties.map((prop) => (
+                  <PropertyCard key={prop.id} property={prop} />
+                ))}
+              </div>
             </div>
           )}
         </main>
@@ -67,6 +73,7 @@ export default function PropertiesPage() {
       <button
         onClick={() => router.push("/listproperty")}
         className="fixed bottom-6 right-6 bg-jade-green hover:scale-105 transition-transform text-white p-4 rounded-md shadow-lg flex items-center justify-center"
+        aria-label="List a new property"
       >
         <FaPlus size={20} />
       </button>
