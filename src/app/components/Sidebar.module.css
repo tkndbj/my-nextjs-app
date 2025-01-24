@@ -28,11 +28,30 @@
   width: 200px; /* Fixed width for expanded state */
 }
 
-/* Responsive Design for Mobile Devices */
-@media (max-width: 768px) {
-  /* Changed from 640px to 768px */
+/* Responsive Design for Mobile Devices - Portrait */
+@media (max-width: 768px) and (orientation: portrait) {
   .sidebar {
     /* Ensure transform transitions are applied on mobile */
+    transition: transform 0.5s ease, width 0.5s ease, background-color 0.5s ease,
+      color 0.5s ease;
+    width: 200px; /* Maintain the expanded width as the default for sliding */
+  }
+
+  .collapsed {
+    /* Slide the sidebar out of view to the left when collapsed */
+    transform: translateX(-100%);
+  }
+
+  .expanded {
+    /* Slide the sidebar into view */
+    transform: translateX(0);
+  }
+}
+
+/* Responsive Design for Mobile Devices - Landscape */
+@media (max-width: 1024px) and (orientation: landscape) {
+  .sidebar {
+    /* Ensure transform transitions are applied on mobile landscape */
     transition: transform 0.5s ease, width 0.5s ease, background-color 0.5s ease,
       color 0.5s ease;
     width: 200px; /* Maintain the expanded width as the default for sliding */

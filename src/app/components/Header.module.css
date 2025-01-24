@@ -260,9 +260,47 @@
 
 /* Responsive Adjustments */
 
-/* Mobile Styles */
-@media (max-width: 768px) {
+/* Mobile Styles - Portrait */
+@media (max-width: 768px) and (orientation: portrait) {
   /* Changed from 640px to 768px */
+  .header {
+    padding: 0;
+  }
+
+  .navContainer {
+    padding: 0 10px;
+  }
+
+  .logo {
+    font-size: 1rem;
+  }
+
+  .searchContainer {
+    margin: 0 10px;
+  }
+
+  .searchInput {
+    max-width: 250px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+
+  .menu {
+    display: none; /* Hide desktop menu on mobile */
+  }
+
+  /* Badge Adjustments */
+  .badge {
+    top: -4px; /* Adjusted for smaller icons */
+    right: -8px;
+    font-size: 0.65rem;
+    padding: 1px 4px;
+  }
+}
+
+/* Mobile Styles - Landscape */
+@media (max-width: 1024px) and (orientation: landscape) {
+  /* Apply the same styles as portrait mobile */
   .header {
     padding: 0;
   }
