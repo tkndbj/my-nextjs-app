@@ -299,8 +299,8 @@
 }
 
 /* Mobile Styles - Landscape */
-@media (max-width: 1024px) and (orientation: landscape) {
-  /* Apply the same styles as portrait mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  /* Changed from 1024px to 768px to match portrait mobile */
   .header {
     padding: 0;
   }
