@@ -334,4 +334,9 @@
     font-size: 0.65rem;
     padding: 1px 4px;
   }
+
+  /* Ensure mobile section is visible in landscape */
+  .mobileSection {
+    display: flex !important;
+  }
 }
