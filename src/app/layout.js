@@ -10,8 +10,8 @@ import Sidebar from "./components/Sidebar";
 import { MarketProvider } from "../../context/MarketContext";
 
 export const metadata = {
-  title: "My Web App",
-  description: "A description of my web app.",
+  title: "Ada Express",
+  description: "",
 };
 
 export default function RootLayout({ children }) {
