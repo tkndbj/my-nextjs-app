@@ -129,14 +129,14 @@ export default function HomePageContent() {
       <Header />
 
       {/* Categories Section */}
-      {/* <div className="w-full overflow-x-hidden py-4">
+      <div className="w-full overflow-x-hidden py-4">
         <Categories
           selectedCategory={selectedCategory}
           selectedSubcategory={selectedSubcategory}
           onCategorySelect={setSelectedCategory}
           onSubcategorySelect={setSelectedSubcategory}
         />
-      </div> */}
+      </div>
 
       {/* Product Grid */}
       <div className="px-2 py-4 min-h-screen">

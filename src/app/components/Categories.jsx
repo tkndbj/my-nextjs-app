@@ -60,13 +60,27 @@ export default function Categories({
       <div
         ref={containerRef}
         className="
-          flex items-center justify-center gap-4 
+          flex flex-nowrap items-center gap-4 
           overflow-x-auto hide-scrollbar cursor-grab bg-background
+          touch-pan-x
         "
         onMouseDown={handleMouseDown}
         onMouseLeave={handleMouseLeave}
         onMouseUp={handleMouseUp}
         onMouseMove={handleMouseMove}
+        // Optional: Add touch events for better mobile support
+        onTouchStart={(e) => {
+          setIsDragging(true);
+          setStartX(e.touches[0].pageX - containerRef.current.offsetLeft);
+          setScrollLeft(containerRef.current.scrollLeft);
+        }}
+        onTouchEnd={handleMouseUp}
+        onTouchMove={(e) => {
+          if (!isDragging) return;
+          const x = e.touches[0].pageX - containerRef.current.offsetLeft;
+          const walk = (x - startX) * 2; // speed factor
+          containerRef.current.scrollLeft = scrollLeft - walk;
+        }}
       >
         {categories.map((category, index) => (
           <div key={category.key} className="flex flex-col items-center">
@@ -85,7 +99,7 @@ export default function Categories({
               <Image
                 src={`/images/categories/${category.image}`}
                 alt={category.key}
-                fill
+                layout="fill"
                 sizes="(max-width: 640px) 20vw,
                        (max-width: 768px) 15vw,
                        (max-width: 1024px) 10vw,
@@ -122,6 +136,19 @@ export default function Categories({
             onMouseLeave={handleMouseLeave}
             onMouseUp={handleMouseUp}
             onMouseMove={handleMouseMove}
+            // Optional: Add touch events for better mobile support
+            onTouchStart={(e) => {
+              setIsDragging(true);
+              setStartX(e.touches[0].pageX - containerRef.current.offsetLeft);
+              setScrollLeft(containerRef.current.scrollLeft);
+            }}
+            onTouchEnd={handleMouseUp}
+            onTouchMove={(e) => {
+              if (!isDragging) return;
+              const x = e.touches[0].pageX - containerRef.current.offsetLeft;
+              const walk = (x - startX) * 2; // speed factor
+              containerRef.current.scrollLeft = scrollLeft - walk;
+            }}
           >
             {subcategories[selectedCategory]?.map((subcat) => (
               <button
