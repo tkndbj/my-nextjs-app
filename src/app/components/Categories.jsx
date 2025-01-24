@@ -25,9 +25,8 @@ export default function Categories({
 
   const handleTouchMove = (e, ref) => {
     if (!isDragging) return;
-    e.preventDefault();
     const x = e.touches[0].pageX - ref.current.offsetLeft;
-    const walk = (x - startX) * 2;
+    const walk = (x - startX) * 1.5; // Reduced speed factor for smoother scrolling
     ref.current.scrollLeft = scrollLeft - walk;
   };
 
@@ -50,7 +49,7 @@ export default function Categories({
     if (!isDragging) return;
     e.preventDefault();
     const x = e.pageX - ref.current.offsetLeft;
-    const walk = (x - startX) * 2;
+    const walk = (x - startX) * 1.5; // Reduced speed factor for smoother scrolling
     ref.current.scrollLeft = scrollLeft - walk;
   };
 
@@ -83,7 +82,8 @@ export default function Categories({
           "
           style={{
             WebkitOverflowScrolling: 'touch',
-            scrollSnapType: 'x mandatory',
+            scrollSnapType: 'x proximity', // Changed from mandatory to proximity
+            scrollBehavior: 'smooth',
           }}
           onTouchStart={(e) => handleTouchStart(e, containerRef)}
           onTouchMove={(e) => handleTouchMove(e, containerRef)}
@@ -95,19 +95,19 @@ export default function Categories({
           {categories.map((category, index) => (
             <div 
               key={category.key} 
-              className="flex-none scroll-snap-align-start"
-              style={{ scrollSnapAlign: 'start' }}
+              className="flex-none"
             >
               <div className="flex flex-col items-center w-20">
                 <button
                   onClick={() => handleCategoryClick(category.key)}
                   className={`
                     w-20 h-20 relative rounded-full overflow-hidden shadow-md 
-                    hover:scale-105 transition-transform flex-shrink-0
+                    transform transition-all duration-200 ease-out
+                    active:scale-95 hover:shadow-lg
                     ${
                       selectedCategory === category.key
-                        ? "border-4 border-jade-green dark:border-accent"
-                        : "border border-secondaryBackground dark:border-secondaryBackground"
+                        ? "ring-4 ring-jade-green dark:ring-accent ring-offset-2"
+                        : "ring-1 ring-gray-200 dark:ring-gray-700"
                     }
                   `}
                 >
@@ -116,13 +116,14 @@ export default function Categories({
                     alt={category.key}
                     fill
                     sizes="80px"
-                    className="object-cover"
+                    className="object-cover transform transition-transform duration-200"
                     priority={index === 0}
                   />
                 </button>
                 <span
                   className={`
                     mt-2 text-center text-sm whitespace-nowrap
+                    transition-colors duration-200
                     ${
                       selectedCategory === category.key
                         ? "text-jade-green dark:text-accent font-semibold"
@@ -153,7 +154,8 @@ export default function Categories({
             "
             style={{
               WebkitOverflowScrolling: 'touch',
-              scrollSnapType: 'x mandatory',
+              scrollSnapType: 'x proximity', // Changed from mandatory to proximity
+              scrollBehavior: 'smooth',
             }}
             onTouchStart={(e) => handleTouchStart(e, subcategoriesRef)}
             onTouchMove={(e) => handleTouchMove(e, subcategoriesRef)}
@@ -167,15 +169,16 @@ export default function Categories({
                 key={subcat}
                 onClick={() => handleSubcategoryClick(subcat)}
                 className={`
-                  px-4 py-2 rounded-full border text-sm transition
-                  flex-none scroll-snap-align-start whitespace-nowrap
+                  px-4 py-2 rounded-full
+                  text-sm whitespace-nowrap
+                  transform transition-all duration-200 ease-out
+                  active:scale-95
                   ${
                     selectedSubcategory === subcat
-                      ? "bg-jade-green dark:bg-accent text-background border-jade-green dark:border-accent"
-                      : "bg-transparent border-foreground text-foreground hover:bg-jade-green hover:text-background dark:hover:bg-accent"
+                      ? "bg-jade-green dark:bg-accent text-white shadow-md"
+                      : "bg-transparent border border-gray-300 dark:border-gray-600 text-foreground hover:bg-gray-100 dark:hover:bg-gray-800"
                   }
                 `}
-                style={{ scrollSnapAlign: 'start' }}
               >
                 {subcat}
               </button>
