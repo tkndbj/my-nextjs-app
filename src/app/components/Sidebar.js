@@ -24,6 +24,8 @@ import MessagesWindow from "./MessagesWindow";
 import { auth } from "../../../lib/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useRouter, usePathname } from "next/navigation";
+import useWindowWidth from "../../hooks/useWindowWidth"; // Import the custom hook
+import { MOBILE_BREAKPOINT } from "../constants/breakpoints"; // Import breakpoint
 
 const Sidebar = () => {
   const { isCollapsed, toggleSidebar } = useSidebar();
@@ -37,6 +39,7 @@ const Sidebar = () => {
 
   const router = useRouter();
   const pathname = usePathname();
+  const windowWidth = useWindowWidth(); // Use the custom hook
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -162,6 +165,9 @@ const Sidebar = () => {
     }
   };
 
+  // Determine if the device is mobile
+  const isMobile = windowWidth !== undefined && windowWidth < MOBILE_BREAKPOINT;
+
   return (
     <>
       {!isExcludedPath && (
@@ -222,61 +228,65 @@ const Sidebar = () => {
               <span className={styles.text}>My Products</span>
             </div>
 
-            {/* Notifications - Desktop Only */}
-            <div
-              className={`${styles.menuItem} ${styles.desktopOnly} ${
-                showNotifications ? styles.active : ""
-              }`}
-              onClick={handleNotificationsClick}
-            >
-              <div className={styles.icon}>
-                <FaBell />
-              </div>
-              <span className={styles.text}>Notifications</span>
-
-              {showNotifications && userId && (
-                <div
-                  className={`${styles.popupContainer} ${
-                    showNotifications ? "" : styles.hidden
-                  }`}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <NotificationsWindow
-                    userId={userId}
-                    onClose={handleCloseNotifications}
-                  />
+            {/* Conditionally Render Notifications - Desktop Only */}
+            {!isMobile && (
+              <div
+                className={`${styles.menuItem} ${styles.desktopOnly} ${
+                  showNotifications ? styles.active : ""
+                }`}
+                onClick={handleNotificationsClick}
+              >
+                <div className={styles.icon}>
+                  <FaBell />
                 </div>
-              )}
-            </div>
+                <span className={styles.text}>Notifications</span>
 
-            {/* Messages - Desktop Only */}
-            <div
-              className={`${styles.menuItem} ${styles.desktopOnly} ${
-                showMessages ? styles.active : ""
-              }`}
-              onClick={handleMessagesClick}
-            >
-              <div className={styles.icon}>
-                <FaEnvelope />
+                {showNotifications && userId && (
+                  <div
+                    className={`${styles.popupContainer} ${
+                      showNotifications ? "" : styles.hidden
+                    }`}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <NotificationsWindow
+                      userId={userId}
+                      onClose={handleCloseNotifications}
+                    />
+                  </div>
+                )}
               </div>
-              <span className={styles.text}>Messages</span>
+            )}
 
-              {showMessages && userId && (
-                <div
-                  className={`${styles.popupContainer} ${
-                    showMessages ? "" : styles.hidden
-                  }`}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {/* Pass preselectedChatId to auto-open that chat */}
-                  <MessagesWindow
-                    userId={userId}
-                    onClose={handleCloseMessages}
-                    preselectedChatId={preselectedChatId}
-                  />
+            {/* Conditionally Render Messages - Desktop Only */}
+            {!isMobile && (
+              <div
+                className={`${styles.menuItem} ${styles.desktopOnly} ${
+                  showMessages ? styles.active : ""
+                }`}
+                onClick={handleMessagesClick}
+              >
+                <div className={styles.icon}>
+                  <FaEnvelope />
                 </div>
-              )}
-            </div>
+                <span className={styles.text}>Messages</span>
+
+                {showMessages && userId && (
+                  <div
+                    className={`${styles.popupContainer} ${
+                      showMessages ? "" : styles.hidden
+                    }`}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {/* Pass preselectedChatId to auto-open that chat */}
+                    <MessagesWindow
+                      userId={userId}
+                      onClose={handleCloseMessages}
+                      preselectedChatId={preselectedChatId}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* My Ads */}
             <div
