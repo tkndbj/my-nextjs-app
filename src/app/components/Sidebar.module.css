@@ -16,7 +16,8 @@
   flex-direction: column;
   justify-content: space-between;
   z-index: 1000;
-  overflow: hidden; /* Ensures content doesn't overflow during transition */
+  /* Changed from hidden to visible to allow popups to overflow */
+  overflow: visible;
 }
 
 /* Desktop States */
@@ -46,6 +47,11 @@
     /* Slide the sidebar into view */
     transform: translateX(0);
   }
+
+  /* Hide popups on mobile devices */
+  .popupContainer {
+    display: none;
+  }
 }
 
 /* Responsive Design for Mobile Devices - Landscape */
@@ -65,6 +71,11 @@
   .expanded {
     /* Slide the sidebar into view */
     transform: translateX(0);
+  }
+
+  /* Hide popups on mobile devices */
+  .popupContainer {
+    display: none;
   }
 }
 
@@ -109,7 +120,7 @@
 }
 
 .menuItem {
-  position: relative;
+  position: relative; /* Ensure popups are positioned correctly */
   display: flex;
   align-items: center;
   padding: 0.75rem 1rem;
@@ -170,6 +181,7 @@
   color: #ffffff !important;
 }
 
+/* Popup Containers - Visible Only on Desktop */
 .popupContainer {
   position: absolute;
   top: 0;
@@ -179,9 +191,113 @@
   transition: opacity 0.5s ease, transform 0.5s ease; /* Smooth transition for popups */
   opacity: 1;
   transform: translateY(0);
+  /* Optional: Add background and padding for better visibility */
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+/* Hidden State for Popups */
 .popupContainer.hidden {
   opacity: 0;
   transform: translateY(-10px);
+}
+
+/* Additional Popup Styling (Optional) */
+/* These classes can be used within NotificationsWindow and MessagesWindow components if needed */
+.notificationsWindow,
+.messagesWindow {
+  width: 300px;
+  padding: 1rem;
+  /* Inherit styles or customize as needed */
+}
+
+/* Hide popups by default on desktop, show when active via JavaScript */
+.notificationsWindow.hidden,
+.messagesWindow.hidden {
+  display: none;
+}
+
+.notificationsWindow.active,
+.messagesWindow.active {
+  display: block;
+}
+
+/* Responsive Adjustments */
+
+/* Mobile Styles - Portrait */
+@media (max-width: 768px) and (orientation: portrait) {
+  /* Existing mobile portrait styles */
+  .header {
+    padding: 0;
+  }
+
+  .navContainer {
+    padding: 0 10px;
+  }
+
+  .logo {
+    font-size: 1rem;
+  }
+
+  .searchContainer {
+    margin: 0 10px;
+  }
+
+  .searchInput {
+    max-width: 250px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+
+  .menu {
+    display: none; /* Hide desktop menu on mobile */
+  }
+
+  /* Badge Adjustments */
+  .badge {
+    top: -4px; /* Adjusted for smaller icons */
+    right: -8px;
+    font-size: 0.65rem;
+    padding: 1px 4px;
+  }
+}
+
+/* Mobile Styles - Landscape */
+@media (max-width: 1024px) and (orientation: landscape) {
+  /* Apply the same styles as portrait mobile */
+  .header {
+    padding: 0;
+  }
+
+  .navContainer {
+    padding: 0 10px;
+  }
+
+  .logo {
+    font-size: 1rem;
+  }
+
+  .searchContainer {
+    margin: 0 10px;
+  }
+
+  .searchInput {
+    max-width: 250px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+
+  .menu {
+    display: none; /* Hide desktop menu on mobile */
+  }
+
+  /* Badge Adjustments */
+  .badge {
+    top: -4px; /* Adjusted for smaller icons */
+    right: -8px;
+    font-size: 0.65rem;
+    padding: 1px 4px;
+  }
 }
