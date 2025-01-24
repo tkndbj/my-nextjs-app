@@ -87,6 +87,7 @@ const Sidebar = () => {
     e.stopPropagation(); // Prevent parent clicks
     setShowNotifications((prev) => !prev);
     if (showMessages) setShowMessages(false);
+    // No sidebar collapse for Notifications
   };
 
   // Toggle messages window
@@ -97,6 +98,7 @@ const Sidebar = () => {
     // If we're closing, also reset preselectedChatId
     // so next time it starts fresh
     if (showMessages) setPreselectedChatId(null);
+    // No sidebar collapse for Messages
   };
 
   // Close notifications
@@ -142,10 +144,22 @@ const Sidebar = () => {
     }
   };
 
+  // Helper function to determine if a menu item is active
+  const isActive = (basePath) => {
+    if (basePath === "/") {
+      return pathname === "/";
+    }
+    return pathname === basePath || pathname.startsWith(`${basePath}/`);
+  };
+
   // Navigation
   const handleNavClick = (navFunc) => (e) => {
     e.stopPropagation();
     navFunc();
+    // Collapse sidebar only if it's expanded
+    if (!isCollapsed) {
+      toggleSidebar();
+    }
   };
 
   return (
@@ -171,7 +185,9 @@ const Sidebar = () => {
           <div className={styles.menu}>
             {/* Home */}
             <div
-              className={styles.menuItem}
+              className={`${styles.menuItem} ${
+                isActive("/") ? styles.active : ""
+              }`}
               onClick={handleNavClick(() => router.push("/"))}
             >
               <div className={styles.icon}>
@@ -182,7 +198,9 @@ const Sidebar = () => {
 
             {/* Properties */}
             <div
-              className={styles.menuItem}
+              className={`${styles.menuItem} ${
+                isActive("/properties") ? styles.active : ""
+              }`}
               onClick={handleNavClick(() => router.push("/properties"))}
             >
               <div className={styles.icon}>
@@ -193,7 +211,9 @@ const Sidebar = () => {
 
             {/* My Products */}
             <div
-              className={styles.menuItem}
+              className={`${styles.menuItem} ${
+                isActive("/myproducts") ? styles.active : ""
+              }`}
               onClick={handleNavClick(handleMyproductsClick)}
             >
               <div className={styles.icon}>
@@ -204,7 +224,9 @@ const Sidebar = () => {
 
             {/* Notifications - Desktop Only */}
             <div
-              className={`${styles.menuItem} ${styles.desktopOnly}`}
+              className={`${styles.menuItem} ${styles.desktopOnly} ${
+                showNotifications ? styles.active : ""
+              }`}
               onClick={handleNotificationsClick}
             >
               <div className={styles.icon}>
@@ -229,7 +251,9 @@ const Sidebar = () => {
 
             {/* Messages - Desktop Only */}
             <div
-              className={`${styles.menuItem} ${styles.desktopOnly}`}
+              className={`${styles.menuItem} ${styles.desktopOnly} ${
+                showMessages ? styles.active : ""
+              }`}
               onClick={handleMessagesClick}
             >
               <div className={styles.icon}>
@@ -256,7 +280,9 @@ const Sidebar = () => {
 
             {/* My Ads */}
             <div
-              className={styles.menuItem}
+              className={`${styles.menuItem} ${
+                isActive("/ads") ? styles.active : ""
+              }`}
               onClick={handleNavClick(() => router.push("/ads"))}
             >
               <div className={styles.icon}>
@@ -267,7 +293,9 @@ const Sidebar = () => {
 
             {/* Profile */}
             <div
-              className={styles.menuItem}
+              className={`${styles.menuItem} ${
+                isActive("/profile") ? styles.active : ""
+              }`}
               onClick={handleNavClick(handleProfileClick)}
             >
               <div className={styles.icon}>

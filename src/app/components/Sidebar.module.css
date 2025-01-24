@@ -29,6 +29,12 @@
   width: 200px; /* Fixed width for expanded state */
 }
 
+/* Active Menu Item */
+.active {
+  background-color: #00a86b !important; /* Jade Green */
+  color: #ffffff !important; /* White text and icon */
+}
+
 /* Responsive Design for Mobile Devices - Portrait */
 @media (max-width: 768px) and (orientation: portrait) {
   .sidebar {
@@ -202,11 +208,6 @@
 
 .bottomSection {
   padding: 1rem 0;
-}
-
-.active {
-  background-color: #00a86b !important;
-  color: #ffffff !important;
 }
 
 /* Popup Containers - Visible Only on Desktop */
