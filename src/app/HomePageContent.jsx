@@ -130,12 +130,15 @@ export default function HomePageContent() {
 
       {/* Categories Section */}
       <div className="w-full py-4">
-        <Categories
-          selectedCategory={selectedCategory}
-          selectedSubcategory={selectedSubcategory}
-          onCategorySelect={setSelectedCategory}
-          onSubcategorySelect={setSelectedSubcategory}
-        />
+        {/* Dedicated Scrollable Container */}
+        <div className="w-full overflow-x-auto px-4">
+          <Categories
+            selectedCategory={selectedCategory}
+            selectedSubcategory={selectedSubcategory}
+            onCategorySelect={setSelectedCategory}
+            onSubcategorySelect={setSelectedSubcategory}
+          />
+        </div>
       </div>
 
       {/* Product Grid */}
