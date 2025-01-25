@@ -48,6 +48,7 @@
   display: block;
   height: 100%;
   line-height: 38px; /* Vertically center the text */
+  white-space: nowrap; /* Prevent text from wrapping */
 }
 
 /* Link Styling in Dark Mode */
@@ -76,10 +77,10 @@
     flex-direction: row;
     overflow-x: auto;
     padding: 0 8px; /* Reduced horizontal padding */
-    gap: 8px; /* Reduced space between items */
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-    scrollbar-width: none; /* Hide scrollbar for Firefox */
+    /* Removed gap to allow variable spacing */
+    /* gap: 8px; */
     justify-content: flex-start; /* Align items to the start */
+    flex-wrap: nowrap; /* Prevent items from wrapping to the next line */
   }
 
   /* Hide scrollbar for WebKit browsers */
@@ -90,5 +91,13 @@
   .menuItem {
     flex: none; /* Prevent items from shrinking */
     min-width: 100px; /* Adjust as needed */
+    /* Removed white-space from .menuItem since it's handled in .link */
+    /* Add variable margins if desired */
+    margin-right: 12px; /* Example: Increase spacing between items */
+  }
+
+  /* Optional: Remove right margin from the last item to avoid extra space */
+  .menuItem:last-child {
+    margin-right: 0;
   }
 }
