@@ -20,7 +20,7 @@ import FavoritesWindow from "./FavoritesWindow";
 import CartWindow from "./CartWindow";
 import NotificationsWindow from "./NotificationsWindow";
 import MessagesWindow from "./MessagesWindow";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, onSnapshot, doc } from "firebase/firestore";
 import { useSidebar } from "../../../context/SidebarContext";
 
 export default function Header() {
@@ -36,6 +36,8 @@ export default function Header() {
   // Counters
   const [favoritesCount, setFavoritesCount] = useState(0);
   const [cartCount, setCartCount] = useState(0);
+  const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
 
   // Sidebar context
   const { toggleSidebar } = useSidebar();
@@ -48,27 +50,74 @@ export default function Header() {
     return () => unsubscribe();
   }, []);
 
-  // Fetch favorites/cart counts
+  // Fetch and listen to favorites and cart counts
   useEffect(() => {
-    if (!user) {
+    let favoritesUnsubscribe;
+    let cartUnsubscribe;
+
+    if (user) {
+      const favRef = collection(db, "users", user.uid, "favorites");
+      favoritesUnsubscribe = onSnapshot(
+        favRef,
+        (favSnap) => {
+          setFavoritesCount(favSnap.size);
+        },
+        (error) => {
+          console.error("Error listening to favorites:", error);
+        }
+      );
+
+      const cartRef = collection(db, "users", user.uid, "cart");
+      cartUnsubscribe = onSnapshot(
+        cartRef,
+        (cartSnap) => {
+          setCartCount(cartSnap.size);
+        },
+        (error) => {
+          console.error("Error listening to cart:", error);
+        }
+      );
+    } else {
       setFavoritesCount(0);
       setCartCount(0);
-      return;
     }
-    const fetchCounts = async () => {
-      try {
-        const favRef = collection(db, "users", user.uid, "favorites");
-        const favSnap = await getDocs(favRef);
-        setFavoritesCount(favSnap.size);
 
-        const cartRef = collection(db, "users", user.uid, "cart");
-        const cartSnap = await getDocs(cartRef);
-        setCartCount(cartSnap.size);
-      } catch (error) {
-        console.error("Error fetching favorites/cart counts:", error);
-      }
+    return () => {
+      if (favoritesUnsubscribe) favoritesUnsubscribe();
+      if (cartUnsubscribe) cartUnsubscribe();
     };
-    fetchCounts();
+  }, [user]);
+
+  // Listen to unread notifications and messages counts
+  useEffect(() => {
+    let userDocUnsubscribe;
+
+    if (user) {
+      const userDocRef = doc(db, "users", user.uid);
+      userDocUnsubscribe = onSnapshot(
+        userDocRef,
+        (docSnap) => {
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            setUnreadNotificationsCount(data.unreadNotifications || 0);
+            setUnreadMessagesCount(data.unreadMessages || 0);
+          } else {
+            setUnreadNotificationsCount(0);
+            setUnreadMessagesCount(0);
+          }
+        },
+        (error) => {
+          console.error("Error listening to user document:", error);
+        }
+      );
+    } else {
+      setUnreadNotificationsCount(0);
+      setUnreadMessagesCount(0);
+    }
+
+    return () => {
+      if (userDocUnsubscribe) userDocUnsubscribe();
+    };
   }, [user]);
 
   // Toggle handlers
@@ -111,18 +160,24 @@ export default function Header() {
 
           <button
             onClick={handleNotificationsClick}
-            className="text-xl" // Removed conditional text color
+            className="relative text-xl" // Added 'relative' for badge positioning
             aria-label="Notifications"
           >
             <HiBell className={styles.iconWithBorder} />
+            {unreadNotificationsCount > 0 && (
+              <span className={styles.badge}>{unreadNotificationsCount}</span>
+            )}
           </button>
 
           <button
             onClick={handleMessagesClick}
-            className="text-xl" // Removed conditional text color
+            className="relative text-xl" // Added 'relative' for badge positioning
             aria-label="Messages"
           >
             <HiMail className={styles.iconWithBorder} />
+            {unreadMessagesCount > 0 && (
+              <span className={styles.badge}>{unreadMessagesCount}</span>
+            )}
           </button>
         </div>
 
