@@ -1,3 +1,5 @@
+// src/app/components/Categories.jsx
+
 "use client";
 
 import React from "react";
@@ -5,22 +7,22 @@ import Image from "next/image";
 import { categories, subcategories } from "../data/categoriesData";
 
 export default function Categories({
-  onCategorySelect,
-  onSubcategorySelect,
+  setSelectedCategory,
+  setSelectedSubcategory,
   selectedCategory,
   selectedSubcategory,
 }) {
   const handleCategoryClick = (categoryKey) => {
     const isCurrentlySelected = selectedCategory === categoryKey;
-    onCategorySelect?.(isCurrentlySelected ? null : categoryKey);
+    setSelectedCategory(isCurrentlySelected ? null : categoryKey);
     if (isCurrentlySelected) {
-      onSubcategorySelect?.(null);
+      setSelectedSubcategory(null);
     }
   };
 
   const handleSubcategoryClick = (subcategory) => {
     const isCurrentlySelected = selectedSubcategory === subcategory;
-    onSubcategorySelect?.(isCurrentlySelected ? null : subcategory);
+    setSelectedSubcategory(isCurrentlySelected ? null : subcategory);
   };
 
   return (
@@ -81,7 +83,7 @@ export default function Categories({
       </div>
 
       {/* Subcategories row */}
-      {selectedCategory && (
+      {selectedCategory && subcategories[selectedCategory] && (
         <div className="relative mt-4">
           <div
             className="
@@ -92,7 +94,7 @@ export default function Categories({
               md:justify-center
             "
           >
-            {subcategories[selectedCategory]?.map((subcat) => (
+            {subcategories[selectedCategory].map((subcat) => (
               <button
                 key={subcat}
                 onClick={() => handleSubcategoryClick(subcat)}

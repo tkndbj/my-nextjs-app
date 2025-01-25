@@ -170,7 +170,8 @@ export const categoryKeywordsMap = {
     "poetry",
     "horror",
   ],
-  "Home & Garden": [
+  Home: [
+    // Changed key from "Home & Garden" to "Home"
     "furniture",
     "bedding",
     "decor",
@@ -191,7 +192,7 @@ export const categoryKeywordsMap = {
     "kitchenware",
     "wall art",
   ],
-  "Toys & Games": [
+  Toys: [
     "action figures",
     "puzzles",
     "board games",
@@ -326,7 +327,8 @@ export const subcategories = {
     "Magazines",
     "Novels",
   ],
-  "Home & Garden": [
+  Home: [
+    // Changed key from "Home & Garden" to "Home"
     "Furniture",
     "Bedding",
     "Decor",
@@ -338,7 +340,7 @@ export const subcategories = {
     "Lamps",
     "Chairs",
   ],
-  "Toys & Games": [
+  Toys: [
     "Action Figures",
     "Puzzles",
     "Board Games",

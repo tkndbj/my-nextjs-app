@@ -1,18 +1,24 @@
+// context/MarketContext.jsx
+
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { db } from "../lib/firebase";
 import {
   doc,
   setDoc,
-  deleteDoc,
   collection,
-  updateDoc,
   increment,
   runTransaction,
   serverTimestamp,
+  query,
+  where,
+  getDocs,
 } from "firebase/firestore";
 import { useUser } from "./UserContext";
+import { index } from "../src/app/algoliaClient"; // Import Algolia index
+import { useDebounce } from "use-debounce"; // Import useDebounce hook
+import { useRouter } from "next/navigation"; // Import useRouter from Next.js
 
 // Create the context
 const MarketContext = createContext();
@@ -22,6 +28,31 @@ const sanitizeFieldName = (fieldName) => {
   return fieldName.replace(/[^a-zA-Z0-9]/g, "_").toLowerCase();
 };
 
+// Helper function to build Algolia filters (excluding category and subcategory)
+const buildAlgoliaFilters = ({ showDeals, showFeatured, specialFilter }) => {
+  const filters = [];
+
+  if (showDeals) {
+    filters.push("discountPercentage > 0");
+  }
+
+  if (showFeatured) {
+    filters.push("isBoosted:true"); // Correct syntax for boolean
+  }
+
+  if (specialFilter) {
+    if (specialFilter === "Trending") {
+      filters.push("dailyClickCount > 10");
+    } else if (specialFilter === "5-Star") {
+      filters.push("averageRating:5"); // Correct syntax for equality
+    }
+  }
+
+  // Removed category and subcategory filters
+
+  return filters.join(" AND ");
+};
+
 // Create a provider component
 export const MarketProvider = ({ children }) => {
   const [showDeals, setShowDeals] = useState(false);
@@ -29,8 +60,199 @@ export const MarketProvider = ({ children }) => {
   const [specialFilter, setSpecialFilter] = useState(null); // For "Trending" and "5-Star"
   const [sortOption, setSortOption] = useState(null); // Includes "best_sellers" and other sort options
 
+  // States for category and subcategory
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedSubcategory, setSelectedSubcategory] = useState(null);
+
+  // States for Firestore-based category products
+  const [categoryProducts, setCategoryProducts] = useState([]);
+  const [isCategoryLoading, setIsCategoryLoading] = useState(false);
+  const [categoryError, setCategoryError] = useState(null);
+
   // Access the authenticated user from UserContext
   const user = useUser();
+
+  // States for search suggestions and queries
+  const [suggestions, setSuggestions] = useState([]);
+  const [isSuggestionsLoading, setIsSuggestionsLoading] = useState(false);
+
+  const [inputQuery, setInputQuery] = useState(""); // For search bar input and suggestions
+  const [searchQuery, setSearchQuery] = useState(""); // For actual search submissions
+
+  // Debounce the input query to reduce API calls for suggestions
+  const [debouncedInputQuery] = useDebounce(inputQuery, 300);
+
+  // States for Algolia search results
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState(null);
+
+  // Initialize Next.js router for navigation
+  const router = useRouter();
+
+  /**
+   * Fetches search suggestions from Algolia based on the user's input query.
+   * @param {string} searchInput - The input query from the search bar.
+   */
+  const fetchSuggestions = async (searchInput) => {
+    if (!searchInput.trim()) {
+      setSuggestions([]);
+      return;
+    }
+
+    setIsSuggestionsLoading(true);
+    try {
+      const { hits } = await index.search(searchInput, {
+        hitsPerPage: 5, // Number of suggestions to fetch
+        attributesToRetrieve: ["objectID", "productName"], // Ensure these fields are in your Algolia index
+        // You can customize other search parameters as needed
+      });
+      setSuggestions(hits);
+    } catch (error) {
+      console.error("Error fetching Algolia suggestions:", error);
+      setSuggestions([]);
+    } finally {
+      setIsSuggestionsLoading(false);
+    }
+  };
+
+  // useEffect to fetch suggestions when debouncedInputQuery changes
+  useEffect(() => {
+    if (debouncedInputQuery) {
+      fetchSuggestions(debouncedInputQuery);
+    } else {
+      setSuggestions([]);
+    }
+  }, [debouncedInputQuery]);
+
+  /**
+   * Performs a search using Algolia with the current search query and applied filters.
+   * Updates the searchResults state with the fetched products.
+   */
+  const performSearch = async () => {
+    try {
+      setIsSearchLoading(true);
+      const searchParams = {
+        hitsPerPage: 100, // Adjust as needed
+        filters: buildAlgoliaFilters({
+          showDeals,
+          showFeatured,
+          specialFilter,
+          // Removed selectedCategory and selectedSubcategory
+        }),
+      };
+
+      // Determine which index to use based on sortOption
+      let currentIndex = index; // Default index
+
+      // Example: If sortOption is "price_asc", use the "products_price_asc" replica
+      // You need to create these replicas in your Algolia dashboard
+      switch (sortOption) {
+        case "price_asc":
+          currentIndex = index.clone("products_price_asc");
+          break;
+        case "price_desc":
+          currentIndex = index.clone("products_price_desc");
+          break;
+        case "best_sellers":
+          currentIndex = index.clone("products_best_sellers");
+          break;
+        // Add more cases as needed for other sort options
+        default:
+          currentIndex = index; // Default to the main index
+      }
+
+      // Perform the search
+      const { hits } = await currentIndex.search(searchQuery, searchParams);
+      setSearchResults(hits);
+      setSearchError(null);
+    } catch (error) {
+      console.error("Error performing Algolia search:", error);
+      setSearchResults([]);
+      setSearchError(error);
+    } finally {
+      setIsSearchLoading(false);
+    }
+  };
+
+  /**
+   * Fetches products from Firestore based on selected category and subcategory.
+   * This function operates independently from Algolia's search functionality.
+   */
+  const fetchCategoryProducts = async () => {
+    if (!selectedCategory) {
+      setCategoryProducts([]);
+      console.log("No category selected. Cleared categoryProducts.");
+      return;
+    }
+
+    setIsCategoryLoading(true);
+    setCategoryError(null);
+    console.log(
+      `Fetching products for Category: ${selectedCategory}, Subcategory: ${selectedSubcategory}`
+    );
+
+    try {
+      const productsRef = collection(db, "products");
+      let q;
+
+      if (selectedSubcategory) {
+        q = query(
+          productsRef,
+          where("category", "==", selectedCategory),
+          where("subcategory", "==", selectedSubcategory)
+        );
+        console.log(
+          `Query: category == "${selectedCategory}" AND subcategory == "${selectedSubcategory}"`
+        );
+      } else {
+        q = query(productsRef, where("category", "==", selectedCategory));
+        console.log(`Query: category == "${selectedCategory}"`);
+      }
+
+      const querySnapshot = await getDocs(q);
+      const products = [];
+      querySnapshot.forEach((doc) => {
+        products.push({ id: doc.id, ...doc.data() });
+      });
+
+      console.log(`Fetched ${products.length} products from Firestore.`);
+      setCategoryProducts(products);
+    } catch (error) {
+      console.error("Error fetching category products:", error);
+      setCategoryError(error);
+    } finally {
+      setIsCategoryLoading(false);
+    }
+  };
+
+  /**
+   * Handles search submissions, such as pressing Enter.
+   * Sets the searchQuery which will trigger the product list update.
+   * Optionally updates the URL's query parameter.
+   * @param {string} searchTerm - The search term to query.
+   */
+  const handleSearchSubmit = (searchTerm) => {
+    if (searchTerm.trim()) {
+      setSearchQuery(searchTerm);
+      // Optionally, update the URL's query parameter for bookmarking/sharing
+      router.push(`/?query=${encodeURIComponent(searchTerm)}`);
+    } else {
+      setSearchQuery("");
+      router.push(`/`);
+    }
+    setSuggestions([]); // Optionally hide suggestions after search
+  };
+
+  /**
+   * Navigates to the product detail page based on the product ID.
+   * @param {string} productId - The ID of the product to navigate to.
+   */
+  const navigateToProductDetail = (productId) => {
+    if (productId) {
+      router.push(`/products/${productId}`);
+    }
+  };
 
   // Toggle Deals filter
   const toggleDeals = () => {
@@ -41,7 +263,6 @@ export const MarketProvider = ({ children }) => {
         setSpecialFilter(null);
         setSortOption(null); // Reset sort when a filter is applied
       }
-      console.log("Toggled Deals:", newShowDeals);
       return newShowDeals;
     });
   };
@@ -55,7 +276,6 @@ export const MarketProvider = ({ children }) => {
         setSpecialFilter(null);
         setSortOption(null); // Reset sort when a filter is applied
       }
-      console.log("Toggled Featured:", newShowFeatured);
       return newShowFeatured;
     });
   };
@@ -69,7 +289,6 @@ export const MarketProvider = ({ children }) => {
         setShowFeatured(false);
         setSortOption(null); // Reset sort when a filter is applied
       }
-      console.log("Set Special Filter:", newFilter);
       return newFilter;
     });
   };
@@ -83,7 +302,6 @@ export const MarketProvider = ({ children }) => {
       setShowFeatured(false);
       setSpecialFilter(null);
     }
-    console.log("Set Sort Option:", option);
   };
 
   /**
@@ -151,8 +369,6 @@ export const MarketProvider = ({ children }) => {
 
         transaction.update(productRef, updateData);
       });
-
-      
     } catch (error) {
       console.error("Error incrementing click count:", error);
       throw error;
@@ -276,6 +492,34 @@ export const MarketProvider = ({ children }) => {
     }
   };
 
+  /**
+   * useEffect to perform search whenever searchQuery or relevant filters change.
+   */
+  useEffect(() => {
+    performSearch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    searchQuery,
+    showDeals,
+    showFeatured,
+    specialFilter,
+    sortOption,
+    // Removed selectedCategory and selectedSubcategory
+  ]);
+
+  /**
+   * useEffect to fetch category products whenever selectedCategory or selectedSubcategory changes.
+   */
+  useEffect(() => {
+    if (selectedCategory) {
+      fetchCategoryProducts();
+    } else {
+      setCategoryProducts([]); // Clear category products if no category is selected
+      console.log("No category selected. Cleared categoryProducts.");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCategory, selectedSubcategory]);
+
   const value = {
     showDeals,
     toggleDeals,
@@ -287,6 +531,26 @@ export const MarketProvider = ({ children }) => {
     setSortOption: setSortOptionHandler,
     incrementClickCount,
     recordProductClick,
+    suggestions, // Added for search suggestions
+    isSuggestionsLoading, // Added for loading state of suggestions
+    fetchSuggestions, // Added to allow manual fetching if needed
+    inputQuery, // Added to manage the search input state
+    setInputQuery, // Added to allow updating the search input from components
+    searchQuery, // Added to manage the submitted search query
+    setSearchQuery, // Added to allow setting the search query from components
+    handleSearchSubmit, // Renamed to reflect its purpose
+    navigateToProductDetail, // Added to navigate to product detail programmatically
+    searchResults, // Added to provide search results from Algolia
+    isSearchLoading, // Added to provide loading state for search
+    searchError, // Added to provide error state for search
+    selectedCategory, // Exposed selectedCategory
+    setSelectedCategory, // Exposed setter for selectedCategory
+    selectedSubcategory, // Exposed selectedSubcategory
+    setSelectedSubcategory, // Exposed setter for selectedSubcategory
+    categoryProducts, // Exposed categoryProducts
+    isCategoryLoading, // Exposed loading state for category products
+    categoryError, // Exposed error state for category products
+    // Include other states and functions as needed
   };
 
   return (

@@ -1,121 +1,50 @@
+// src/app/components/HomePageContent.jsx
+
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { db } from "../../lib/firebase";
-import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
+import React, { useEffect } from "react"; // Import useEffect
 import ProductCard from "./components/ProductCard";
 import Categories from "./components/Categories";
 import SecondHeader from "./components/SecondHeader"; // Import the SecondHeader component
 import SearchBar from "./components/SearchBar"; // Import the SearchBar component
 import { useMarket } from "../../context/MarketContext";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import styles from "./components/HomePageContent.module.css"; // Import the CSS module
 
 export default function HomePageContent() {
-  const [products, setProducts] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  // Access search-related states and results from MarketContext
+  const {
+    searchResults, // Products fetched from Algolia
+    isSearchLoading,
+    searchError,
+    showDeals,
+    showFeatured,
+    specialFilter,
+    sortOption,
+    selectedCategory,
+    setSelectedCategory,
+    selectedSubcategory,
+    setSelectedSubcategory,
+    categoryProducts, // Products fetched based on category
+    isCategoryLoading,
+    categoryError,
+  } = useMarket();
 
-  // State for categories
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [selectedSubcategory, setSelectedSubcategory] = useState(null);
-
-  const { showDeals, showFeatured, specialFilter, sortOption } = useMarket();
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
     const queryParam = searchParams.get("query") || "";
-    setSearchQuery(queryParam);
+    // Optionally, handle loading search from URL parameters here
+    // For debugging, log the query parameter
+    console.log(`URL Query Parameter: ${queryParam}`);
   }, [searchParams]);
 
+  // Debugging: Log selectedCategory and categoryProducts
   useEffect(() => {
-    async function fetchProducts() {
-      try {
-        const qRef = collection(db, "products");
-        const qConstraints = [];
-
-        // Text-based search
-        if (searchQuery.trim()) {
-          qConstraints.push(where("name", ">=", searchQuery));
-          qConstraints.push(where("name", "<=", searchQuery + "\uf8ff"));
-        }
-
-        // Deals / Featured / Special filter
-        if (showDeals) {
-          qConstraints.push(where("discountPercentage", ">", 0));
-        }
-        if (showFeatured) {
-          qConstraints.push(where("isBoosted", "==", true));
-        }
-        if (specialFilter) {
-          if (specialFilter === "Trending") {
-            qConstraints.push(where("dailyClickCount", ">", 10));
-          } else if (specialFilter === "5-Star") {
-            qConstraints.push(where("averageRating", "==", 5));
-          }
-        }
-
-        // Category / Subcategory filters
-        if (selectedCategory) {
-          qConstraints.push(where("category", "==", selectedCategory));
-        }
-        if (selectedSubcategory) {
-          qConstraints.push(where("subcategory", "==", selectedSubcategory));
-        }
-
-        // Sorting
-        if (sortOption) {
-          switch (sortOption) {
-            case "date":
-              qConstraints.push(orderBy("createdAt", "desc"));
-              break;
-            case "alphabetical":
-              qConstraints.push(orderBy("name", "asc"));
-              break;
-            case "price_asc":
-              qConstraints.push(orderBy("price", "asc"));
-              break;
-            case "price_desc":
-              qConstraints.push(orderBy("price", "desc"));
-              break;
-            case "best_sellers":
-              qConstraints.push(orderBy("purchaseCount", "desc"));
-              break;
-            default:
-              break;
-          }
-        }
-
-        // Execute Firestore query
-        const qFinal = query(qRef, ...qConstraints);
-        const querySnapshot = await getDocs(qFinal);
-        const items = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
-        // Boosted products first
-        const boostedProducts = items.filter((p) => p.isBoosted);
-        const otherProducts = items.filter((p) => !p.isBoosted);
-        const sortedProducts = [...boostedProducts, ...otherProducts];
-
-        setProducts(sortedProducts);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-        setProducts([]);
-      }
-    }
-
-    fetchProducts();
-  }, [
-    searchQuery ?? "",
-    showDeals ?? false,
-    showFeatured ?? false,
-    specialFilter ?? "",
-    sortOption ?? "",
-    selectedCategory ?? "",
-    selectedSubcategory ?? "",
-  ]);
+    console.log(`Selected Category: ${selectedCategory}`);
+    console.log(`Selected Subcategory: ${selectedSubcategory}`);
+    console.log(`Category Products Count: ${categoryProducts.length}`);
+  }, [selectedCategory, selectedSubcategory, categoryProducts]);
 
   return (
     <>
@@ -123,33 +52,63 @@ export default function HomePageContent() {
       <SecondHeader />
 
       {/* Search Bar */}
-      <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      <SearchBar />
 
       {/* Categories Section */}
-      <div className="w-full" style={{ marginTop: "114px" }}>
+      <div className="w-full" style={{ marginTop: "60px" }}>
         {/* Adjust margin to account for Header (38px), SecondHeader (38px), and SearchBar (38px) */}
         <div className="max-w-7xl mx-auto overflow-hidden">
           <Categories
             selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
             selectedSubcategory={selectedSubcategory}
-            onCategorySelect={setSelectedCategory}
-            onSubcategorySelect={setSelectedSubcategory}
+            setSelectedSubcategory={setSelectedSubcategory}
           />
         </div>
       </div>
 
       {/* Product Grid */}
       <div className="px-2 py-4 min-h-screen">
-        {products.length === 0 ? (
-          <p className="text-center text-foreground">No products found.</p>
-        ) : (
+        {/* Determine which product list to display */}
+        {isSearchLoading || isCategoryLoading ? (
+          <p className="text-center text-foreground">Loading products...</p>
+        ) : searchError ? (
+          <p className="text-center text-red-500">
+            Error fetching search results. Please try again later.
+          </p>
+        ) : categoryError ? (
+          <p className="text-center text-red-500">
+            Error fetching category products. Please try again later.
+          </p>
+        ) : searchResults.length > 0 ? (
+          /* Display Algolia search results */
           <div className="mx-auto w-full max-w-7xl">
             <div className={styles.productGrid}>
-              {products.map((p) => (
-                <ProductCard key={p.id} product={p} />
+              {searchResults.map((p) => (
+                <ProductCard key={p.objectID} product={p} />
               ))}
             </div>
           </div>
+        ) : selectedCategory ? (
+          /* Display category-based products */
+          categoryProducts.length > 0 ? (
+            <div className="mx-auto w-full max-w-7xl">
+              <div className={styles.productGrid}>
+                {categoryProducts.map((p) => (
+                  <ProductCard key={p.id} product={p} />
+                ))}
+              </div>
+            </div>
+          ) : (
+            <p className="text-center text-foreground">
+              No products found in this category.
+            </p>
+          )
+        ) : (
+          /* Default view when no search or category is selected */
+          <p className="text-center text-foreground">
+            Please enter a search term or select a category to view products.
+          </p>
         )}
       </div>
     </>

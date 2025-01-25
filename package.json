@@ -46,6 +46,7 @@
     "react-toastify": "^11.0.0",
     "slick-carousel": "^1.8.1",
     "swiper": "^11.2.1",
+    "use-debounce": "^10.0.4",
     "uuid": "^11.0.3"
   },
   "devDependencies": {
