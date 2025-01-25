@@ -9,12 +9,12 @@ import { useRouter } from "next/navigation";
 import styles from "./Header.module.css";
 
 import {
-  TbMenu, // Replaces FaBars
-  TbBell, // Replaces FaBell
-  TbMail, // Replaces FaEnvelope
-  TbHeart, // Replaces FaHeart
-  TbShoppingCart, // Replaces FaShoppingCart
-} from "react-icons/tb";
+  HiMenu, // Replaces TbMenu
+  HiBell, // Replaces TbBell
+  HiMail, // Replaces TbMail
+  HiHeart, // Replaces TbHeart
+  HiShoppingCart, // Replaces TbShoppingCart
+} from "react-icons/hi";
 
 import FavoritesWindow from "./FavoritesWindow";
 import CartWindow from "./CartWindow";
@@ -106,7 +106,7 @@ export default function Header() {
             className="text-2xl" // Removed 'text-white'
             aria-label="Toggle Sidebar"
           >
-            <TbMenu className={styles.iconWithBorder} />
+            <HiMenu className={styles.iconWithBorder} />
           </button>
 
           <button
@@ -114,7 +114,7 @@ export default function Header() {
             className="text-xl" // Removed conditional text color
             aria-label="Notifications"
           >
-            <TbBell className={styles.iconWithBorder} />
+            <HiBell className={styles.iconWithBorder} />
           </button>
 
           <button
@@ -122,7 +122,7 @@ export default function Header() {
             className="text-xl" // Removed conditional text color
             aria-label="Messages"
           >
-            <TbMail className={styles.iconWithBorder} />
+            <HiMail className={styles.iconWithBorder} />
           </button>
         </div>
 
@@ -143,7 +143,7 @@ export default function Header() {
             className="relative" // Removed 'text-xl text-white'
             title="Favorites"
           >
-            <TbHeart className={styles.iconWithBorder} />
+            <HiHeart className={styles.iconWithBorder} />
             {favoritesCount > 0 && (
               <span className={styles.badge}>{favoritesCount}</span>
             )}
@@ -160,7 +160,7 @@ export default function Header() {
             className="relative" // Removed 'text-xl text-white'
             title="Cart"
           >
-            <TbShoppingCart className={styles.iconWithBorder} />
+            <HiShoppingCart className={styles.iconWithBorder} />
             {cartCount > 0 && <span className={styles.badge}>{cartCount}</span>}
           </button>
           {showCart && (
@@ -191,7 +191,7 @@ export default function Header() {
             className="relative" // Removed 'text-xl text-white'
             title="Favorites"
           >
-            <TbHeart className={styles.iconWithBorder} />
+            <HiHeart className={styles.iconWithBorder} />
             {favoritesCount > 0 && (
               <span className={styles.badge}>{favoritesCount}</span>
             )}
@@ -208,7 +208,7 @@ export default function Header() {
             className="relative" // Removed 'text-xl text-white'
             title="Cart"
           >
-            <TbShoppingCart className={styles.iconWithBorder} />
+            <HiShoppingCart className={styles.iconWithBorder} />
             {cartCount > 0 && <span className={styles.badge}>{cartCount}</span>}
           </button>
           {showCart && (
