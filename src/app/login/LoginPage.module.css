@@ -153,6 +153,7 @@
 
   .form input {
     padding: 12px;
+    font-size: 16px; /* **Added to prevent zoom on mobile** */
   }
 
   .form button {
