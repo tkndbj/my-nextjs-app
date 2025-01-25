@@ -11,11 +11,25 @@
   position: fixed;
   top: 76px; /* Position it below Header and SecondHeader (38px + 38px) */
   z-index: 997; /* Below Header (999) and SecondHeader (998) */
-  transition: background-color 0.3s ease;
+  transition: top 0.3s ease, height 0.3s ease, background-color 0.3s ease;
+}
+
+/* Expanded Search Bar Styles for Mobile */
+.expanded {
+  top: 0; /* Move to the top of the viewport */
+  width: 100%;
+  height: 56px; /* Adjust height as needed */
+  background-color: #ffffff; /* Same as headers' background */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1001; /* Above the overlay */
 }
 
 /* Change background in dark mode if applicable */
 :global(.dark) .searchBarContainer {
+  background-color: #24252c;
+}
+
+:global(.dark) .expanded {
   background-color: #24252c;
 }
 
@@ -27,6 +41,12 @@
   height: 30px;
   display: flex;
   align-items: center;
+  transition: max-width 0.3s ease, height 0.3s ease;
+}
+
+.expanded .searchForm {
+  max-width: 90%;
+  height: 40px;
 }
 
 /* Search Icon Styling */
@@ -53,6 +73,10 @@
   color: #333;
 }
 
+.expanded .searchInput {
+  border-radius: 8px; /* Adjust for a more rectangular shape if desired */
+}
+
 /* Search Input Hover and Focus Effects */
 .searchInput:hover {
   border-color: coral;
@@ -60,6 +84,10 @@
 
 .searchInput:focus {
   border-color: coral;
+  background-color: #fff;
+}
+
+.expanded .searchInput:focus {
   background-color: #fff;
 }
 
@@ -73,6 +101,10 @@
 :global(.dark) .searchInput:hover,
 :global(.dark) .searchInput:focus {
   border-color: coral;
+  background-color: #444;
+}
+
+.expanded :global(.dark) .searchInput:focus {
   background-color: #444;
 }
 
@@ -117,7 +149,10 @@
   animation: fadeIn 0.3s ease;
 }
 
-/* Change background in dark mode if applicable */
+.expanded .suggestionsList {
+  top: 100%;
+}
+
 :global(.dark) .suggestionsList {
   background-color: #24252c;
   border: 1px solid #555;
@@ -147,19 +182,16 @@
   font-size: 0.95rem;
 }
 
-/* Hover Effect for Suggestions */
 .suggestionItem:hover {
   background-color: coral;
   color: #ffffff;
 }
 
-/* Dark Mode Hover Effect */
 :global(.dark) .suggestionItem:hover {
   background-color: coral;
   color: #ffffff;
 }
 
-/* **New Addition: Dark Mode Text Color for Suggestion Items** */
 :global(.dark) .suggestionItem {
   color: #ffffff; /* Set text color to white in dark mode */
 }
@@ -185,4 +217,39 @@
 
 .suggestionsList::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+/* Overlay Styling */
+.overlay {
+  position: fixed;
+  top: 56px; /* Height of the expanded search bar */
+  left: 0;
+  width: 100%;
+  height: calc(100% - 56px);
+  background-color: rgba(0, 0, 0, 0.3); /* Semi-transparent */
+  opacity: 0;
+  animation: fadeInOverlay 0.3s forwards;
+  z-index: 1000; /* Below the expanded search bar */
+}
+
+@keyframes fadeInOverlay {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.overlay.fade-out {
+  animation: fadeOutOverlay 0.3s forwards;
+}
+
+@keyframes fadeOutOverlay {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
