@@ -17,7 +17,7 @@
 }
 
 /* Change header background in dark mode */
-:global(.dark) :local(.header) {
+:global(.dark) .header {
   background-color: #24252c; /* Dark theme background */
 }
 
@@ -38,7 +38,7 @@
 }
 
 /* Icon Paths Styling in Dark Mode */
-:global(.dark) :local(.iconWithBorder) path {
+:global(.dark) .iconWithBorder path {
   fill: #24252c; /* Fill color for dark mode */
   stroke: white; /* Stroke color for dark mode */
 }
@@ -50,7 +50,7 @@
 }
 
 /* Hover Effects for Icons in Dark Mode */
-:global(.dark) :local(.iconWithBorder:hover) path {
+:global(.dark) .iconWithBorder:hover path {
   fill: #3a3a3a; /* Darken fill on hover in dark mode */
   stroke: white; /* Maintain white stroke on hover in dark mode */
 }
