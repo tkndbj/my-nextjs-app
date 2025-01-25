@@ -11,6 +11,7 @@
   position: fixed;
   top: 38px; /* Position it right below the main header */
   z-index: 998; /* Just below the main header */
+  /* box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); */
   transition: background-color 0.3s ease;
 }
 
@@ -23,29 +24,19 @@
 .menu {
   list-style: none;
   display: flex;
-  flex-wrap: nowrap; /* Prevent items from wrapping */
-  justify-content: flex-start; /* Align items to the start */
+  justify-content: space-around;
   width: 100%;
   max-width: 1200px; /* Match navContainer's max-width */
-  padding: 0 8px; /* Add horizontal padding */
+  padding: 0;
   margin: 0;
-  gap: 8px; /* Space between items */
-  overflow-x: auto; /* Enable horizontal scrolling */
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-  scrollbar-width: none; /* Hide scrollbar for Firefox */
   transition: all 0.3s ease;
-}
-
-/* Hide scrollbar for WebKit browsers */
-.menu::-webkit-scrollbar {
-  display: none;
 }
 
 /* Menu Item Styling */
 .menuItem {
-  flex: 0 0 auto; /* Prevent flex items from growing or shrinking */
-  min-width: 100px; /* Ensure items have a minimum width */
+  flex: 1;
   text-align: center;
+  min-width: 100px; /* Ensure items have a minimum width */
 }
 
 /* Link Styling */
@@ -57,11 +48,9 @@
   display: block;
   height: 100%;
   line-height: 38px; /* Vertically center the text */
-  overflow: hidden; /* Prevent text from overflowing */
-  text-overflow: ellipsis; /* Show ellipsis for overflowed text */
-  white-space: nowrap; /* Prevent text from wrapping */
 }
 
+/* Link Styling in Dark Mode */
 :global(.dark) .link {
   color: #ffffff; /* White text in dark mode */
 }
@@ -77,13 +66,29 @@
 }
 
 /* Responsive Adjustments */
-@media (max-width: 1200px) {
-  /* Increased max-width to cover more devices */
+@media (max-width: 768px) {
+  .secondHeader {
+    top: 38px; /* Ensure it stays below the main header */
+  }
+
   .menu {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 0 8px; /* Reduced horizontal padding */
+    gap: 8px; /* Reduced space between items */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    scrollbar-width: none; /* Hide scrollbar for Firefox */
     justify-content: flex-start; /* Align items to the start */
   }
 
+  /* Hide scrollbar for WebKit browsers */
+  .menu::-webkit-scrollbar {
+    display: none;
+  }
+
   .menuItem {
-    flex: 0 0 100px; /* Fixed width to ensure equal spacing */
+    flex: none; /* Prevent items from shrinking */
+    min-width: 100px; /* Adjust as needed */
   }
 }
