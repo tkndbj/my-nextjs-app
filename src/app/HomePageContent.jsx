@@ -6,6 +6,7 @@ import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
 import ProductCard from "./components/ProductCard";
 import Categories from "./components/Categories";
 import SecondHeader from "./components/SecondHeader"; // Import the SecondHeader component
+import SearchBar from "./components/SearchBar"; // Import the SearchBar component
 import { useMarket } from "../../context/MarketContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import styles from "./components/HomePageContent.module.css"; // Import the CSS module
@@ -121,9 +122,12 @@ export default function HomePageContent() {
       {/* Second Header */}
       <SecondHeader />
 
+      {/* Search Bar */}
+      <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+
       {/* Categories Section */}
-      <div className="w-full" style={{ marginTop: "76px" }}>
-        {/* Adjust margin to account for both headers */}
+      <div className="w-full" style={{ marginTop: "114px" }}>
+        {/* Adjust margin to account for Header (38px), SecondHeader (38px), and SearchBar (38px) */}
         <div className="max-w-7xl mx-auto overflow-hidden">
           <Categories
             selectedCategory={selectedCategory}
