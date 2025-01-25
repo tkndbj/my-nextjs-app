@@ -121,7 +121,7 @@ export default function HomePageContent() {
     <>
       {/* Categories Section */}
       <div className="w-full">
-        <div className="max-w-7xl mx-auto overflow-hidden px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto overflow-hidden">
           <Categories
             selectedCategory={selectedCategory}
             selectedSubcategory={selectedSubcategory}
