@@ -17,7 +17,7 @@ const SecondHeader = () => {
 
   return (
     <div className={styles.secondHeader}>
-      <ul className={styles.menu}>
+      <ul className={`${styles.menu} no-scrollbar`}>
         {menuItems.map((item) => (
           <li key={item} className={styles.menuItem}>
             <a

@@ -29,12 +29,14 @@
   max-width: 1200px; /* Match navContainer's max-width */
   padding: 0;
   margin: 0;
+  transition: all 0.3s ease;
 }
 
 /* Menu Item Styling */
 .menuItem {
   flex: 1;
   text-align: center;
+  min-width: 100px; /* Ensure items have a minimum width */
 }
 
 /* Link Styling */
@@ -65,13 +67,27 @@
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
+  .secondHeader {
+    top: 38px; /* Ensure it stays below the main header */
+  }
+
   .menu {
-    flex-wrap: wrap;
-    justify-content: center;
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 0 16px; /* Add horizontal padding */
+    gap: 16px; /* Space between items */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    scrollbar-width: none; /* Hide scrollbar for Firefox */
+  }
+
+  /* Hide scrollbar for WebKit browsers */
+  .menu::-webkit-scrollbar {
+    display: none;
   }
 
   .menuItem {
-    flex: none;
-    margin: 0 10px;
+    flex: none; /* Prevent items from shrinking */
+    min-width: 120px; /* Adjust as needed */
   }
 }

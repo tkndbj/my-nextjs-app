@@ -123,7 +123,6 @@ export default function HomePageContent() {
 
       {/* Categories Section */}
       <div className="w-full" style={{ marginTop: "76px" }}>
-        {" "}
         {/* Adjust margin to account for both headers */}
         <div className="max-w-7xl mx-auto overflow-hidden">
           <Categories
