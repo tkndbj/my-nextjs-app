@@ -48,6 +48,9 @@
   display: block;
   height: 100%;
   line-height: 38px; /* Vertically center the text */
+  overflow: hidden; /* Prevent text from overflowing */
+  text-overflow: ellipsis; /* Show ellipsis for overflowed text */
+  white-space: nowrap; /* Prevent text from wrapping */
 }
 
 /* Link Styling in Dark Mode */
@@ -88,7 +91,6 @@
   }
 
   .menuItem {
-    flex: none; /* Prevent items from shrinking */
-    min-width: 100px; /* Adjust as needed */
+    flex: 0 0 100px; /* Fixed width to ensure equal spacing */
   }
 }
