@@ -1,4 +1,4 @@
-/* src/app/login/LoginPage.module.css */
+/* src/app/Login/LoginPage.module.css */
 
 /* (1) Outer container: fill the screen, center content, no scrolling */
 .container {
@@ -8,7 +8,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden; /* no scrolling */
+  overflow: hidden; /* Prevent scrolling */
 }
 
 /* (2) Background video behind everything */
@@ -19,7 +19,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  z-index: -1; /* behind container */
+  z-index: -1; /* Behind container */
 }
 
 /* (3) Desktop default: 400x600 login box centered */
@@ -28,8 +28,10 @@
   width: 400px;
   height: 600px;
   background: transparent;
-  z-index: 2; /* above video */
+  z-index: 2; /* Above video */
   max-width: 90%;
+  border-radius: 12px; /* Optional: Add some rounding for aesthetics */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Add shadow for depth */
 }
 
 /* Common form styles */
@@ -41,6 +43,8 @@
   height: 100%;
   background: white;
   transition: transform 0.7s ease-in-out, opacity 0.7s ease-in-out;
+  border-radius: 12px; /* Match loginContainer */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Add shadow */
 }
 
 /* Sign In Form Styles */
@@ -91,6 +95,8 @@
   text-align: center;
   padding: 20px;
   border-radius: 8px;
+  background: #f9f9f9; /* Optional: Slight background for readability */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Add shadow */
 }
 
 /* Spinner */
@@ -110,7 +116,9 @@
 }
 
 /* (4) MOBILE OVERRIDE: Full-bleed login box, no scroll */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+  /* Update breakpoint to match MOBILE_BREAKPOINT (768px) */
+
   /* Force .loginContainer to fill entire screen */
   .loginContainer {
     width: 100vw;
@@ -121,11 +129,33 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    background: white; /* Ensure background is white since video is removed */
+    border-radius: 0; /* Remove border-radius for full screen */
+    box-shadow: none; /* Remove shadow for full screen */
   }
 
   /* The form also fills its container so no scrolling is needed */
   .form {
     width: 100%;
     height: 100%;
+    border-radius: 0; /* Remove border-radius for full screen */
+    box-shadow: none; /* Remove shadow for full screen */
+  }
+
+  /* Optional: Adjust text sizes and padding for better mobile experience */
+  .form form {
+    padding: 20px;
+  }
+
+  .form h1 {
+    font-size: 1.5rem;
+  }
+
+  .form input {
+    padding: 12px;
+  }
+
+  .form button {
+    padding: 12px;
   }
 }

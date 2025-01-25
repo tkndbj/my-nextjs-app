@@ -3,6 +3,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import useWindowWidth from "../../hooks/useWindowWidth"; // Adjust the path if necessary
+import { MOBILE_BREAKPOINT } from "../constants/breakpoints"; // Adjust the path if necessary
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -18,6 +20,10 @@ import styles from "./LoginPage.module.css";
 import { doc, setDoc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 
 export default function LoginPage() {
+  // Utilize the useWindowWidth hook to get the current window width
+  const windowWidth = useWindowWidth();
+  const isMobile = windowWidth !== undefined && windowWidth < MOBILE_BREAKPOINT;
+
   const [isRegisterActive, setIsRegisterActive] = useState(false);
   const router = useRouter();
 
@@ -167,6 +173,7 @@ export default function LoginPage() {
       setRegistrationSuccess(true);
     } catch (error) {
       setError(error.message);
+      setIsLoading(false); // Ensure loading is stopped on error
     }
   };
 
@@ -195,6 +202,7 @@ export default function LoginPage() {
     } catch (error) {
       console.error("Error saving user data: ", error);
       setError("Failed to save user data.");
+      setIsLoading(false); // Ensure loading is stopped on error
     }
   };
 
@@ -237,16 +245,19 @@ export default function LoginPage() {
 
   return (
     <div className={styles.container}>
-      <video
-        autoPlay
-        loop
-        muted
-        className={styles.backgroundVideo}
-        src="/video1.mp4"
-        type="video/mp4"
-        tabIndex={-1} // Prevents video from being focusable
-        aria-hidden="true" // Hides video from assistive technologies
-      />
+      {/* Conditionally render the background video only on desktop devices */}
+      {!isMobile && (
+        <video
+          autoPlay
+          loop
+          muted
+          className={styles.backgroundVideo}
+          src="/video1.mp4"
+          type="video/mp4"
+          tabIndex={-1} // Prevents video from being focusable
+          aria-hidden="true" // Hides video from assistive technologies
+        />
+      )}
       <div id="container" className={styles.loginContainer}>
         {/* Login Form */}
         <div
@@ -391,12 +402,16 @@ export default function LoginPage() {
               onChange={(e) => setRegisterRePassword(e.target.value)}
               required
             />
-            <button
-              type="submit"
-              className="bg-[#512da8] text-white text-xs font-semibold uppercase mt-3 px-6 py-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[#512da8]"
-            >
-              Sign Up
-            </button>
+            {isLoading ? (
+              <div className={styles.spinner}></div>
+            ) : (
+              <button
+                type="submit"
+                className="bg-[#512da8] text-white text-xs font-semibold uppercase mt-3 px-6 py-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[#512da8]"
+              >
+                Sign Up
+              </button>
+            )}
             <button
               type="button"
               onClick={handleBackToLogin}
