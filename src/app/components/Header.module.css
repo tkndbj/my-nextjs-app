@@ -1,9 +1,8 @@
 /* src/app/components/Header.module.css */
 
-/* Header Styling */
 .header {
   width: 100%;
-  background-color: #ffffff;
+  background-color: #000;
   color: #fff;
   display: flex;
   justify-content: center;
@@ -11,58 +10,16 @@
   top: 0;
   z-index: 999;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  height: 38px; /* Fixed height */
+  height: 35px; /* Added fixed height */
   align-items: center; /* Vertically center content */
-  transition: background-color 0.3s ease;
 }
 
-/* Change header background in dark mode */
-:global(.dark) .header {
-  background-color: #24252c; /* Dark theme background */
-}
-
-/* Icon Styling */
-.iconWithBorder {
-  transition: fill 0.3s ease, stroke 0.3s ease;
-  fill: currentColor;
-  stroke: currentColor;
-  font-size: 1.5rem; /* Increased icon size */
-}
-
-/* Icon Paths Styling in Light Mode */
-.iconWithBorder path {
-  fill: white;
-  stroke: black;
-  stroke-width: 1px;
-  transition: fill 0.3s ease, stroke 0.3s ease;
-}
-
-/* Icon Paths Styling in Dark Mode */
-:global(.dark) .iconWithBorder path {
-  fill: #24252c; /* Fill color for dark mode */
-  stroke: white; /* Stroke color for dark mode */
-}
-
-/* Hover Effects for Icons in Light Mode */
-.iconWithBorder:hover path {
-  fill: #f0f0f0; /* Lighten fill on hover in light mode */
-  stroke: #333; /* Darken stroke on hover in light mode */
-}
-
-/* Hover Effects for Icons in Dark Mode */
-:global(.dark) .iconWithBorder:hover path {
-  fill: #3a3a3a; /* Darken fill on hover in dark mode */
-  stroke: white; /* Maintain white stroke on hover in dark mode */
-}
-
-/* Scrolled Header Styling */
 .header.scrolled {
   background-color: rgba(0, 0, 0, 0.8); /* Slightly transparent */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Stronger shadow */
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Navigation Container */
 .navContainer {
   max-width: 1200px;
   width: 100%;
@@ -73,12 +30,10 @@
   position: relative;
 }
 
-/* Left Container */
 .leftContainer {
   flex: 0 0 auto;
 }
 
-/* Logo Styling */
 .logo {
   font-weight: bold;
   font-size: 1.2rem;
@@ -86,7 +41,6 @@
   text-decoration: none;
 }
 
-/* Search Container */
 .searchContainer {
   flex: 1 1 auto;
   display: flex;
@@ -95,12 +49,12 @@
   position: relative; /* Ensure the autocomplete panel is positioned correctly */
 }
 
-/* Search Input Styling */
+/* Apply styles to the input rendered by Autocomplete */
 .searchInput {
   width: 100%;
   max-width: 400px;
   padding: 8px 16px;
-  border-radius: 999px; /* Pill shape */
+  border-radius: 999px; /* pill shape */
   border: 1px solid #444;
   background-color: #222;
   color: #fff;
@@ -108,7 +62,7 @@
   font-size: 0.9rem;
 }
 
-/* Hide Default Autocomplete UI */
+/* Hide any default autocomplete UI to prevent conflicts */
 .autocomplete-wrapper input {
   border: none;
   outline: none;
@@ -185,7 +139,7 @@
   margin-right: 8px;
 }
 
-/* Badge for Counters */
+/* Badge for counters */
 .badge {
   position: absolute;
   top: -2px; /* Adjust as needed */
@@ -198,7 +152,7 @@
   line-height: 1;
 }
 
-/* Adjust Autocomplete Panel Styles */
+/* Adjust autocomplete panel styles if needed */
 .autocomplete-item {
   display: flex;
   align-items: center;
@@ -208,7 +162,6 @@
   color: #333;
 }
 
-/* Autocomplete Item Hover Effect */
 .autocomplete-item:hover {
   background-color: #f0f0f0;
 }
@@ -231,7 +184,7 @@
   margin-right: 8px;
 }
 
-/* Label (Hidden) */
+/* Label */
 .aa-Label {
   display: none; /* Hide label visually if not needed */
 }
@@ -246,7 +199,7 @@
   margin-left: 8px;
 }
 
-/* Clear Button Styling */
+/* Clear Button */
 .aa-ClearButton {
   background: none;
   border: none;
@@ -255,7 +208,6 @@
   font-size: 1rem;
 }
 
-/* Clear Button Hover Effect */
 .aa-ClearButton:hover {
   color: #fff;
 }
@@ -274,7 +226,7 @@
   overflow-y: auto;
 }
 
-/* Stalled Panel Styling */
+/* Stalled Panel */
 .aa-Panel--stalled {
   opacity: 0.5;
 }
@@ -292,7 +244,6 @@
   cursor: pointer;
 }
 
-/* Autocomplete Item Specific Styling */
 .autocomplete-item {
   color: #fff; /* Match header's text color */
   text-decoration: none;
@@ -300,12 +251,11 @@
   width: 100%;
 }
 
-/* Autocomplete Item Hover Effect */
 .autocomplete-item:hover {
   background-color: #333; /* Darker shade on hover */
 }
 
-/* No Results Styling */
+/* No Results */
 .autocomplete-no-results {
   padding: 8px 16px;
   color: #aaa;
@@ -320,7 +270,7 @@
 
 /* Mobile Styles - Portrait */
 @media (max-width: 768px) and (orientation: portrait) {
-  /* Adjusted breakpoint from 640px to 768px */
+  /* Changed from 640px to 768px */
   .header {
     padding: 0;
   }
@@ -358,7 +308,7 @@
 
 /* Mobile Styles - Landscape */
 @media (max-width: 768px) and (orientation: landscape) {
-  /* Adjusted breakpoint from 1024px to 768px to match portrait mobile */
+  /* Changed from 1024px to 768px to match portrait mobile */
   .header {
     padding: 0;
   }
