@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import styles from "./SecondHeader.module.css";
 
 const SecondHeader = () => {
@@ -15,9 +15,17 @@ const SecondHeader = () => {
     "Electronics",
   ];
 
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    if (menuRef.current) {
+      menuRef.current.scrollLeft = 0;
+    }
+  }, []);
+
   return (
     <div className={styles.secondHeader}>
-      <ul className={`${styles.menu} no-scrollbar`}>
+      <ul className={`${styles.menu} no-scrollbar`} ref={menuRef}>
         {menuItems.map((item) => (
           <li key={item} className={styles.menuItem}>
             <a

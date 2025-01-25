@@ -75,10 +75,11 @@
     display: flex;
     flex-direction: row;
     overflow-x: auto;
-    padding: 0 16px; /* Add horizontal padding */
-    gap: 16px; /* Space between items */
+    padding: 0 8px; /* Reduced horizontal padding */
+    gap: 8px; /* Reduced space between items */
     -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
     scrollbar-width: none; /* Hide scrollbar for Firefox */
+    justify-content: flex-start; /* Align items to the start */
   }
 
   /* Hide scrollbar for WebKit browsers */
@@ -88,6 +89,6 @@
 
   .menuItem {
     flex: none; /* Prevent items from shrinking */
-    min-width: 120px; /* Adjust as needed */
+    min-width: 100px; /* Adjust as needed */
   }
 }
