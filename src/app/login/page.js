@@ -8,17 +8,15 @@ import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
   updateProfile,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from "firebase/auth";
-import { auth, db } from "../../../lib/firebase"; // Correct import
+import { auth, db } from "../../../lib/firebase"; // Ensure messaging is initialized in your Firebase config
 import { useRouter } from "next/navigation";
-import {
-  FaGooglePlusG,
-  FaFacebookF,
-  FaGithub,
-  FaLinkedinIn,
-} from "react-icons/fa";
+import { FaGooglePlusG } from "react-icons/fa"; // Only Google icon is needed
 import styles from "./LoginPage.module.css";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
+import { getToken } from "firebase/messaging";
 
 export default function LoginPage() {
   const [isRegisterActive, setIsRegisterActive] = useState(false);
@@ -54,7 +52,7 @@ export default function LoginPage() {
           await user.reload();
           if (user.emailVerified) {
             clearInterval(interval);
-            router.push("/Subscription"); // Redirect to Subscription after verification
+            router.push("/"); // Redirect to Home after verification
           }
         }
       }, 3000); // Check every 3 seconds
@@ -78,23 +76,27 @@ export default function LoginPage() {
     setError("");
     setIsLoading(true); // Start loading
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        loginEmail,
+        loginPassword
+      );
       const user = userCredential.user;
-      
+
       // Reload user to ensure we have the latest emailVerified status
       await user.reload();
-      
+
       // Fetch user data from Firestore
       const userDocRef = doc(db, "users", user.uid);
       const userDocSnap = await getDoc(userDocRef);
       let isNewUser = false;
       let userData = {};
-  
+
       if (userDocSnap.exists()) {
         userData = userDocSnap.data();
         isNewUser = userData.isNew === true;
       }
-  
+
       // If user is new and not verified
       if (!user.emailVerified && isNewUser) {
         await auth.signOut();
@@ -102,19 +104,14 @@ export default function LoginPage() {
         setIsLoading(false); // Stop loading on error
         return;
       }
-  
+
       // If user is verified or is not new (old user)
       if (user.emailVerified || !isNewUser) {
-        // Check if the user has a subscription plan
-        const subscriptionPlan = userData.subscriptionPlan;
-  
-        if (!subscriptionPlan) {
-          // No subscription plan => Navigate to Subscription page
-          router.push("/Subscription");
-        } else {
-          // Has subscription plan => Navigate to Home page
-          router.push("/");
-        }
+        // Add FCM Token
+        await addFcmTokenToUser(user.uid);
+
+        // Redirect to Home page
+        router.push("/");
       } else {
         // If user is old and still not verified (uncommon scenario)
         setError("Please verify your email to continue.");
@@ -188,7 +185,7 @@ export default function LoginPage() {
           phoneNumber: registerPhone.trim(),
           accountType: "Bireysel", // Adjust as needed
           isNew: true,
-          // Add any other fields to align with your Flutter Firestore structure
+          // Add any other fields to align with your Firestore structure
         },
         { merge: true }
       );
@@ -202,6 +199,66 @@ export default function LoginPage() {
     } catch (error) {
       console.error("Error saving user data: ", error);
       setError("Failed to save user data.");
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setError("");
+    setIsLoading(true);
+    const provider = new GoogleAuthProvider();
+
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // Check if user exists in Firestore
+      const userDocRef = doc(db, "users", user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (!userDocSnap.exists()) {
+        // New user, save data
+        await setDoc(
+          userDocRef,
+          {
+            displayName: user.displayName || "",
+            email: user.email || "",
+            isNew: true,
+            // Add other necessary fields as per your Flutter app
+          },
+          { merge: true }
+        );
+      }
+
+      // Add FCM Token
+      await addFcmTokenToUser(user.uid);
+
+      // Redirect to Home
+      router.push("/");
+    } catch (error) {
+      console.error("Google Sign-In Error:", error);
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const addFcmTokenToUser = async (userId) => {
+    try {
+      const currentToken = await getToken(messaging, {
+        vapidKey: "YOUR_PUBLIC_VAPID_KEY",
+      }); // Replace with your VAPID key
+
+      if (currentToken) {
+        const userDocRef = doc(db, "users", userId);
+        await updateDoc(userDocRef, {
+          fcmTokens: arrayUnion(currentToken),
+        });
+        console.log("FCM token added to user document.");
+      } else {
+        console.log("No FCM token available.");
+      }
+    } catch (error) {
+      console.error("Error adding FCM token to user:", error);
     }
   };
 
@@ -228,38 +285,22 @@ export default function LoginPage() {
           >
             <h1 className="text-xl font-semibold text-black">Sign In</h1>
             <div className="social-icons my-5">
-              {/* Social icons */}
-              <a
-                href="#"
-                className="icon border border-[#ccc] rounded-[20%] inline-flex items-center justify-center mx-1 w-[40px] h-[40px] transition-all hover:scale-125 hover:border-black"
+              {/* Google Icon with Text */}
+              <button
+                type="button"
+                onClick={handleGoogleSignIn}
+                className="flex items-center justify-center border border-[#ccc] rounded-lg px-4 py-2 bg-white w-full transition-all hover:bg-gray-100"
               >
-                <FaGooglePlusG className="text-black" />
-              </a>
-              <a
-                href="#"
-                className="icon border border-[#ccc] rounded-[20%] inline-flex items-center justify-center mx-1 w-[40px] h-[40px] transition-all hover:scale-125 hover:border-black"
-              >
-                <FaFacebookF className="text-black" />
-              </a>
-              <a
-                href="#"
-                className="icon border border-[#ccc] rounded-[20%] inline-flex items-center justify-center mx-1 w-[40px] h-[40px] transition-all hover:scale-125 hover:border-black"
-              >
-                <FaGithub className="text-black" />
-              </a>
-              <a
-                href="#"
-                className="icon border border-[#ccc] rounded-[20%] inline-flex items-center justify-center mx-1 w-[40px] h-[40px] transition-all hover:scale-125 hover:border-black"
-              >
-                <FaLinkedinIn className="text-black" />
-              </a>
+                <FaGooglePlusG className="text-black mr-2" />
+                <span className="text-black font-semibold">
+                  Sign in with Google
+                </span>
+              </button>
             </div>
             <span className="text-sm text-gray-800">
               or use your email and password
             </span>
-            {error && (
-              <div className="text-red-500 text-sm mt-2">{error}</div>
-            )}
+            {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
             <input
               type="email"
               placeholder="Email"
@@ -284,7 +325,7 @@ export default function LoginPage() {
             ) : (
               <button
                 type="submit"
-                className="bg-[#512da8] text-white text-xs font-semibold uppercase mt-3 px-6 py-2 rounded-lg"
+                className="bg-[#512da8] text-white text-xs font-semibold uppercase mt-3 px-6 py-2 rounded-lg w-full"
               >
                 Sign In
               </button>
@@ -292,9 +333,9 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={handleRegisterClick}
-              className="text-[13px] mt-3 text-gray-700 underline"
+              className="text-[13px] mt-3 text-gray-700 underline w-full text-left"
             >
-              Don't have an account?
+              Dont have an account?
             </button>
           </form>
         </div>
@@ -309,42 +350,24 @@ export default function LoginPage() {
             onSubmit={handleSignUp}
             className="flex flex-col items-center justify-center h-full px-10 bg-white"
           >
-            <h1 className="text-xl font-semibold text-black">
-              Create Account
-            </h1>
+            <h1 className="text-xl font-semibold text-black">Create Account</h1>
             <div className="social-icons my-5">
-              {/* Social icons */}
-              <a
-                href="#"
-                className="icon border border-[#ccc] rounded-[20%] inline-flex items-center justify-center mx-1 w-[40px] h-[40px] transition-all hover:scale-125 hover:border-black"
+              {/* Google Icon with Text */}
+              <button
+                type="button"
+                onClick={handleGoogleSignIn}
+                className="flex items-center justify-center border border-[#ccc] rounded-lg px-4 py-2 bg-white w-full transition-all hover:bg-gray-100"
               >
-                <FaGooglePlusG className="text-black" />
-              </a>
-              <a
-                href="#"
-                className="icon border border-[#ccc] rounded-[20%] inline-flex items-center justify-center mx-1 w-[40px] h-[40px] transition-all hover:scale-125 hover:border-black"
-              >
-                <FaFacebookF className="text-black" />
-              </a>
-              <a
-                href="#"
-                className="icon border border-[#ccc] rounded-[20%] inline-flex items-center justify-center mx-1 w-[40px] h-[40px] transition-all hover:scale-125 hover:border-black"
-              >
-                <FaGithub className="text-black" />
-              </a>
-              <a
-                href="#"
-                className="icon border border-[#ccc] rounded-[20%] inline-flex items-center justify-center mx-1 w-[40px] h-[40px] transition-all hover:scale-125 hover:border-black"
-              >
-                <FaLinkedinIn className="text-black" />
-              </a>
+                <FaGooglePlusG className="text-black mr-2" />
+                <span className="text-black font-semibold">
+                  Sign up with Google
+                </span>
+              </button>
             </div>
             <span className="text-sm text-gray-800">
               or use your email for registration
             </span>
-            {error && (
-              <div className="text-red-500 text-sm mt-2">{error}</div>
-            )}
+            {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
             <input
               type="text"
               placeholder="Name"
@@ -395,14 +418,14 @@ export default function LoginPage() {
             />
             <button
               type="submit"
-              className="bg-[#512da8] text-white text-xs font-semibold uppercase mt-3 px-6 py-2 rounded-lg"
+              className="bg-[#512da8] text-white text-xs font-semibold uppercase mt-3 px-6 py-2 rounded-lg w-full"
             >
               Sign Up
             </button>
             <button
               type="button"
               onClick={handleBackToLogin}
-              className="text-[13px] mt-3 text-gray-700 underline"
+              className="text-[13px] mt-3 text-gray-700 underline w-full text-left"
             >
               Back to Login
             </button>
@@ -421,8 +444,7 @@ export default function LoginPage() {
                 address.
               </p>
               <p className="text-sm text-gray-800 mt-2">
-                After verification, you will be redirected to the subscription
-                page.
+                After verification, you will be redirected to the home page.
               </p>
             </div>
           </div>
