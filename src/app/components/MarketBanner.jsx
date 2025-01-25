@@ -46,7 +46,8 @@ export default function MarketBanner() {
   if (banners.length === 0) {
     return (
       <div className="my-6 flex justify-center items-center h-40 sm:h-56 md:h-72">
-        <div className="loader">Loading...</div> {/* Implement a loader as needed */}
+        <div className="loader">Loading...</div>{" "}
+        {/* Implement a loader as needed */}
       </div>
     );
   }
@@ -67,23 +68,32 @@ export default function MarketBanner() {
   };
 
   return (
-    <div className="my-6">
+    <div className="my-6 overflow-hidden">
       <Slider {...settings}>
         {banners.map((banner, index) => (
-          <div key={banner.id} className="relative w-full h-40 sm:h-56 md:h-72">
+          <div
+            key={banner.id}
+            className="relative w-full h-40 sm:h-56 md:h-72 overflow-hidden"
+          >
             {banner.link ? (
-              <Link href={banner.link}>
-                <a aria-label={`Navigate to ${banner.title || "Market Banner"}`}>
+              <Link href={banner.link} passHref>
+                <div
+                  role="link"
+                  aria-label={`Navigate to ${banner.title || "Market Banner"}`}
+                  className="cursor-pointer"
+                >
                   {banner.imageUrl ? (
                     <Image
                       src={banner.imageUrl}
                       alt={banner.title || "Market Banner"}
-                      fill
+                      layout="responsive"
+                      width={1600} // Adjust based on your design
+                      height={400} // Adjust based on your design
                       sizes="(max-width: 640px) 100vw, 
-                             (max-width: 768px) 50vw, 
-                             (max-width: 1024px) 33vw, 
-                             25vw"
-                      className="object-cover rounded-lg" // Replaces objectFit
+                             (max-width: 768px) 100vw, 
+                             (max-width: 1024px) 100vw, 
+                             100vw"
+                      className="object-cover rounded-lg"
                       priority={index === 0} // Only the first image has priority
                       loading={index === 0 ? "eager" : "lazy"} // Conditional loading
                     />
@@ -92,20 +102,22 @@ export default function MarketBanner() {
                       <span className="text-gray-500">No Image Available</span>
                     </div>
                   )}
-                </a>
+                </div>
               </Link>
             ) : (
-              <>
+              <div>
                 {banner.imageUrl ? (
                   <Image
                     src={banner.imageUrl}
                     alt={banner.title || "Market Banner"}
-                    fill
+                    layout="responsive"
+                    width={1600} // Adjust based on your design
+                    height={400} // Adjust based on your design
                     sizes="(max-width: 640px) 100vw, 
-                           (max-width: 768px) 50vw, 
-                           (max-width: 1024px) 33vw, 
-                           25vw"
-                    className="object-cover rounded-lg" // Replaces objectFit
+                           (max-width: 768px) 100vw, 
+                           (max-width: 1024px) 100vw, 
+                           100vw"
+                    className="object-cover rounded-lg"
                     priority={index === 0} // Only the first image has priority
                     loading={index === 0 ? "eager" : "lazy"} // Conditional loading
                   />
@@ -114,7 +126,7 @@ export default function MarketBanner() {
                     <span className="text-gray-500">No Image Available</span>
                   </div>
                 )}
-              </>
+              </div>
             )}
           </div>
         ))}

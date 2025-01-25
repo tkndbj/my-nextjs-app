@@ -9,12 +9,12 @@ import { useRouter } from "next/navigation";
 import styles from "./Header.module.css";
 
 import {
-  FaBars,
-  FaBell,
-  FaEnvelope,
-  FaHeart,
-  FaShoppingCart,
-} from "react-icons/fa";
+  TbMenu, // Replaces FaBars
+  TbBell, // Replaces FaBell
+  TbMail, // Replaces FaEnvelope
+  TbHeart, // Replaces FaHeart
+  TbShoppingCart, // Replaces FaShoppingCart
+} from "react-icons/tb";
 
 import FavoritesWindow from "./FavoritesWindow";
 import CartWindow from "./CartWindow";
@@ -103,34 +103,30 @@ export default function Header() {
         <div className="flex items-center space-x-5">
           <button
             onClick={toggleSidebar}
-            className="text-white text-2xl"
+            className="text-2xl" // Removed 'text-white'
             aria-label="Toggle Sidebar"
           >
-            <FaBars />
+            <TbMenu className={styles.iconWithBorder} />
           </button>
 
           <button
             onClick={handleNotificationsClick}
-            className={`text-xl ${
-              showNotifications ? "text-[#00A86B]" : "text-white"
-            }`}
+            className="text-xl" // Removed conditional text color
             aria-label="Notifications"
           >
-            <FaBell />
+            <TbBell className={styles.iconWithBorder} />
           </button>
 
           <button
             onClick={handleMessagesClick}
-            className={`text-xl ${
-              showMessages ? "text-[#00A86B]" : "text-white"
-            }`}
+            className="text-xl" // Removed conditional text color
             aria-label="Messages"
           >
-            <FaEnvelope />
+            <TbMail className={styles.iconWithBorder} />
           </button>
         </div>
 
-        {/* CENTER: Ada Express (no extra negative margin) */}
+        {/* CENTER: Ada Express */}
         <div className="flex-1 flex justify-center">
           <h1
             className="text-lg font-bold bg-clip-text text-transparent
@@ -140,14 +136,14 @@ export default function Header() {
           </h1>
         </div>
 
-        {/* RIGHT GROUP: Favorites, Cart (slightly more left so not off-screen) */}
+        {/* RIGHT GROUP: Favorites, Cart */}
         <div className="flex items-center space-x-5 mr-2">
           <button
             onClick={handleFavoritesClick}
-            className="text-xl text-white relative"
+            className="relative" // Removed 'text-xl text-white'
             title="Favorites"
           >
-            <FaHeart />
+            <TbHeart className={styles.iconWithBorder} />
             {favoritesCount > 0 && (
               <span className={styles.badge}>{favoritesCount}</span>
             )}
@@ -161,10 +157,10 @@ export default function Header() {
 
           <button
             onClick={handleCartClick}
-            className="text-xl text-white relative"
+            className="relative" // Removed 'text-xl text-white'
             title="Cart"
           >
-            <FaShoppingCart />
+            <TbShoppingCart className={styles.iconWithBorder} />
             {cartCount > 0 && <span className={styles.badge}>{cartCount}</span>}
           </button>
           {showCart && (
@@ -175,12 +171,10 @@ export default function Header() {
 
       {/* DESKTOP SECTION (md+) */}
       <div className="hidden md:flex items-center w-full py-2 px-4 relative">
-        {/* Approach: use 3 sections for perfect centering */}
-
         {/* LEFT spacer (could remain empty) */}
         <div className="flex-1"></div>
 
-        {/* CENTER: Ada Express (exact center horizontally) */}
+        {/* CENTER: Ada Express */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           <h1
             className="text-xl font-bold bg-clip-text text-transparent 
@@ -190,14 +184,14 @@ export default function Header() {
           </h1>
         </div>
 
-        {/* RIGHT: Favorites + Cart with some spacing */}
+        {/* RIGHT: Favorites + Cart */}
         <div className="ml-auto flex items-center space-x-8">
           <button
             onClick={handleFavoritesClick}
-            className="text-xl text-white relative"
+            className="relative" // Removed 'text-xl text-white'
             title="Favorites"
           >
-            <FaHeart />
+            <TbHeart className={styles.iconWithBorder} />
             {favoritesCount > 0 && (
               <span className={styles.badge}>{favoritesCount}</span>
             )}
@@ -211,10 +205,10 @@ export default function Header() {
 
           <button
             onClick={handleCartClick}
-            className="text-xl text-white relative"
+            className="relative" // Removed 'text-xl text-white'
             title="Cart"
           >
-            <FaShoppingCart />
+            <TbShoppingCart className={styles.iconWithBorder} />
             {cartCount > 0 && <span className={styles.badge}>{cartCount}</span>}
           </button>
           {showCart && (
