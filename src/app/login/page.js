@@ -11,12 +11,11 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
-import { auth, db } from "../../../lib/firebase"; // Ensure messaging is initialized in your Firebase config
+import { auth, db } from "../../../lib/firebase"; // Ensure messaging is removed from firebase config
 import { useRouter } from "next/navigation";
 import { FaGooglePlusG } from "react-icons/fa"; // Only Google icon is needed
 import styles from "./LoginPage.module.css";
 import { doc, setDoc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
-import { getToken } from "firebase/messaging";
 
 export default function LoginPage() {
   const [isRegisterActive, setIsRegisterActive] = useState(false);
@@ -107,9 +106,6 @@ export default function LoginPage() {
 
       // If user is verified or is not new (old user)
       if (user.emailVerified || !isNewUser) {
-        // Add FCM Token
-        await addFcmTokenToUser(user.uid);
-
         // Redirect to Home page
         router.push("/");
       } else {
@@ -229,9 +225,6 @@ export default function LoginPage() {
         );
       }
 
-      // Add FCM Token
-      await addFcmTokenToUser(user.uid);
-
       // Redirect to Home
       router.push("/");
     } catch (error) {
@@ -239,26 +232,6 @@ export default function LoginPage() {
       setError(error.message);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const addFcmTokenToUser = async (userId) => {
-    try {
-      const currentToken = await getToken(messaging, {
-        vapidKey: "YOUR_PUBLIC_VAPID_KEY",
-      }); // Replace with your VAPID key
-
-      if (currentToken) {
-        const userDocRef = doc(db, "users", userId);
-        await updateDoc(userDocRef, {
-          fcmTokens: arrayUnion(currentToken),
-        });
-        console.log("FCM token added to user document.");
-      } else {
-        console.log("No FCM token available.");
-      }
-    } catch (error) {
-      console.error("Error adding FCM token to user:", error);
     }
   };
 
@@ -271,6 +244,8 @@ export default function LoginPage() {
         className={styles.backgroundVideo}
         src="/video1.mp4"
         type="video/mp4"
+        tabIndex={-1} // Prevents video from being focusable
+        aria-hidden="true" // Hides video from assistive technologies
       />
       <div id="container" className={styles.loginContainer}>
         {/* Login Form */}
@@ -289,7 +264,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
-                className="flex items-center justify-center border border-[#ccc] rounded-lg px-4 py-2 bg-white w-full transition-all hover:bg-gray-100"
+                className="flex items-center justify-center border border-[#ccc] rounded-lg px-4 py-2 bg-white w-full transition-all hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#512da8]"
               >
                 <FaGooglePlusG className="text-black mr-2" />
                 <span className="text-black font-semibold">
@@ -304,7 +279,7 @@ export default function LoginPage() {
             <input
               type="email"
               placeholder="Email"
-              className="bg-[#eee] rounded-lg p-3 text-sm w-full mt-2"
+              className="bg-[#eee] rounded-lg p-3 text-sm w-full mt-2 text-base"
               value={loginEmail}
               onChange={(e) => setLoginEmail(e.target.value)}
               required
@@ -312,7 +287,7 @@ export default function LoginPage() {
             <input
               type="password"
               placeholder="Password"
-              className="bg-[#eee] rounded-lg p-3 text-sm w-full mt-2"
+              className="bg-[#eee] rounded-lg p-3 text-sm w-full mt-2 text-base"
               value={loginPassword}
               onChange={(e) => setLoginPassword(e.target.value)}
               required
@@ -325,7 +300,7 @@ export default function LoginPage() {
             ) : (
               <button
                 type="submit"
-                className="bg-[#512da8] text-white text-xs font-semibold uppercase mt-3 px-6 py-2 rounded-lg w-full"
+                className="bg-[#512da8] text-white text-xs font-semibold uppercase mt-3 px-6 py-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[#512da8]"
               >
                 Sign In
               </button>
@@ -356,7 +331,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
-                className="flex items-center justify-center border border-[#ccc] rounded-lg px-4 py-2 bg-white w-full transition-all hover:bg-gray-100"
+                className="flex items-center justify-center border border-[#ccc] rounded-lg px-4 py-2 bg-white w-full transition-all hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#512da8]"
               >
                 <FaGooglePlusG className="text-black mr-2" />
                 <span className="text-black font-semibold">
@@ -371,7 +346,7 @@ export default function LoginPage() {
             <input
               type="text"
               placeholder="Name"
-              className="bg-[#eee] rounded-lg p-3 text-sm w-full mt-2"
+              className="bg-[#eee] rounded-lg p-3 text-sm w-full mt-2 text-base"
               value={registerName}
               onChange={(e) => setRegisterName(e.target.value)}
               required
@@ -379,7 +354,7 @@ export default function LoginPage() {
             <input
               type="text"
               placeholder="Surname"
-              className="bg-[#eee] rounded-lg p-3 text-sm w-full mt-2"
+              className="bg-[#eee] rounded-lg p-3 text-sm w-full mt-2 text-base"
               value={registerSurname}
               onChange={(e) => setRegisterSurname(e.target.value)}
               required
@@ -387,7 +362,7 @@ export default function LoginPage() {
             <input
               type="tel"
               placeholder="Phone Number"
-              className="bg-[#eee] rounded-lg p-3 text-sm w-full mt-2"
+              className="bg-[#eee] rounded-lg p-3 text-sm w-full mt-2 text-base"
               value={registerPhone}
               onChange={(e) => setRegisterPhone(e.target.value)}
               required
@@ -395,7 +370,7 @@ export default function LoginPage() {
             <input
               type="email"
               placeholder="Email"
-              className="bg-[#eee] rounded-lg p-3 text-sm w-full mt-2"
+              className="bg-[#eee] rounded-lg p-3 text-sm w-full mt-2 text-base"
               value={registerEmail}
               onChange={(e) => setRegisterEmail(e.target.value)}
               required
@@ -403,7 +378,7 @@ export default function LoginPage() {
             <input
               type="password"
               placeholder="Password"
-              className="bg-[#eee] rounded-lg p-3 text-sm w-full mt-2"
+              className="bg-[#eee] rounded-lg p-3 text-sm w-full mt-2 text-base"
               value={registerPassword}
               onChange={(e) => setRegisterPassword(e.target.value)}
               required
@@ -411,14 +386,14 @@ export default function LoginPage() {
             <input
               type="password"
               placeholder="Re-Password"
-              className="bg-[#eee] rounded-lg p-3 text-sm w-full mt-2"
+              className="bg-[#eee] rounded-lg p-3 text-sm w-full mt-2 text-base"
               value={registerRePassword}
               onChange={(e) => setRegisterRePassword(e.target.value)}
               required
             />
             <button
               type="submit"
-              className="bg-[#512da8] text-white text-xs font-semibold uppercase mt-3 px-6 py-2 rounded-lg w-full"
+              className="bg-[#512da8] text-white text-xs font-semibold uppercase mt-3 px-6 py-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[#512da8]"
             >
               Sign Up
             </button>
