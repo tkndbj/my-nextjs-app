@@ -1,5 +1,3 @@
-// src/app/components/HomePageContent.jsx
-
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -7,6 +5,7 @@ import { db } from "../../lib/firebase";
 import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
 import ProductCard from "./components/ProductCard";
 import Categories from "./components/Categories";
+import SecondHeader from "./components/SecondHeader"; // Import the SecondHeader component
 import { useMarket } from "../../context/MarketContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import styles from "./components/HomePageContent.module.css"; // Import the CSS module
@@ -119,8 +118,13 @@ export default function HomePageContent() {
 
   return (
     <>
+      {/* Second Header */}
+      <SecondHeader />
+
       {/* Categories Section */}
-      <div className="w-full">
+      <div className="w-full" style={{ marginTop: "76px" }}>
+        {" "}
+        {/* Adjust margin to account for both headers */}
         <div className="max-w-7xl mx-auto overflow-hidden">
           <Categories
             selectedCategory={selectedCategory}

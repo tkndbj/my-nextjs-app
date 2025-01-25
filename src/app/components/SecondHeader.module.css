@@ -1,0 +1,77 @@
+/* SecondHeader.module.css */
+
+/* Container Styling */
+.secondHeader {
+  width: 100%;
+  height: 38px; /* Match the main header's height */
+  background-color: #ffffff; /* Same background as main header */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 38px; /* Position it right below the main header */
+  z-index: 998; /* Just below the main header */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+}
+
+/* Change background in dark mode if applicable */
+:global(.dark) .secondHeader {
+  background-color: #24252c;
+}
+
+/* Menu Styling */
+.menu {
+  list-style: none;
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  max-width: 1200px; /* Match navContainer's max-width */
+  padding: 0;
+  margin: 0;
+}
+
+/* Menu Item Styling */
+.menuItem {
+  flex: 1;
+  text-align: center;
+}
+
+/* Link Styling */
+.link {
+  color: #333; /* Default text color */
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.2s ease;
+  display: block;
+  height: 100%;
+  line-height: 38px; /* Vertically center the text */
+}
+
+/* Link Styling in Dark Mode */
+:global(.dark) .link {
+  color: #ffffff; /* White text in dark mode */
+}
+
+/* Hover Effect */
+.link:hover {
+  color: coral;
+}
+
+/* Ensure hover works correctly in dark mode */
+:global(.dark) .link:hover {
+  color: coral; /* Retain hover color */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .menu {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .menuItem {
+    flex: none;
+    margin: 0 10px;
+  }
+}
