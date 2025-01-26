@@ -111,22 +111,19 @@ const SearchBar = () => {
             {isSuggestionsLoading && <div className={styles.loader}></div>}
 
             {/* Suggestions inside overlay for mobile */}
-            {isMobile &&
-              isExpanded &&
-              showSuggestions &&
-              suggestions.length > 0 && (
-                <ul className={styles.suggestionsList}>
-                  {suggestions.map((suggestion) => (
-                    <li
-                      key={suggestion.objectID}
-                      className={styles.suggestionItem}
-                      onClick={() => handleSuggestionClick(suggestion)}
-                    >
-                      {suggestion.productName || "No Name Available"}
-                    </li>
-                  ))}
-                </ul>
-              )}
+            {showSuggestions && suggestions.length > 0 && (
+              <ul className={styles.suggestionsList}>
+                {suggestions.map((suggestion) => (
+                  <li
+                    key={suggestion.objectID}
+                    className={styles.suggestionItem}
+                    onClick={() => handleSuggestionClick(suggestion)}
+                  >
+                    {suggestion.productName || "No Name Available"}
+                  </li>
+                ))}
+              </ul>
+            )}
 
             {/* Future components can be rendered here */}
           </div>
@@ -151,7 +148,12 @@ const SearchBar = () => {
         )}
 
         <form className={styles.searchForm} onSubmit={handleSubmit}>
-          <FaSearch className={styles.searchIcon} />
+          {/* Apply the expandedSearchIcon class conditionally */}
+          <FaSearch
+            className={clsx(styles.searchIcon, {
+              [styles.expandedSearchIcon]: isMobile && isExpanded,
+            })}
+          />
           <input
             type="text"
             value={inputQuery}
