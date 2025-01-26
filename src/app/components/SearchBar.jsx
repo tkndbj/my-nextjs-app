@@ -8,6 +8,9 @@ import { FaSearch, FaArrowLeft } from "react-icons/fa"; // Import FaArrowLeft
 import { useMarket } from "../../../context/MarketContext";
 import useIsMobile from "../../hooks/useIsMobile";
 import clsx from "clsx";
+import ProductCard from "./ProductCard"; // Adjust the path if necessary
+import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
+import { db } from "../../../lib/firebase"; // Ensure this path is correct
 
 const SearchBar = () => {
   const {
@@ -20,6 +23,7 @@ const SearchBar = () => {
   } = useMarket();
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [topProducts, setTopProducts] = useState([]); // New state for top products
   const searchInputRef = useRef(null);
   const isMobile = useIsMobile();
 
@@ -90,6 +94,7 @@ const SearchBar = () => {
   useEffect(() => {
     if (isMobile && isExpanded) {
       document.body.style.overflow = "hidden";
+      fetchTopProducts(); // Fetch top products when expanded
     } else {
       document.body.style.overflow = "auto";
     }
@@ -98,6 +103,22 @@ const SearchBar = () => {
       document.body.style.overflow = "auto";
     };
   }, [isMobile, isExpanded]);
+
+  // Function to fetch top 20 products sorted by clickCount descending
+  const fetchTopProducts = async () => {
+    try {
+      const productsRef = collection(db, "products");
+      const q = query(productsRef, orderBy("clickCount", "desc"), limit(20));
+      const querySnapshot = await getDocs(q);
+      const products = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setTopProducts(products);
+    } catch (error) {
+      console.error("Error fetching top products:", error);
+    }
+  };
 
   return (
     <>
@@ -124,6 +145,16 @@ const SearchBar = () => {
                 ))}
               </ul>
             )}
+
+            {/* Most Viewed Products Section */}
+            <div className={styles.mostViewedSection}>
+              <h3 className={styles.mostViewedTitle}>Most Viewed Products</h3>
+              <div className={styles.productCardsContainer}>
+                {topProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            </div>
 
             {/* Future components can be rendered here */}
           </div>

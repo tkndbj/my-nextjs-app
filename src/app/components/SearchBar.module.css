@@ -88,7 +88,7 @@
 }
 
 .expanded .searchIcon {
-  left: 16px; /* Shift to the left to prevent overlapping */
+  left: 16px; /* Shift sufficiently to prevent overlapping */
 }
 
 /* Search Input Styling */
@@ -191,7 +191,7 @@
 }
 
 /* Mobile Overlay Suggestions */
-.overlayContent .mobileSuggestionsList {
+.mobileSuggestionsList {
   position: static; /* Remove absolute positioning */
   transform: none; /* Remove transform */
   width: 100%; /* Full width within overlayContent */
@@ -201,7 +201,7 @@
   background-color: #ffffff; /* Ensure background is visible */
 }
 
-:global(.dark) .overlayContent .mobileSuggestionsList {
+:global(.dark) .mobileSuggestionsList {
   background-color: #24252c;
   border: 1px solid #555;
 }
@@ -302,4 +302,78 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+/* Most Viewed Products Section */
+.mostViewedSection {
+  width: 100%;
+  padding: 16px 0; /* Space above and below the section */
+}
+
+.mostViewedTitle {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 12px;
+  text-align: center;
+  color: #333;
+}
+
+:global(.dark) .mostViewedTitle {
+  color: #ffffff;
+}
+
+/* Product Cards Container */
+.productCardsContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+  max-height: 500px; /* Adjust as needed */
+  overflow-y: auto;
+  padding-bottom: 16px;
+}
+
+/* Adjust ProductCard Styles if Necessary */
+.overlayContent .productCardsContainer .productCard {
+  /* Example: Add shadow or border if needed */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 480px) {
+  .productCardsContainer {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 8px;
+  }
+
+  .mostViewedTitle {
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+}
+
+/* Dark Mode Adjustments */
+:global(.dark) .productCardsContainer {
+  /* If ProductCard handles its own dark mode, no changes needed here */
+}
+
+/* Optional: Scrollbar Styling for Product Cards Container */
+.productCardsContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.productCardsContainer::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+:global(.dark) .productCardsContainer::-webkit-scrollbar-track {
+  background: #444;
+}
+
+.productCardsContainer::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.productCardsContainer::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
