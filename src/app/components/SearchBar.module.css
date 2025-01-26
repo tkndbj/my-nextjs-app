@@ -344,8 +344,8 @@
 
 .productCardsContainer > * {
   scroll-snap-align: start;
-  flex: 0 0 250px; /* Set a fixed width (e.g., 250px) */
-  width: 250px; /* Ensure the width is consistent */
+  flex: 0 0 150px; /* Set a fixed width (e.g., 250px) */
+  width: 150px; /* Ensure the width is consistent */
 }
 
 /* Responsive Adjustments */
