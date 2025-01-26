@@ -308,6 +308,7 @@
 .mostViewedSection {
   width: 100%;
   padding: 16px 0; /* Space above and below the section */
+  position: relative; /* For potential gradient overlays */
 }
 
 .mostViewedTitle {
@@ -322,25 +323,32 @@
   color: #ffffff;
 }
 
-/* Product Cards Container */
+/* Product Cards Container - Horizontal Scroll */
 .productCardsContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
   gap: 12px;
-  max-height: 500px; /* Adjust as needed */
-  overflow-y: auto;
   padding-bottom: 16px;
+  scroll-behavior: smooth; /* Smooth scrolling */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+
+  /* Optional: Add scroll snapping */
+  scroll-snap-type: x mandatory;
 }
 
-/* Adjust ProductCard Styles if Necessary */
-.overlayContent .productCardsContainer .productCard {
-  /* Example: Add shadow or border if needed */
+.productCardsContainer::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for Chrome, Safari, and Opera */
+}
+
+.productCardsContainer > * {
+  scroll-snap-align: start;
 }
 
 /* Responsive Adjustments */
 @media (max-width: 480px) {
   .productCardsContainer {
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     gap: 8px;
   }
 
@@ -355,9 +363,9 @@
   /* If ProductCard handles its own dark mode, no changes needed here */
 }
 
-/* Optional: Scrollbar Styling for Product Cards Container */
+/* Optional: Scrollbar Styling for Product Cards Container (if you choose to show it) */
 .productCardsContainer::-webkit-scrollbar {
-  width: 6px;
+  height: 6px;
 }
 
 .productCardsContainer::-webkit-scrollbar-track {
