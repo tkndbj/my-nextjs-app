@@ -315,7 +315,7 @@
   font-size: 1.2rem;
   font-weight: bold;
   margin-bottom: 12px;
-  text-align: center;
+  text-align: left; /* Changed from center to left */
   color: #333;
 }
 
@@ -344,6 +344,8 @@
 
 .productCardsContainer > * {
   scroll-snap-align: start;
+  flex: 0 0 250px; /* Set a fixed width (e.g., 250px) */
+  width: 250px; /* Ensure the width is consistent */
 }
 
 /* Responsive Adjustments */
