@@ -33,6 +33,33 @@
   background-color: #24252c;
 }
 
+/* Back Button Styling */
+.backButton {
+  position: absolute;
+  left: 12px; /* Adjust as needed */
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+}
+
+.backButton:hover {
+  color: coral;
+}
+
+:global(.dark) .backButton {
+  color: #ffffff;
+}
+
+:global(.dark) .backButton:hover {
+  color: coral;
+}
+
 /* Search Form Styling */
 .searchForm {
   position: relative;
@@ -41,12 +68,14 @@
   height: 30px;
   display: flex;
   align-items: center;
-  transition: max-width 0.3s ease, height 0.3s ease;
+  margin-left: 0; /* Reset margin */
+  transition: max-width 0.3s ease, height 0.3s ease, margin-left 0.3s ease;
 }
 
 .expanded .searchForm {
   max-width: 90%;
   height: 40px;
+  margin-left: 40px; /* Space for back button */
 }
 
 /* Search Icon Styling */
@@ -55,7 +84,11 @@
   left: 12px;
   color: #888;
   pointer-events: none; /* Allows clicks to pass through to the input */
-  transition: color 0.3s ease;
+  transition: color 0.3s ease, left 0.3s ease;
+}
+
+.expanded .searchIcon {
+  left: 40px; /* Shift to accommodate back button */
 }
 
 /* Search Input Styling */
@@ -68,13 +101,13 @@
   outline: none;
   font-size: 1rem;
   transition: border-color 0.3s ease, background-color 0.3s ease,
-    color 0.3s ease;
+    color 0.3s ease, padding-left 0.3s ease;
   background-color: #f9f9f9;
   color: #333;
 }
 
 .expanded .searchInput {
-  border-radius: 8px; /* Adjust for a more rectangular shape if desired */
+  padding-left: 36px; /* Maintain search icon padding */
 }
 
 /* Search Input Hover and Focus Effects */
@@ -192,6 +225,7 @@
   color: #ffffff;
 }
 
+/* **New Addition: Dark Mode Text Color for Suggestion Items** */
 :global(.dark) .suggestionItem {
   color: #ffffff; /* Set text color to white in dark mode */
 }
@@ -226,12 +260,17 @@
   left: 0;
   width: 100%;
   height: calc(100% - 56px);
-  background-color: rgba(0, 0, 0, 0.3); /* Semi-transparent */
-  opacity: 0;
-  animation: fadeInOverlay 0.3s forwards;
+  background-color: #ffffff; /* White for light theme */
+  opacity: 1; /* Fully opaque */
+  transition: background-color 0.3s ease;
   z-index: 1000; /* Below the expanded search bar */
 }
 
+:global(.dark) .overlay {
+  background-color: #24252c; /* Dark color for dark theme */
+}
+
+/* Optionally remove or adjust fade-in/fade-out animations since background is solid */
 @keyframes fadeInOverlay {
   from {
     opacity: 0;

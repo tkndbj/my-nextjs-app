@@ -1,8 +1,10 @@
+// src/app/components/SearchBar.jsx
+
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
 import styles from "./SearchBar.module.css";
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaArrowLeft } from "react-icons/fa"; // Import FaArrowLeft
 import { useMarket } from "../../../context/MarketContext";
 import useIsMobile from "../../hooks/useIsMobile";
 import clsx from "clsx";
@@ -112,6 +114,17 @@ const SearchBar = () => {
         })}
         ref={searchInputRef}
       >
+        {/* Back Icon */}
+        {isMobile && isExpanded && (
+          <button
+            className={styles.backButton}
+            onClick={() => setIsExpanded(false)}
+            aria-label="Close search"
+          >
+            <FaArrowLeft />
+          </button>
+        )}
+
         <form className={styles.searchForm} onSubmit={handleSubmit}>
           <FaSearch className={styles.searchIcon} />
           <input
