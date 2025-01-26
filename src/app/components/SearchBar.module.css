@@ -106,8 +106,8 @@
   color: #333;
 }
 
-.expanded .searchInput {
-  padding-left: 36px; /* Maintain search icon padding */
+.expandedInput {
+  padding-left: 50px; /* Increased padding to prevent overlap */
 }
 
 /* Search Input Hover and Focus Effects */
@@ -165,6 +165,7 @@
 
 /* Suggestions List Styling */
 .suggestionsList {
+  /* For Desktop Dropdown */
   position: absolute;
   top: 100%;
   left: 50%;
@@ -180,10 +181,7 @@
   z-index: 1000;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   animation: fadeIn 0.3s ease;
-}
-
-.expanded .suggestionsList {
-  top: 100%;
+  margin-top: 8px; /* Space between search input and suggestions */
 }
 
 :global(.dark) .suggestionsList {
@@ -264,31 +262,19 @@
   opacity: 1; /* Fully opaque */
   transition: background-color 0.3s ease;
   z-index: 1000; /* Below the expanded search bar */
+  display: flex;
+  justify-content: center; /* Center the overlayContent */
+  align-items: flex-start; /* Align items to the top */
+  padding-top: 16px; /* Space from the top */
 }
 
 :global(.dark) .overlay {
   background-color: #24252c; /* Dark color for dark theme */
 }
 
-/* Optionally remove or adjust fade-in/fade-out animations since background is solid */
-@keyframes fadeInOverlay {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.overlay.fade-out {
-  animation: fadeOutOverlay 0.3s forwards;
-}
-
-@keyframes fadeOutOverlay {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
+/* Overlay Content Styling */
+.overlayContent {
+  width: 100%;
+  max-width: 600px; /* Match the searchForm's max-width */
+  background-color: transparent; /* Transparent to show overlay's background */
 }

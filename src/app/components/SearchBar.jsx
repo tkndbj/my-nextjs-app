@@ -102,10 +102,35 @@ const SearchBar = () => {
   return (
     <>
       {isMobile && isExpanded && (
-        <div
-          className={styles.overlay}
-          onClick={() => setIsExpanded(false)}
-        ></div>
+        <div className={styles.overlay} onClick={() => setIsExpanded(false)}>
+          <div
+            className={styles.overlayContent}
+            onClick={(e) => e.stopPropagation()} // Prevent overlay click when interacting with content
+          >
+            {/* Loader inside overlay */}
+            {isSuggestionsLoading && <div className={styles.loader}></div>}
+
+            {/* Suggestions inside overlay for mobile */}
+            {isMobile &&
+              isExpanded &&
+              showSuggestions &&
+              suggestions.length > 0 && (
+                <ul className={styles.suggestionsList}>
+                  {suggestions.map((suggestion) => (
+                    <li
+                      key={suggestion.objectID}
+                      className={styles.suggestionItem}
+                      onClick={() => handleSuggestionClick(suggestion)}
+                    >
+                      {suggestion.productName || "No Name Available"}
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+            {/* Future components can be rendered here */}
+          </div>
+        </div>
       )}
 
       <div
@@ -132,13 +157,17 @@ const SearchBar = () => {
             value={inputQuery}
             onChange={handleInputChange}
             placeholder="Search products..."
-            className={styles.searchInput}
+            className={clsx(styles.searchInput, {
+              [styles.expandedInput]: isMobile && isExpanded,
+            })}
             onFocus={handleFocus}
             aria-label="Search products"
           />
           {isSuggestionsLoading && <div className={styles.loader}></div>}
         </form>
-        {showSuggestions && suggestions.length > 0 && (
+
+        {/* Suggestions Dropdown for Desktop */}
+        {!isMobile && showSuggestions && suggestions.length > 0 && (
           <ul className={styles.suggestionsList}>
             {suggestions.map((suggestion) => (
               <li
