@@ -88,12 +88,7 @@
 }
 
 .expanded .searchIcon {
-  left: 40px; /* Shift to accommodate back button */
-}
-
-/* **New Addition: Adjust Search Icon in Expanded Mobile View** */
-.expandedSearchIcon {
-  left: 16px; /* Further left shift to prevent overlapping */
+  left: 16px; /* Shift to the left to prevent overlapping */
 }
 
 /* Search Input Styling */
@@ -196,13 +191,19 @@
 }
 
 /* Mobile Overlay Suggestions */
-.overlayContent .suggestionsList {
+.overlayContent .mobileSuggestionsList {
   position: static; /* Remove absolute positioning */
   transform: none; /* Remove transform */
   width: 100%; /* Full width within overlayContent */
   max-width: none; /* Remove max-width */
   border-radius: 8px;
   margin-top: 16px; /* Space between search input and suggestions */
+  background-color: #ffffff; /* Ensure background is visible */
+}
+
+:global(.dark) .overlayContent .mobileSuggestionsList {
+  background-color: #24252c;
+  border: 1px solid #555;
 }
 
 /* Fade-in Animation for Suggestions */
@@ -239,31 +240,36 @@
   color: #ffffff;
 }
 
-/* **New Addition: Dark Mode Text Color for Suggestion Items** */
+/* **Dark Mode Text Color for Suggestion Items** */
 :global(.dark) .suggestionItem {
   color: #ffffff; /* Set text color to white in dark mode */
 }
 
 /* Scrollbar Styling */
-.suggestionsList::-webkit-scrollbar {
+.suggestionsList::-webkit-scrollbar,
+.mobileSuggestionsList::-webkit-scrollbar {
   width: 8px;
 }
 
-.suggestionsList::-webkit-scrollbar-track {
+.suggestionsList::-webkit-scrollbar-track,
+.mobileSuggestionsList::-webkit-scrollbar-track {
   background: #f1f1f1;
   border-radius: 4px;
 }
 
-:global(.dark) .suggestionsList::-webkit-scrollbar-track {
+:global(.dark) .suggestionsList::-webkit-scrollbar-track,
+:global(.dark) .mobileSuggestionsList::-webkit-scrollbar-track {
   background: #444;
 }
 
-.suggestionsList::-webkit-scrollbar-thumb {
+.suggestionsList::-webkit-scrollbar-thumb,
+.mobileSuggestionsList::-webkit-scrollbar-thumb {
   background: #888;
   border-radius: 4px;
 }
 
-.suggestionsList::-webkit-scrollbar-thumb:hover {
+.suggestionsList::-webkit-scrollbar-thumb:hover,
+.mobileSuggestionsList::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
 

@@ -112,7 +112,7 @@ const SearchBar = () => {
 
             {/* Suggestions inside overlay for mobile */}
             {showSuggestions && suggestions.length > 0 && (
-              <ul className={styles.suggestionsList}>
+              <ul className={styles.mobileSuggestionsList}>
                 {suggestions.map((suggestion) => (
                   <li
                     key={suggestion.objectID}
