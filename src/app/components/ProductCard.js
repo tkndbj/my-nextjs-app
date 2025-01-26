@@ -1,4 +1,4 @@
-// src/app/components/components/ProductCard.jsx
+// src/app/components/ProductCard.jsx
 
 "use client";
 
@@ -27,6 +27,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../../../lib/firebase";
+import styles from "./ProductCard.module.css"; // Assuming you have a CSS module for ProductCard
 
 export default function ProductCard({ product }) {
   const {
@@ -223,17 +224,20 @@ export default function ProductCard({ product }) {
 
   return (
     <div
-      className="relative w-full h-auto font-figtree cursor-pointer"
+      className={`${styles.productCard} relative w-full h-auto font-figtree cursor-pointer`}
       onClick={handleCardClick}
     >
       <div className="bg-background rounded-2xl shadow-md overflow-hidden border border-secondaryBackground dark:border-2 dark:border-secondaryBackground transition-transform hover:scale-105 flex flex-col h-full">
         {/* Keep a consistent aspect ratio so it nicely scales on mobile */}
-        <div className="w-full relative aspect-[4/3]">
+        <div className="w-full relative aspect-[3/4]">
+          {" "}
+          {/* Changed aspect ratio */}
           <Image
             src={selectedImage}
             alt={productName}
             fill
             className="object-cover"
+            loading="lazy" // Ensure images are lazy-loaded
           />
           <button
             onClick={toggleFavorite}

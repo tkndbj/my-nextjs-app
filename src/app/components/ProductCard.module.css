@@ -1,0 +1,6 @@
+/* src/app/components/ProductCard.module.css */
+
+.productCard {
+  flex: 0 0 140px; /* Set fixed width to 140px */
+  /* You can adjust 140px to your desired width */
+}

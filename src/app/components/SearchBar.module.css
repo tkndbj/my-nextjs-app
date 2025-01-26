@@ -301,7 +301,7 @@
   background-color: transparent; /* Transparent to show overlay's background */
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start; /* Changed from center to flex-start */
 }
 
 /* Most Viewed Products Section */
@@ -309,13 +309,16 @@
   width: 100%;
   padding: 16px 0; /* Space above and below the section */
   position: relative; /* For potential gradient overlays */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align children to the start (left) */
 }
 
 .mostViewedTitle {
   font-size: 1.2rem;
   font-weight: bold;
   margin-bottom: 12px;
-  text-align: center;
+  text-align: left; /* Changed from center to left */
   color: #333;
 }
 
