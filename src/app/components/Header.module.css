@@ -10,7 +10,7 @@
   position: fixed;
   top: 0;
   z-index: 999;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  /* box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); */
   height: 38px; /* Fixed height */
   align-items: center; /* Vertically center content */
   transition: background-color 0.3s ease;
