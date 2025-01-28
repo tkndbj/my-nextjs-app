@@ -1,10 +1,9 @@
-// src/app/Login/LoginPage.jsx
-
 "use client";
 
-import { useState, useEffect } from "react";
-import useWindowWidth from "../../hooks/useWindowWidth"; // Adjust the path if necessary
-import { MOBILE_BREAKPOINT } from "../constants/breakpoints"; // Adjust the path if necessary
+import React, { useState, useEffect } from "react";
+import useWindowWidth from "../../hooks/useWindowWidth";
+import { MOBILE_BREAKPOINT } from "../constants/breakpoints";
+
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -12,26 +11,43 @@ import {
   updateProfile,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithCustomToken,
 } from "firebase/auth";
-import { auth, db } from "../../../lib/firebase"; // Ensure messaging is removed from firebase config
+
+import { auth, db } from "../../../lib/firebase";
 import { useRouter } from "next/navigation";
-import { FaGooglePlusG } from "react-icons/fa"; // Only Google icon is needed
+import { FaGooglePlusG } from "react-icons/fa";
 import styles from "./LoginPage.module.css";
-import { doc, setDoc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
+
+import {
+  doc,
+  setDoc,
+  getDoc,
+  onSnapshot
+} from "firebase/firestore";
+import {
+  getFunctions as getFirebaseFunctions,
+  httpsCallable
+} from "firebase/functions";
+import { QRCodeCanvas } from "qrcode.react"; // For generating the QR code
 
 export default function LoginPage() {
-  // Utilize the useWindowWidth hook to get the current window width
+  // 1) Check window size to show/hide background video
   const windowWidth = useWindowWidth();
-  const isMobile = windowWidth !== undefined && windowWidth < MOBILE_BREAKPOINT;
+  const isMobile =
+    windowWidth !== undefined && windowWidth < MOBILE_BREAKPOINT;
 
-  const [isRegisterActive, setIsRegisterActive] = useState(false);
+  // 2) Next.js router
   const router = useRouter();
 
-  // Sign In state
+  // 3) Toggle: Sign in or Register form
+  const [isRegisterActive, setIsRegisterActive] = useState(false);
+
+  // 4) Sign In form state
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
 
-  // Sign Up state
+  // 5) Registration form state
   const [registerName, setRegisterName] = useState("");
   const [registerSurname, setRegisterSurname] = useState("");
   const [registerPhone, setRegisterPhone] = useState("");
@@ -39,33 +55,111 @@ export default function LoginPage() {
   const [registerPassword, setRegisterPassword] = useState("");
   const [registerRePassword, setRegisterRePassword] = useState("");
 
-  // Registration Success State
+  // 6) Registration success & error
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
-
-  // Error State
   const [error, setError] = useState("");
 
-  // Loading State
+  // 7) Loading indicator (for sign-in or sign-up)
   const [isLoading, setIsLoading] = useState(false);
 
-  // Handle Navigation after Email Verification
-  useEffect(() => {
-    if (registrationSuccess) {
-      const interval = setInterval(async () => {
-        const user = auth.currentUser;
-        if (user) {
-          await user.reload();
-          if (user.emailVerified) {
-            clearInterval(interval);
-            router.push("/"); // Redirect to Home after verification
-          }
-        }
-      }, 3000); // Check every 3 seconds
+  // 8) QR Authentication states
+  const [sessionId, setSessionId] = useState(null);
+  const [qrAuthError, setQrAuthError] = useState(null);
+  const [isQrAuthLoading, setIsQrAuthLoading] = useState(false);
 
-      return () => clearInterval(interval);
-    }
+  // -------------------------------------------------------------------------
+  // A) Poll for Email Verification after Registration
+  // -------------------------------------------------------------------------
+  useEffect(() => {
+    if (!registrationSuccess) return;
+
+    const interval = setInterval(async () => {
+      const user = auth.currentUser;
+      if (user) {
+        await user.reload();
+        if (user.emailVerified) {
+          clearInterval(interval);
+          router.push("/");
+        }
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
   }, [registrationSuccess, router]);
 
+  // -------------------------------------------------------------------------
+  // B1) QR Authentication - Create QR Session
+  // -------------------------------------------------------------------------
+  useEffect(() => {
+    if (sessionId) return; // Do not create a new session if one already exists
+
+    const functionsInstance = getFirebaseFunctions(undefined, "europe-west3");
+    const createQrAuthSessionFn = httpsCallable(
+      functionsInstance,
+      "createQrAuthSession"
+    );
+
+    // 1) Create a new QR session
+    const createQrSession = async () => {
+      setIsQrAuthLoading(true);
+      setQrAuthError(null);
+
+      try {
+        const result = await createQrAuthSessionFn();
+        const { sessionId } = result.data;
+        setSessionId(sessionId);
+        console.log("QR Session Created:", sessionId);
+      } catch (err) {
+        console.error("Error creating QR auth session:", err);
+        setQrAuthError("Failed to generate QR code. Please try again.");
+      } finally {
+        setIsQrAuthLoading(false);
+      }
+    };
+
+    // 2) Call once on mount or when sessionId is null
+    createQrSession();
+  }, [sessionId]);
+
+  // -------------------------------------------------------------------------
+  // B2) QR Authentication - Listen to QR Session Document
+  // -------------------------------------------------------------------------
+  useEffect(() => {
+    if (!sessionId) return; // Only listen if sessionId is available
+
+    const sessionRef = doc(db, "qrSessions", sessionId);
+    const unsubscribe = onSnapshot(
+      sessionRef,
+      (snapshot) => {
+        if (!snapshot.exists()) return;
+        const data = snapshot.data();
+
+        if (data.customToken) {
+          signInWithCustomToken(auth, data.customToken)
+            .then(() => {
+              console.log("Successfully signed in via QR code!");
+              router.push("/");
+            })
+            .catch((err) => {
+              console.error("Error signing in with custom token:", err);
+              setQrAuthError("Failed to sign in with scanned QR code.");
+            });
+        }
+      },
+      (error) => {
+        console.error("Error listening to QR session:", error);
+        setQrAuthError("Failed to listen to QR session.");
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [sessionId, router]);
+
+  // -------------------------------------------------------------------------
+  // C) Handlers
+  // -------------------------------------------------------------------------
   const handleRegisterClick = () => {
     setIsRegisterActive(true);
     setError("");
@@ -76,10 +170,12 @@ export default function LoginPage() {
     setError("");
   };
 
+  // Sign In
   const handleSignIn = async (e) => {
     e.preventDefault();
     setError("");
-    setIsLoading(true); // Start loading
+    setIsLoading(true);
+
     try {
       const userCredential = await signInWithEmailAndPassword(
         auth,
@@ -87,50 +183,42 @@ export default function LoginPage() {
         loginPassword
       );
       const user = userCredential.user;
-
-      // Reload user to ensure we have the latest emailVerified status
       await user.reload();
 
-      // Fetch user data from Firestore
       const userDocRef = doc(db, "users", user.uid);
       const userDocSnap = await getDoc(userDocRef);
-      let isNewUser = false;
-      let userData = {};
 
+      let isNewUser = false;
       if (userDocSnap.exists()) {
-        userData = userDocSnap.data();
+        const userData = userDocSnap.data();
         isNewUser = userData.isNew === true;
       }
 
-      // If user is new and not verified
       if (!user.emailVerified && isNewUser) {
         await auth.signOut();
         setError("Please verify your email address before logging in.");
-        setIsLoading(false); // Stop loading on error
+        setIsLoading(false);
         return;
       }
 
-      // If user is verified or is not new (old user)
       if (user.emailVerified || !isNewUser) {
-        // Redirect to Home page
         router.push("/");
       } else {
-        // If user is old and still not verified (uncommon scenario)
         setError("Please verify your email to continue.");
         await auth.signOut();
-        setIsLoading(false); // Stop loading on error
+        setIsLoading(false);
       }
-    } catch (error) {
-      setError(error.message);
-      setIsLoading(false); // Stop loading on error
+    } catch (err) {
+      setError(err.message);
+      setIsLoading(false);
     }
   };
 
+  // Sign Up
   const handleSignUp = async (e) => {
     e.preventDefault();
     setError("");
 
-    // Basic Validation
     if (
       !registerName.trim() ||
       !registerSurname.trim() ||
@@ -148,8 +236,7 @@ export default function LoginPage() {
       return;
     }
 
-    // Optional: Add more validation (e.g., email format, password strength)
-
+    setIsLoading(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -158,25 +245,21 @@ export default function LoginPage() {
       );
       const user = userCredential.user;
 
-      // Update Profile with Name and Surname
       await updateProfile(user, {
         displayName: `${registerName.trim()} ${registerSurname.trim()}`,
       });
 
-      // Send Email Verification
       await sendEmailVerification(user);
-
-      // Save Additional User Data to Firestore
       await saveUserData(user);
 
-      // Show Success Message
       setRegistrationSuccess(true);
-    } catch (error) {
-      setError(error.message);
-      setIsLoading(false); // Ensure loading is stopped on error
+    } catch (err) {
+      setError(err.message);
+      setIsLoading(false);
     }
   };
 
+  // Save user data
   const saveUserData = async (user) => {
     try {
       const userDocRef = doc(db, "users", user.uid);
@@ -186,26 +269,20 @@ export default function LoginPage() {
           displayName: `${registerName.trim()} ${registerSurname.trim()}`,
           email: registerEmail.trim(),
           phoneNumber: registerPhone.trim(),
-          accountType: "Bireysel", // Adjust as needed
+          accountType: "Bireysel",
           isNew: true,
-          // Add any other fields to align with your Firestore structure
         },
         { merge: true }
       );
-      console.log("User data saved successfully:", {
-        displayName: `${registerName.trim()} ${registerSurname.trim()}`,
-        email: registerEmail.trim(),
-        phoneNumber: registerPhone.trim(),
-        accountType: "Bireysel",
-        isNew: true,
-      });
-    } catch (error) {
-      console.error("Error saving user data: ", error);
+      console.log("User data saved successfully.");
+    } catch (err) {
+      console.error("Error saving user data:", err);
       setError("Failed to save user data.");
-      setIsLoading(false); // Ensure loading is stopped on error
+      setIsLoading(false);
     }
   };
 
+  // Google Sign-In
   const handleGoogleSignIn = async () => {
     setError("");
     setIsLoading(true);
@@ -215,37 +292,36 @@ export default function LoginPage() {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      // Check if user exists in Firestore
       const userDocRef = doc(db, "users", user.uid);
       const userDocSnap = await getDoc(userDocRef);
 
       if (!userDocSnap.exists()) {
-        // New user, save data
         await setDoc(
           userDocRef,
           {
             displayName: user.displayName || "",
             email: user.email || "",
             isNew: true,
-            // Add other necessary fields as per your Flutter app
           },
           { merge: true }
         );
       }
 
-      // Redirect to Home
       router.push("/");
-    } catch (error) {
-      console.error("Google Sign-In Error:", error);
-      setError(error.message);
+    } catch (err) {
+      console.error("Google Sign-In Error:", err);
+      setError(err.message);
     } finally {
       setIsLoading(false);
     }
   };
 
+  // -------------------------------------------------------------------------
+  // D) Render
+  // -------------------------------------------------------------------------
   return (
     <div className={styles.container}>
-      {/* Conditionally render the background video only on desktop devices */}
+      {/* Desktop background video; hidden on mobile */}
       {!isMobile && (
         <video
           autoPlay
@@ -254,12 +330,13 @@ export default function LoginPage() {
           className={styles.backgroundVideo}
           src="/video1.mp4"
           type="video/mp4"
-          tabIndex={-1} // Prevents video from being focusable
-          aria-hidden="true" // Hides video from assistive technologies
+          tabIndex={-1}
+          aria-hidden="true"
         />
       )}
+
       <div id="container" className={styles.loginContainer}>
-        {/* Login Form */}
+        {/* Sign In Form */}
         <div
           className={`${styles.form} ${styles.signInForm} ${
             isRegisterActive ? styles.signInHidden : styles.signInVisible
@@ -269,9 +346,49 @@ export default function LoginPage() {
             onSubmit={handleSignIn}
             className="flex flex-col items-center justify-center h-full px-10 bg-white"
           >
-            <h1 className="text-xl font-semibold text-black">Sign In</h1>
-            <div className="social-icons my-5">
-              {/* Google Icon with Text */}
+            {/* ========= QR CODE FOR SIGN IN ========== */}
+            <div className={styles.qrSection}>
+              <h2 className="text-lg font-semibold text-black mb-2">
+                Sign in with QR Code
+              </h2>
+              {isQrAuthLoading ? (
+                <div className={styles.spinner}></div>
+              ) : qrAuthError ? (
+                <div className="text-red-500 text-sm">{qrAuthError}</div>
+              ) : sessionId ? (
+                <div className="flex flex-col items-center">
+                  {/* Use a smaller size prop or style class to prevent oversizing */}
+                  <QRCodeCanvas
+                    value={sessionId}
+                    size={150}
+                    className={styles.qrCanvas}
+                  />
+                  <p className="text-sm text-gray-700 mt-2 text-center">
+                    Scan this code with your mobile app to log in.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // Clear session -> triggers new call in B1 useEffect
+                      setSessionId(null);
+                      setQrAuthError(null);
+                    }}
+                    className="mt-3 text-blue-500 underline"
+                  >
+                    Regenerate QR Code
+                  </button>
+                </div>
+              ) : (
+                <div className="text-gray-700 text-sm">
+                  Generating QR Code...
+                </div>
+              )}
+            </div>
+            {/* ======================================== */}
+
+            <h1 className="text-xl font-semibold text-black mt-4">Sign In</h1>
+
+            <div className="social-icons my-5 w-full">
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
@@ -283,10 +400,15 @@ export default function LoginPage() {
                 </span>
               </button>
             </div>
+
             <span className="text-sm text-gray-800">
               or use your email and password
             </span>
-            {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
+
+            {error && (
+              <div className="text-red-500 text-sm mt-2">{error}</div>
+            )}
+
             <input
               type="email"
               placeholder="Email"
@@ -303,9 +425,11 @@ export default function LoginPage() {
               onChange={(e) => setLoginPassword(e.target.value)}
               required
             />
+
             <a href="#" className="text-[13px] mt-3 text-gray-700">
               Forgot Your Password?
             </a>
+
             {isLoading ? (
               <div className={styles.spinner}></div>
             ) : (
@@ -316,12 +440,13 @@ export default function LoginPage() {
                 Sign In
               </button>
             )}
+
             <button
               type="button"
               onClick={handleRegisterClick}
               className="text-[13px] mt-3 text-gray-700 underline w-full text-left"
             >
-              Dont have an account?
+              Don't have an account?
             </button>
           </form>
         </div>
@@ -336,9 +461,11 @@ export default function LoginPage() {
             onSubmit={handleSignUp}
             className="flex flex-col items-center justify-center h-full px-10 bg-white"
           >
-            <h1 className="text-xl font-semibold text-black">Create Account</h1>
-            <div className="social-icons my-5">
-              {/* Google Icon with Text */}
+            <h1 className="text-xl font-semibold text-black">
+              Create Account
+            </h1>
+
+            <div className="social-icons my-5 w-full">
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
@@ -350,10 +477,14 @@ export default function LoginPage() {
                 </span>
               </button>
             </div>
+
             <span className="text-sm text-gray-800">
               or use your email for registration
             </span>
-            {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
+            {error && (
+              <div className="text-red-500 text-sm mt-2">{error}</div>
+            )}
+
             <input
               type="text"
               placeholder="Name"
@@ -402,6 +533,7 @@ export default function LoginPage() {
               onChange={(e) => setRegisterRePassword(e.target.value)}
               required
             />
+
             {isLoading ? (
               <div className={styles.spinner}></div>
             ) : (
@@ -412,6 +544,7 @@ export default function LoginPage() {
                 Sign Up
               </button>
             )}
+
             <button
               type="button"
               onClick={handleBackToLogin}
@@ -422,7 +555,7 @@ export default function LoginPage() {
           </form>
         </div>
 
-        {/* Registration Success Message Overlay */}
+        {/* Registration Success Overlay */}
         {registrationSuccess && (
           <div className={`${styles.overlay} ${styles.showOverlay}`}>
             <div className={styles.successMessage}>

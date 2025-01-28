@@ -30,8 +30,8 @@
   background: transparent;
   z-index: 2; /* Above video */
   max-width: 90%;
-  border-radius: 12px; /* Optional: Add some rounding for aesthetics */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Add shadow for depth */
+  border-radius: 12px; /* Optional: rounding for aesthetics */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: subtle shadow */
 }
 
 /* Common form styles */
@@ -43,8 +43,8 @@
   height: 100%;
   background: white;
   transition: transform 0.7s ease-in-out, opacity 0.7s ease-in-out;
-  border-radius: 12px; /* Match loginContainer */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Add shadow */
+  border-radius: 12px; /* Match .loginContainer */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: subtle shadow */
 }
 
 /* Sign In Form Styles */
@@ -95,8 +95,8 @@
   text-align: center;
   padding: 20px;
   border-radius: 8px;
-  background: #f9f9f9; /* Optional: Slight background for readability */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Add shadow */
+  background: #f9f9f9; /* Optional: Slight background */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: subtle shadow */
 }
 
 /* Spinner */
@@ -117,32 +117,29 @@
 
 /* (4) MOBILE OVERRIDE: Full-bleed login box, no scroll */
 @media (max-width: 768px) {
-  /* Update breakpoint to match MOBILE_BREAKPOINT (768px) */
-
   /* Force .loginContainer to fill entire screen */
   .loginContainer {
     width: 100vw;
     height: 100vh;
     max-width: none;
     max-height: none;
-    /* Center forms within this box */
     display: flex;
     align-items: center;
     justify-content: center;
-    background: white; /* Ensure background is white since video is removed */
-    border-radius: 0; /* Remove border-radius for full screen */
-    box-shadow: none; /* Remove shadow for full screen */
+    background: white; /* Ensure background is white since video is hidden */
+    border-radius: 0;
+    box-shadow: none;
   }
 
   /* The form also fills its container so no scrolling is needed */
   .form {
     width: 100%;
     height: 100%;
-    border-radius: 0; /* Remove border-radius for full screen */
-    box-shadow: none; /* Remove shadow for full screen */
+    border-radius: 0;
+    box-shadow: none;
   }
 
-  /* Optional: Adjust text sizes and padding for better mobile experience */
+  /* Optional: Adjust text/padding for better mobile experience */
   .form form {
     padding: 20px;
   }
@@ -153,10 +150,34 @@
 
   .form input {
     padding: 12px;
-    font-size: 16px; /* **Added to prevent zoom on mobile** */
+    font-size: 16px; /* prevents zoom on mobile */
   }
 
   .form button {
     padding: 12px;
   }
+}
+
+/* -------------------------------------------------- */
+/* NEW STYLES FOR QR CODE SECTION INSIDE SIGN-IN FORM */
+/* -------------------------------------------------- */
+
+/* Container for the QR code and text */
+.qrSection {
+  width: 100%;
+  background: #f7f7f7; /* Light grey background (optional) */
+  border: 1px solid #ccc; /* Thin border (optional) */
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center; /* Center the content horizontally */
+  margin-bottom: 1rem; /* Spacing below */
+}
+
+/* (Optional) Constrain the QR code size further */
+.qrCanvas {
+ 
+  max-width: 80px;
+   max-height: 80px;
+   width: auto;
+   height: auto;
 }

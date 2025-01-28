@@ -558,3 +558,37 @@
     align-items: flex-start;
   }
 }
+
+.qrButton {
+  margin-left: 10px;
+  padding: 6px 10px;
+  background-color: #512da8;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.qrButton:hover {
+  background-color: #6a38cc;
+}
+
+.qrPopup {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  background: #fafafa;
+  width: 200px;
+  text-align: center;
+}
+.closeQrButton {
+  margin-top: 10px;
+  padding: 4px 8px;
+  background: #eee;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.closeQrButton:hover {
+  background: #ddd;
+}

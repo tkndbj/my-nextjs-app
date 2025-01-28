@@ -22,6 +22,8 @@ import {
 } from "firebase/storage";
 import { jsPDF } from "jspdf";
 import Sidebar from "../../components/Sidebar";
+import { QRCodeCanvas } from "qrcode.react"; // 1) import the QR code component
+import { getFunctions as getFirebaseFunctions, httpsCallable } from "firebase/functions"; // 2) import
 
 // ---------- Helper Functions ---------- //
 const formatDate = (timestamp) => {
@@ -181,6 +183,29 @@ const Profile = () => {
   const authenticatedUser = auth.currentUser;
   const authenticatedUserId = authenticatedUser ? authenticatedUser.uid : null;
   const isOwnProfile = authenticatedUserId === id;
+
+  const [mobileSessionId, setMobileSessionId] = useState(null);
+const [isMobileQrVisible, setIsMobileQrVisible] = useState(false);
+
+async function handleGenerateMobileQr() {
+  try {
+    // Call your existing "createQrAuthSession" cloud function 
+    // (or rename if you prefer).
+    const functionsInstance = getFirebaseFunctions(undefined, "europe-west3");
+    const createQrAuthSessionFn = httpsCallable(functionsInstance, "createQrAuthSessionWebToPhone");
+
+    const result = await createQrAuthSessionFn();
+    // The function should return something like: { sessionId: "<randomId>" }
+    const { sessionId } = result.data;
+
+    setMobileSessionId(sessionId);
+    setIsMobileQrVisible(true);  // Show the QR code in UI
+    console.log("Mobile login QR session created:", sessionId);
+  } catch (err) {
+    console.error("Error creating mobile login QR session:", err);
+    // Optionally show an error message
+  }
+}
 
   // ---------- Fetching Data ---------- //
   useEffect(() => {
@@ -501,6 +526,22 @@ const Profile = () => {
       <div className={styles.mainContent}>
         {/* --------- HEADER / PROFILE INFO --------- */}
         <div className={styles.profileHeader}>
+        {isMobileQrVisible && mobileSessionId && (
+  <div className={styles.qrPopup}>
+    <h4>Scan this to sign in on mobile</h4>
+    <QRCodeCanvas
+      value={mobileSessionId}
+      size={150}
+      className={styles.mobileQrCanvas}
+    />
+    <button
+      onClick={() => setIsMobileQrVisible(false)}
+      className={styles.closeQrButton}
+    >
+      Close
+    </button>
+  </div>
+)}
           <div className={styles.userPhotoSection}>
             {userData.profileImage ? (
               <img
@@ -541,13 +582,25 @@ const Profile = () => {
             <div className={styles.userHeading}>
               <h2 className={styles.userName}>{userData.displayName}</h2>
               {isOwnProfile && (
-                <button
-                  className={styles.userProfileButton}
-                  onClick={handleUserProfileClick}
-                >
-                  User Profile
-                </button>
-              )}
+  <>
+    <button
+      className={styles.userProfileButton}
+      onClick={handleUserProfileClick}
+    >
+      User Profile
+    </button>
+
+    {/* New QR button */}
+    <button
+      className={styles.qrButton}   // define .qrButton in CSS
+      onClick={handleGenerateMobileQr}
+      title="QR"
+    >
+      {/* Could be an icon or just text */}
+      <span>QR</span>
+    </button>
+  </>
+)}
             </div>
             <p className={styles.userDetail}>Email: {userData.email}</p>
             <p className={styles.userDetail}>Phone: {userData.phone}</p>
