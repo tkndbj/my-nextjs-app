@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
 import { useMarket } from "../../../context/MarketContext";
 import { useSearchParams } from "next/navigation";
-import styles from "./DynamicMarket.module.css"; // Ensure this file exists
-import ProductCard from "../components/ProductCard"; // Adjust the path if needed
+import styles from "./DynamicMarket.module.css";
+import ProductCard from "../components/ProductCard";
 
-export default function DynamicMarketPage() {
+function DynamicMarketContent() {
   const {
     inputQuery,
     searchResults,
     isSearchLoading,
     categoryProducts,
-    setCategoryProducts, // Exposed setter from context
+    setCategoryProducts,
     selectedCategory,
     selectedSubcategory,
     setSelectedCategory,
@@ -36,17 +36,16 @@ export default function DynamicMarketPage() {
     return () => {
       setSelectedCategory(null);
       setSelectedSubcategory(null);
-      setCategoryProducts([]); // Optional: also clear the product list
+      setCategoryProducts([]);
     };
   }, [setSelectedCategory, setSelectedSubcategory, setCategoryProducts]);
 
   // Determine which products to display:
-  // If a search query is active, use searchResults; otherwise, use categoryProducts.
   const productsToDisplay = inputQuery.trim()
     ? searchResults
     : categoryProducts;
 
-  // Filter products: only show product if owner's verification is either true or not yet set.
+  // Filter products: show product if owner's verification is true or not yet determined.
   const filteredProducts = productsToDisplay.filter(
     (product) =>
       !ownerVerificationMap || ownerVerificationMap[product.ownerId] !== false
@@ -54,7 +53,6 @@ export default function DynamicMarketPage() {
 
   return (
     <div className={styles.dynamicMarketPage}>
-      {/* Subcategories Row (if a category is selected) */}
       {selectedCategory && subcategories && subcategories[selectedCategory] && (
         <div className={styles.subcategories}>
           {subcategories[selectedCategory].map((subcat) => (
@@ -77,7 +75,6 @@ export default function DynamicMarketPage() {
         </div>
       )}
 
-      {/* Product Grid */}
       <main className={styles.productList}>
         {isSearchLoading ? (
           <p>Loading products...</p>
@@ -94,9 +91,17 @@ export default function DynamicMarketPage() {
             </div>
           </div>
         ) : (
-          <p></p>
+          <p>No products found.</p>
         )}
       </main>
     </div>
+  );
+}
+
+export default function DynamicMarketPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <DynamicMarketContent />
+    </Suspense>
   );
 }
