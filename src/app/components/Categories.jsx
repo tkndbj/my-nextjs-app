@@ -1,57 +1,41 @@
-// src/app/components/Categories.jsx
-
 "use client";
 
 import React from "react";
 import Image from "next/image";
-import { categories, subcategories } from "../data/categoriesData";
+import { useMarket } from "../../../context/MarketContext";
+import { useRouter } from "next/navigation";
+import posthog from "posthog-js"; // Ensure PostHog is initialized in your app
 
-export default function Categories({
-  setSelectedCategory,
-  setSelectedSubcategory,
-  selectedCategory,
-  selectedSubcategory,
-}) {
-  const handleCategoryClick = (categoryKey) => {
-    const isCurrentlySelected = selectedCategory === categoryKey;
-    setSelectedCategory(isCurrentlySelected ? null : categoryKey);
-    if (isCurrentlySelected) {
-      setSelectedSubcategory(null);
+export default function Categories() {
+  const router = useRouter();
+  const { categories, selectedCategory, setSelectedCategory } = useMarket();
+
+  const handleCategoryClick = async (categoryKey) => {
+    // Capture PostHog event for this category click
+    posthog.capture("CategorySelected", {
+      rawKey: categoryKey,
+      localizedName: categoryKey, // Replace with localized name if available
+    });
+
+    // Update selected category (if different)
+    if (selectedCategory !== categoryKey) {
+      await setSelectedCategory(categoryKey);
     }
-  };
-
-  const handleSubcategoryClick = (subcategory) => {
-    const isCurrentlySelected = selectedSubcategory === subcategory;
-    setSelectedSubcategory(isCurrentlySelected ? null : subcategory);
+    // Navigate to dynamic market page with the selected category in the URL query
+    router.push(`/dynamicmarket?category=${encodeURIComponent(categoryKey)}`);
   };
 
   return (
     <div className="w-full max-w-[100vw] overflow-hidden">
-      {/* Main categories row */}
+      {/* Main Categories Row */}
       <div className="relative">
-        <div
-          className="
-            flex items-center gap-4
-            overflow-x-auto
-            px-4 py-4
-            no-scrollbar
-            md:justify-center
-          "
-        >
+        <div className="flex items-center gap-4 overflow-x-auto px-4 py-4 no-scrollbar md:justify-center">
           {categories.map((category, index) => (
             <div key={category.key} className="flex-shrink-0">
               <div className="flex flex-col items-center w-20">
                 <button
                   onClick={() => handleCategoryClick(category.key)}
-                  className={`
-                    w-20 h-20 relative rounded-full overflow-hidden
-                    shadow-md hover:shadow-lg
-                    ${
-                      selectedCategory === category.key
-                        ? "border-4 border-jade-green dark:border-accent"
-                        : "border border-gray-200 dark:border-gray-700"
-                    }
-                  `}
+                  className="w-20 h-20 relative rounded-full overflow-hidden shadow-md hover:shadow-lg border border-gray-200 dark:border-gray-700"
                 >
                   <div className="absolute inset-0 rounded-full overflow-hidden">
                     <Image
@@ -64,16 +48,7 @@ export default function Categories({
                     />
                   </div>
                 </button>
-                <span
-                  className={`
-                    mt-2 text-center text-sm whitespace-nowrap
-                    ${
-                      selectedCategory === category.key
-                        ? "text-jade-green dark:text-accent font-semibold"
-                        : "text-foreground"
-                    }
-                  `}
-                >
+                <span className="mt-2 text-center text-sm whitespace-nowrap text-foreground">
                   {category.key}
                 </span>
               </div>
@@ -81,39 +56,6 @@ export default function Categories({
           ))}
         </div>
       </div>
-
-      {/* Subcategories row */}
-      {selectedCategory && subcategories[selectedCategory] && (
-        <div className="relative mt-4">
-          <div
-            className="
-              flex gap-3 
-              overflow-x-auto
-              px-4 py-2
-              no-scrollbar
-              md:justify-center
-            "
-          >
-            {subcategories[selectedCategory].map((subcat) => (
-              <button
-                key={subcat}
-                onClick={() => handleSubcategoryClick(subcat)}
-                className={`
-                  px-4 py-2 rounded-full text-sm whitespace-nowrap
-                  flex-shrink-0 border transition-all duration-200
-                  ${
-                    selectedSubcategory === subcat
-                      ? "bg-jade-green dark:bg-accent text-white border-jade-green dark:border-accent"
-                      : "bg-transparent border-gray-300 dark:border-gray-600 text-foreground hover:bg-gray-100 dark:hover:bg-transparent"
-                  }
-                `}
-              >
-                {subcat}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

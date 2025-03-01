@@ -1,0 +1,54 @@
+.dynamicMarketPage {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #fff;
+  font-family: sans-serif;
+}
+
+/* Subcategories Row */
+.subcategories {
+  display: flex;
+  justify-content: center; /* centers subcategory buttons horizontally */
+  gap: 8px;
+  overflow-x: auto;
+  padding: 16px;
+  background-color: #fafafa;
+}
+
+.subcategoryButton {
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+  background-color: transparent;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.selectedSubcategoryButton {
+  padding: 8px 16px;
+  border: 1px solid #0070f3;
+  background-color: #0070f3;
+  color: #fff;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+/* Product List */
+.productList {
+  flex: 1;
+  padding: 16px;
+}
+
+/* Product Grid (matching the home page layout) */
+.productGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  justify-items: center;
+}
+
+@media only screen and (orientation: landscape) and (max-width: 768px) {
+  .productGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

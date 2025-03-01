@@ -1,8 +1,12 @@
-// context/MarketContext.jsx
-
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+} from "react";
 import { db } from "../lib/firebase";
 import {
   doc,
@@ -14,11 +18,18 @@ import {
   query,
   where,
   getDocs,
+  orderBy,
+  limit,
+  startAfter,
 } from "firebase/firestore";
 import { useUser } from "./UserContext";
 import { index } from "../src/app/algoliaClient"; // Import Algolia index
 import { useDebounce } from "use-debounce"; // Import useDebounce hook
 import { useRouter } from "next/navigation"; // Import useRouter from Next.js
+import {
+  categories as categoriesData,
+  subcategories as subcategoriesData,
+} from "../src/app/data/categoriesData";
 
 // Create the context
 const MarketContext = createContext();
@@ -50,8 +61,21 @@ const buildAlgoliaFilters = ({ showDeals, showFeatured, specialFilter }) => {
 
   // Removed category and subcategory filters
 
+  // Optionally, you could add an Algolia filter for verified owners if your index has that field
+  // filters.push("ownerVerified:true");
+
   return filters.join(" AND ");
 };
+
+// Helper: Fetch all verified owner IDs from the "users" collection.
+async function fetchVerifiedOwnerIds() {
+  const verifiedQuery = query(
+    collection(db, "users"),
+    where("verified", "==", true)
+  );
+  const snapshot = await getDocs(verifiedQuery);
+  return snapshot.docs.map((doc) => doc.id);
+}
 
 // Create a provider component
 export const MarketProvider = ({ children }) => {
@@ -59,6 +83,7 @@ export const MarketProvider = ({ children }) => {
   const [showFeatured, setShowFeatured] = useState(false);
   const [specialFilter, setSpecialFilter] = useState(null); // For "Trending" and "5-Star"
   const [sortOption, setSortOption] = useState(null); // Includes "best_sellers" and other sort options
+  const ownerVerificationCache = useRef({});
 
   // States for category and subcategory
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -105,7 +130,6 @@ export const MarketProvider = ({ children }) => {
       const { hits } = await index.search(searchInput, {
         hitsPerPage: 5, // Number of suggestions to fetch
         attributesToRetrieve: ["objectID", "productName"], // Ensure these fields are in your Algolia index
-        // You can customize other search parameters as needed
       });
       setSuggestions(hits);
     } catch (error) {
@@ -132,21 +156,17 @@ export const MarketProvider = ({ children }) => {
   const performSearch = async () => {
     try {
       setIsSearchLoading(true);
-      const searchParams = {
+      const searchParamsObj = {
         hitsPerPage: 100, // Adjust as needed
         filters: buildAlgoliaFilters({
           showDeals,
           showFeatured,
           specialFilter,
-          // Removed selectedCategory and selectedSubcategory
         }),
       };
 
       // Determine which index to use based on sortOption
       let currentIndex = index; // Default index
-
-      // Example: If sortOption is "price_asc", use the "products_price_asc" replica
-      // You need to create these replicas in your Algolia dashboard
       switch (sortOption) {
         case "price_asc":
           currentIndex = index.clone("products_price_asc");
@@ -157,13 +177,13 @@ export const MarketProvider = ({ children }) => {
         case "best_sellers":
           currentIndex = index.clone("products_best_sellers");
           break;
-        // Add more cases as needed for other sort options
         default:
-          currentIndex = index; // Default to the main index
+          currentIndex = index;
+          break;
       }
 
       // Perform the search
-      const { hits } = await currentIndex.search(searchQuery, searchParams);
+      const { hits } = await currentIndex.search(searchQuery, searchParamsObj);
       setSearchResults(hits);
       setSearchError(null);
     } catch (error) {
@@ -176,8 +196,9 @@ export const MarketProvider = ({ children }) => {
   };
 
   /**
-   * Fetches products from Firestore based on selected category and subcategory.
-   * This function operates independently from Algolia's search functionality.
+   * Fetches products from Firestore based on selected category and subcategory,
+   * but only from owners who are verified. Because Firestore’s “in” clause is limited
+   * to 10 values, we batch the verified owner IDs.
    */
   const fetchCategoryProducts = async () => {
     if (!selectedCategory) {
@@ -194,30 +215,48 @@ export const MarketProvider = ({ children }) => {
 
     try {
       const productsRef = collection(db, "products");
-      let q;
 
-      if (selectedSubcategory) {
-        q = query(
-          productsRef,
-          where("category", "==", selectedCategory),
-          where("subcategory", "==", selectedSubcategory)
-        );
-        console.log(
-          `Query: category == "${selectedCategory}" AND subcategory == "${selectedSubcategory}"`
-        );
-      } else {
-        q = query(productsRef, where("category", "==", selectedCategory));
-        console.log(`Query: category == "${selectedCategory}"`);
+      // First, fetch all verified owner IDs
+      const verifiedOwnerIds = await fetchVerifiedOwnerIds();
+      if (verifiedOwnerIds.length === 0) {
+        setCategoryProducts([]);
+        return;
       }
 
-      const querySnapshot = await getDocs(q);
-      const products = [];
-      querySnapshot.forEach((doc) => {
-        products.push({ id: doc.id, ...doc.data() });
-      });
+      let allProducts = [];
 
-      console.log(`Fetched ${products.length} products from Firestore.`);
-      setCategoryProducts(products);
+      // Batch query verified owner IDs in groups of 10
+      for (let i = 0; i < verifiedOwnerIds.length; i += 10) {
+        const batch = verifiedOwnerIds.slice(i, i + 10);
+        let q;
+        if (selectedSubcategory) {
+          q = query(
+            productsRef,
+            where("category", "==", selectedCategory),
+            where("subcategory", "==", selectedSubcategory),
+            where("ownerId", "in", batch)
+          );
+          console.log(
+            `Query: category == "${selectedCategory}" AND subcategory == "${selectedSubcategory}" AND ownerId in batch`
+          );
+        } else {
+          q = query(
+            productsRef,
+            where("category", "==", selectedCategory),
+            where("ownerId", "in", batch)
+          );
+          console.log(
+            `Query: category == "${selectedCategory}" AND ownerId in batch`
+          );
+        }
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+          allProducts.push({ id: doc.id, ...doc.data() });
+        });
+      }
+
+      console.log(`Fetched ${allProducts.length} products from Firestore.`);
+      setCategoryProducts(allProducts);
     } catch (error) {
       console.error("Error fetching category products:", error);
       setCategoryError(error);
@@ -227,26 +266,100 @@ export const MarketProvider = ({ children }) => {
   };
 
   /**
-   * Handles search submissions, such as pressing Enter.
-   * Sets the searchQuery which will trigger the product list update.
-   * Optionally updates the URL's query parameter.
-   * @param {string} searchTerm - The search term to query.
+   * Fetches products from Firestore with pagination and other filters,
+   * but only returns products whose owner is verified.
+   */
+  const fetchProductsFromFirestore = async ({
+    page = 0,
+    limit: queryLimit = 50,
+    ignoreCategory = false,
+  }) => {
+    // We'll accumulate products from multiple batches.
+    let allProducts = [];
+    let lastDocument = null; // For pagination per batch
+
+    try {
+      const productsRef = collection(db, "products");
+
+      // Get verified owner IDs
+      const verifiedOwnerIds = await fetchVerifiedOwnerIds();
+      if (verifiedOwnerIds.length === 0) return; // No verified owners; return empty
+
+      // Batch the verified owner IDs in groups of 10
+      for (let i = 0; i < verifiedOwnerIds.length; i += 10) {
+        const batch = verifiedOwnerIds.slice(i, i + 10);
+        let q = query(productsRef, where("ownerId", "in", batch));
+
+        if (!ignoreCategory && selectedCategory) {
+          q = query(q, where("category", "==", selectedCategory));
+        }
+        if (!ignoreCategory && selectedSubcategory) {
+          q = query(q, where("subcategory", "==", selectedSubcategory));
+        }
+        // (Add additional filters such as price, deals, etc. if needed)
+
+        // Apply sorting
+        switch (sortOption) {
+          case "alphabetical":
+            q = query(q, orderBy("productName", "asc"));
+            break;
+          case "price_asc":
+            q = query(q, orderBy("price", "asc"));
+            break;
+          case "price_desc":
+            q = query(q, orderBy("price", "desc"));
+            break;
+          case "date":
+          default:
+            q = query(q, orderBy("createdAt", "desc"));
+            break;
+        }
+
+        // For pagination: if page > 0 and lastDocument exists, use startAfter.
+        if (page > 0 && lastDocument) {
+          q = query(q, startAfter(lastDocument));
+        }
+
+        // Apply limit
+        q = query(q, limit(queryLimit));
+
+        const snapshot = await getDocs(q);
+        snapshot.docs.forEach((doc) => {
+          allProducts.push({ id: doc.id, ...doc.data() });
+        });
+        if (snapshot.docs.length > 0) {
+          lastDocument = snapshot.docs[snapshot.docs.length - 1];
+        }
+      }
+
+      // Here, you might update your internal state (e.g. _products) accordingly.
+      // For example, if page === 0, you might clear old products:
+      // setCategoryProducts(allProducts);
+      // (This example directly uses setCategoryProducts for simplicity.)
+      setCategoryProducts(allProducts);
+    } catch (error) {
+      console.error("Firestore fetch error:", error);
+    } finally {
+      // Optionally update filtering state.
+    }
+  };
+
+  /**
+   * Handles search submissions.
    */
   const handleSearchSubmit = (searchTerm) => {
     if (searchTerm.trim()) {
       setSearchQuery(searchTerm);
-      // Optionally, update the URL's query parameter for bookmarking/sharing
       router.push(`/?query=${encodeURIComponent(searchTerm)}`);
     } else {
       setSearchQuery("");
       router.push(`/`);
     }
-    setSuggestions([]); // Optionally hide suggestions after search
+    setSuggestions([]);
   };
 
   /**
-   * Navigates to the product detail page based on the product ID.
-   * @param {string} productId - The ID of the product to navigate to.
+   * Navigates to the product detail page.
    */
   const navigateToProductDetail = (productId) => {
     if (productId) {
@@ -261,11 +374,79 @@ export const MarketProvider = ({ children }) => {
       if (newShowDeals) {
         setShowFeatured(false);
         setSpecialFilter(null);
-        setSortOption(null); // Reset sort when a filter is applied
+        setSortOption(null);
       }
       return newShowDeals;
     });
   };
+
+  async function fetchOwnersVerificationStatus(ownerIds) {
+    const result = {};
+    if (!ownerIds || ownerIds.length === 0) return result;
+
+    const ownersToQuery = [];
+    ownerIds.forEach((ownerId) => {
+      if (ownerVerificationCache.current.hasOwnProperty(ownerId)) {
+        result[ownerId] = ownerVerificationCache.current[ownerId];
+      } else {
+        ownersToQuery.push(ownerId);
+      }
+    });
+
+    if (ownersToQuery.length === 0) {
+      return result;
+    }
+
+    for (let i = 0; i < ownersToQuery.length; i += 10) {
+      const batch = ownersToQuery.slice(i, i + 10);
+      try {
+        const q = query(
+          collection(db, "users"),
+          where("__name__", "in", batch)
+        );
+        const snapshot = await getDocs(q);
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          const verified = data.verified ?? false;
+          ownerVerificationCache.current[doc.id] = verified;
+          result[doc.id] = verified;
+        });
+        batch.forEach((ownerId) => {
+          if (!(ownerId in result)) {
+            ownerVerificationCache.current[ownerId] = false;
+            result[ownerId] = false;
+          }
+        });
+      } catch (error) {
+        console.error("Error verifying owners for batch:", batch, error);
+        batch.forEach((ownerId) => {
+          ownerVerificationCache.current[ownerId] = false;
+          result[ownerId] = false;
+        });
+      }
+    }
+    return result;
+  }
+
+  async function fetchOwnersVerificationForProducts(products) {
+    const ownerIds = Array.from(new Set(products.map((p) => p.ownerId)));
+    if (ownerIds.length === 0) return;
+    await fetchOwnersVerificationStatus(ownerIds);
+    // Optionally trigger a state update if needed.
+  }
+
+  async function fetchBoostedProducts() {
+    // This is pseudocode—replace with your actual boosted products query.
+    const snapshot = await queryBoostedProducts(); // pseudocode function
+    const fetchedBoosted = snapshot.docs.map((doc) => Product.fromDoc(doc));
+
+    await fetchOwnersVerificationForProducts(fetchedBoosted);
+
+    const filteredBoosted = fetchedBoosted.filter(
+      (p) => ownerVerificationCache.current[p.ownerId] === true
+    );
+    // You can update boosted products state here if needed.
+  }
 
   // Toggle Featured filter
   const toggleFeatured = () => {
@@ -274,7 +455,7 @@ export const MarketProvider = ({ children }) => {
       if (newShowFeatured) {
         setShowDeals(false);
         setSpecialFilter(null);
-        setSortOption(null); // Reset sort when a filter is applied
+        setSortOption(null);
       }
       return newShowFeatured;
     });
@@ -287,7 +468,7 @@ export const MarketProvider = ({ children }) => {
       if (newFilter) {
         setShowDeals(false);
         setShowFeatured(false);
-        setSortOption(null); // Reset sort when a filter is applied
+        setSortOption(null);
       }
       return newFilter;
     });
@@ -296,7 +477,6 @@ export const MarketProvider = ({ children }) => {
   // Set Sort Option
   const setSortOptionHandler = (option) => {
     setSortOption(option);
-    // Reset filters when a sort option is selected, except for "best_sellers"
     if (option !== "best_sellers") {
       setShowDeals(false);
       setShowFeatured(false);
@@ -306,8 +486,6 @@ export const MarketProvider = ({ children }) => {
 
   /**
    * Increments the clickCount and dailyClickCount for a product.
-   * Ensures that the user is not the owner of the product.
-   * @param {string} productId - The ID of the product.
    */
   const incrementClickCount = async (productId) => {
     if (!user) {
@@ -326,13 +504,12 @@ export const MarketProvider = ({ children }) => {
         }
 
         const data = productDoc.data();
-        const userId = data.userId; // Changed from ownerId to userId
+        const userId = data.userId; // Using userId field
 
         console.log(
           `Product ownerId: ${userId}, CurrentUserId: ${currentUserId}`
         );
 
-        // Skip if current user is the product owner
         if (userId && userId === currentUserId) {
           console.log("User is the product owner. Skipping increment.");
           return;
@@ -352,13 +529,11 @@ export const MarketProvider = ({ children }) => {
 
         console.log(`Is same day: ${isSameDay}`);
 
-        // Prepare update object
         const updateData = {
           clickCount: increment(1),
           lastClickDate: serverTimestamp(),
         };
 
-        // Adjust daily click count based on date
         if (isSameDay) {
           updateData.dailyClickCount = increment(1);
         } else {
@@ -377,8 +552,6 @@ export const MarketProvider = ({ children }) => {
 
   /**
    * Records the product click into the user's preferences.
-   * Updates categoryClicks, subcategoryClicks, and discountClicks.
-   * @param {Object} product - The product object.
    */
   const recordProductClick = async (product) => {
     if (!user) {
@@ -392,7 +565,6 @@ export const MarketProvider = ({ children }) => {
     const hasDiscount = (product.discountPercentage ?? 0) > 0;
 
     try {
-      // Category Clicks
       const categoryClicksRef = doc(
         db,
         "users",
@@ -402,13 +574,10 @@ export const MarketProvider = ({ children }) => {
       );
       await setDoc(
         categoryClicksRef,
-        {
-          [category]: increment(1),
-        },
-        { merge: true } // Correct usage with setDoc
+        { [category]: increment(1) },
+        { merge: true }
       );
 
-      // Subcategory Clicks
       const subcategoryClicksRef = doc(
         db,
         "users",
@@ -418,13 +587,10 @@ export const MarketProvider = ({ children }) => {
       );
       await setDoc(
         subcategoryClicksRef,
-        {
-          [subcategory]: increment(1),
-        },
-        { merge: true } // Correct usage with setDoc
+        { [subcategory]: increment(1) },
+        { merge: true }
       );
 
-      // Discount Clicks
       if (hasDiscount) {
         const discountClicksRef = doc(
           db,
@@ -435,17 +601,14 @@ export const MarketProvider = ({ children }) => {
         );
         await setDoc(
           discountClicksRef,
-          {
-            count: increment(1),
-          },
-          { merge: true } // Correct usage with setDoc
+          { count: increment(1) },
+          { merge: true }
         );
       }
 
       console.log("Successfully recorded product click preferences.");
     } catch (error) {
       if (error.code === "not-found") {
-        // If document doesn't exist, create it
         try {
           const categoryClicksRef = doc(
             db,
@@ -492,35 +655,22 @@ export const MarketProvider = ({ children }) => {
     }
   };
 
-  /**
-   * useEffect to perform search whenever searchQuery or relevant filters change.
-   */
   useEffect(() => {
     performSearch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    searchQuery,
-    showDeals,
-    showFeatured,
-    specialFilter,
-    sortOption,
-    // Removed selectedCategory and selectedSubcategory
-  ]);
+  }, [searchQuery, showDeals, showFeatured, specialFilter, sortOption]);
 
-  /**
-   * useEffect to fetch category products whenever selectedCategory or selectedSubcategory changes.
-   */
   useEffect(() => {
     if (selectedCategory) {
       fetchCategoryProducts();
     } else {
-      setCategoryProducts([]); // Clear category products if no category is selected
+      setCategoryProducts([]);
       console.log("No category selected. Cleared categoryProducts.");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCategory, selectedSubcategory]);
 
   const value = {
+    categories: categoriesData,
+    subcategories: subcategoriesData,
     showDeals,
     toggleDeals,
     showFeatured,
@@ -531,25 +681,27 @@ export const MarketProvider = ({ children }) => {
     setSortOption: setSortOptionHandler,
     incrementClickCount,
     recordProductClick,
-    suggestions, // Added for search suggestions
-    isSuggestionsLoading, // Added for loading state of suggestions
-    fetchSuggestions, // Added to allow manual fetching if needed
-    inputQuery, // Added to manage the search input state
-    setInputQuery, // Added to allow updating the search input from components
-    searchQuery, // Added to manage the submitted search query
-    setSearchQuery, // Added to allow setting the search query from components
-    handleSearchSubmit, // Renamed to reflect its purpose
-    navigateToProductDetail, // Added to navigate to product detail programmatically
-    searchResults, // Added to provide search results from Algolia
-    isSearchLoading, // Added to provide loading state for search
-    searchError, // Added to provide error state for search
-    selectedCategory, // Exposed selectedCategory
-    setSelectedCategory, // Exposed setter for selectedCategory
-    selectedSubcategory, // Exposed selectedSubcategory
-    setSelectedSubcategory, // Exposed setter for selectedSubcategory
-    categoryProducts, // Exposed categoryProducts
-    isCategoryLoading, // Exposed loading state for category products
-    categoryError, // Exposed error state for category products
+    suggestions,
+    isSuggestionsLoading,
+    fetchSuggestions,
+    inputQuery,
+    setInputQuery,
+    searchQuery,
+    setSearchQuery,
+    handleSearchSubmit,
+    navigateToProductDetail,
+    searchResults,
+    isSearchLoading,
+    searchError,
+    selectedCategory,
+    setSelectedCategory,
+    selectedSubcategory,
+    setSelectedSubcategory,
+    categoryProducts,
+    isCategoryLoading,
+    categoryError,
+    ownerVerificationMap: ownerVerificationCache.current,
+    setCategoryProducts,
     // Include other states and functions as needed
   };
 
