@@ -9,18 +9,25 @@ import { useRouter } from "next/navigation";
 import styles from "./Header.module.css";
 
 import {
-  HiMenu, // Replaces TbMenu
-  HiBell, // Replaces TbBell
-  HiMail, // Replaces TbMail
-  HiHeart, // Replaces TbHeart
-  HiShoppingCart, // Replaces TbShoppingCart
+  HiMenu,
+  HiBell,
+  HiMail,
+  HiHeart,
+  HiShoppingCart,
 } from "react-icons/hi";
 
 import FavoritesWindow from "./FavoritesWindow";
 import CartWindow from "./CartWindow";
 import NotificationsWindow from "./NotificationsWindow";
 import MessagesWindow from "./MessagesWindow";
-import { collection, onSnapshot, doc } from "firebase/firestore";
+import {
+  collection,
+  onSnapshot,
+  doc,
+  query,
+  where,
+  orderBy,
+} from "firebase/firestore";
 import { useSidebar } from "../../../context/SidebarContext";
 
 export default function Header() {
@@ -88,35 +95,62 @@ export default function Header() {
     };
   }, [user]);
 
-  // Listen to unread notifications and messages counts
+  // Listen to unread notifications and messages counts using Firestore queries
+  // This mimics the Flutter BadgeProvider by:
+  // (A) Querying the "chats" collection for unread messages count
+  // (B) Querying the user's "notifications" subcollection for unread notifications (excluding "message" type)
   useEffect(() => {
-    let userDocUnsubscribe;
+    let unsubscribeChats;
+    let unsubscribeNotifications;
 
     if (user) {
-      const userDocRef = doc(db, "users", user.uid);
-      userDocUnsubscribe = onSnapshot(
-        userDocRef,
-        (docSnap) => {
-          if (docSnap.exists()) {
+      // (A) Listen to chats for unread messages count.
+      const chatsQuery = query(
+        collection(db, "chats"),
+        where("participants", "array-contains", user.uid)
+      );
+      unsubscribeChats = onSnapshot(
+        chatsQuery,
+        (querySnapshot) => {
+          let totalUnread = 0;
+          querySnapshot.forEach((docSnap) => {
             const data = docSnap.data();
-            setUnreadNotificationsCount(data.unreadNotifications || 0);
-            setUnreadMessagesCount(data.unreadMessages || 0);
-          } else {
-            setUnreadNotificationsCount(0);
-            setUnreadMessagesCount(0);
-          }
+            if (data.unreadCounts) {
+              totalUnread += data.unreadCounts[user.uid] || 0;
+            }
+          });
+          setUnreadMessagesCount(totalUnread);
         },
         (error) => {
-          console.error("Error listening to user document:", error);
+          console.error("Error listening to chats:", error);
+        }
+      );
+
+      // (B) Listen to the notifications subcollection for unread notifications
+      // Excluding those of type 'message'
+      const notificationsQuery = query(
+        collection(db, "users", user.uid, "notifications"),
+        where("isRead", "==", false),
+        orderBy("type"),
+        where("type", "!=", "message")
+      );
+      unsubscribeNotifications = onSnapshot(
+        notificationsQuery,
+        (querySnapshot) => {
+          setUnreadNotificationsCount(querySnapshot.size);
+        },
+        (error) => {
+          console.error("Error listening to notifications:", error);
         }
       );
     } else {
-      setUnreadNotificationsCount(0);
       setUnreadMessagesCount(0);
+      setUnreadNotificationsCount(0);
     }
 
     return () => {
-      if (userDocUnsubscribe) userDocUnsubscribe();
+      if (unsubscribeChats) unsubscribeChats();
+      if (unsubscribeNotifications) unsubscribeNotifications();
     };
   }, [user]);
 
@@ -152,7 +186,7 @@ export default function Header() {
         <div className="flex items-center space-x-5">
           <button
             onClick={toggleSidebar}
-            className="text-2xl" // Removed 'text-white'
+            className="text-2xl"
             aria-label="Toggle Sidebar"
           >
             <HiMenu className={styles.iconWithBorder} />
@@ -160,7 +194,7 @@ export default function Header() {
 
           <button
             onClick={handleNotificationsClick}
-            className="relative text-xl" // Added 'relative' for badge positioning
+            className="relative text-xl"
             aria-label="Notifications"
           >
             <HiBell className={styles.iconWithBorder} />
@@ -171,7 +205,7 @@ export default function Header() {
 
           <button
             onClick={handleMessagesClick}
-            className="relative text-xl" // Added 'relative' for badge positioning
+            className="relative text-xl"
             aria-label="Messages"
           >
             <HiMail className={styles.iconWithBorder} />
@@ -195,7 +229,7 @@ export default function Header() {
         <div className="flex items-center space-x-5 mr-2">
           <button
             onClick={handleFavoritesClick}
-            className="relative" // Removed 'text-xl text-white'
+            className="relative"
             title="Favorites"
           >
             <HiHeart className={styles.iconWithBorder} />
@@ -210,11 +244,7 @@ export default function Header() {
             />
           )}
 
-          <button
-            onClick={handleCartClick}
-            className="relative" // Removed 'text-xl text-white'
-            title="Cart"
-          >
+          <button onClick={handleCartClick} className="relative" title="Cart">
             <HiShoppingCart className={styles.iconWithBorder} />
             {cartCount > 0 && <span className={styles.badge}>{cartCount}</span>}
           </button>
@@ -243,7 +273,7 @@ export default function Header() {
         <div className="ml-auto flex items-center space-x-8">
           <button
             onClick={handleFavoritesClick}
-            className="relative" // Removed 'text-xl text-white'
+            className="relative"
             title="Favorites"
           >
             <HiHeart className={styles.iconWithBorder} />
@@ -258,11 +288,7 @@ export default function Header() {
             />
           )}
 
-          <button
-            onClick={handleCartClick}
-            className="relative" // Removed 'text-xl text-white'
-            title="Cart"
-          >
+          <button onClick={handleCartClick} className="relative" title="Cart">
             <HiShoppingCart className={styles.iconWithBorder} />
             {cartCount > 0 && <span className={styles.badge}>{cartCount}</span>}
           </button>

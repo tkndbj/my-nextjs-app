@@ -2,7 +2,8 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: #fff;
+  background-color: var(--background);
+  color: var(--foreground);
   font-family: sans-serif;
   width: 100vw; /* Full viewport width */
   overflow-x: hidden; /* Prevent horizontal scrolling on the page */
@@ -11,7 +12,7 @@
 /* Subcategories Container (non-scrolling outer wrapper) */
 .subcategoriesContainer {
   width: 100vw;
-  background-color: #fafafa;
+  background-color: var(--secondary-background);
   overflow: hidden; /* Ensure no overflow affects other elements */
   position: relative;
 }
@@ -37,11 +38,12 @@
 
 .subcategoryButton {
   padding: 8px 16px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--input-border);
   background-color: transparent;
   border-radius: 20px;
   cursor: pointer;
   flex-shrink: 0;
+  color: var(--text-color);
 }
 
 .selectedSubcategoryButton {
