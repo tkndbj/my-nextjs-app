@@ -49,6 +49,13 @@ function DynamicMarketContent() {
       !ownerVerificationMap || ownerVerificationMap[product.ownerId] !== false
   );
 
+  // Prevent default touch behavior to stop whole page scrolling
+  const handleTouchMove = (e) => {
+    // Don't prevent default completely as we want horizontal scrolling to work
+    // But we want to isolate the scrolling to just this element
+    e.stopPropagation();
+  };
+
   // Scroll to active subcategory when it changes
   useEffect(() => {
     if (selectedSubcategory && subcategoriesRef.current) {
@@ -68,24 +75,30 @@ function DynamicMarketContent() {
   return (
     <div className={styles.dynamicMarketPage}>
       {selectedCategory && subcategories && subcategories[selectedCategory] && (
-        <div className={styles.subcategories} ref={subcategoriesRef}>
-          {subcategories[selectedCategory].map((subcat) => (
-            <button
-              key={subcat}
-              onClick={() =>
-                setSelectedSubcategory(
-                  selectedSubcategory === subcat ? null : subcat
-                )
-              }
-              className={
-                selectedSubcategory === subcat
-                  ? styles.selectedSubcategoryButton
-                  : styles.subcategoryButton
-              }
-            >
-              {subcat}
-            </button>
-          ))}
+        <div className={styles.subcategoriesContainer}>
+          <div
+            className={styles.subcategories}
+            ref={subcategoriesRef}
+            onTouchMove={handleTouchMove}
+          >
+            {subcategories[selectedCategory].map((subcat) => (
+              <button
+                key={subcat}
+                onClick={() =>
+                  setSelectedSubcategory(
+                    selectedSubcategory === subcat ? null : subcat
+                  )
+                }
+                className={
+                  selectedSubcategory === subcat
+                    ? styles.selectedSubcategoryButton
+                    : styles.subcategoryButton
+                }
+              >
+                {subcat}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
