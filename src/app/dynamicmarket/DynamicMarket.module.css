@@ -4,35 +4,34 @@
   min-height: 100vh;
   background-color: #fff;
   font-family: sans-serif;
-  width: 100%;
-  overflow-x: hidden; /* Prevents horizontal scroll on entire page */
+  width: 100vw; /* Full viewport width */
+  overflow-x: hidden; /* Prevent horizontal scrolling on the page */
 }
 
-/* Subcategories Container - This is a non-scrolling wrapper */
+/* Subcategories Container (non-scrolling outer wrapper) */
 .subcategoriesContainer {
-  width: 100%;
+  width: 100vw;
   background-color: #fafafa;
-  overflow: hidden; /* This prevents any overflow from affecting other elements */
-  position: relative; /* Create stacking context */
+  overflow: hidden; /* Ensure no overflow affects other elements */
+  position: relative;
 }
 
-/* Subcategories Row - This is the scrollable element */
+/* Subcategories Row (scrollable element) */
 .subcategories {
   display: flex;
-  justify-content: flex-start;
-  gap: 8px;
-  padding: 16px;
-  white-space: nowrap; /* Keeps buttons in a single row */
-  overflow-x: auto; /* Enables horizontal scrolling */
-  overflow-y: hidden; /* Prevents vertical scrolling */
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-  scrollbar-width: none; /* Hide scrollbar in Firefox */
-  -ms-overflow-style: none; /* Hide scrollbar in IE/Edge */
-  touch-action: pan-x; /* Only allow horizontal panning */
+  align-items: center;
+  gap: 16px;
+  padding: 16px; /* Similar to px-4 py-4 in your home page component */
+  white-space: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  touch-action: pan-x;
 }
 
 .subcategories::-webkit-scrollbar {
-  display: none; /* Hide scrollbar in Chrome/Safari/Webkit */
+  display: none;
 }
 
 .subcategoryButton {
@@ -41,8 +40,7 @@
   background-color: transparent;
   border-radius: 20px;
   cursor: pointer;
-  flex-shrink: 0; /* Prevents buttons from shrinking */
-  display: inline-block;
+  flex-shrink: 0;
 }
 
 .selectedSubcategoryButton {
@@ -52,8 +50,7 @@
   color: #fff;
   border-radius: 20px;
   cursor: pointer;
-  flex-shrink: 0; /* Prevents buttons from shrinking */
-  display: inline-block;
+  flex-shrink: 0;
 }
 
 /* Product List */
@@ -61,7 +58,7 @@
   flex: 1;
   padding: 16px;
   width: 100%;
-  overflow-x: hidden; /* Explicitly prevent horizontal scrolling */
+  overflow-x: hidden;
 }
 
 /* Product Grid */
@@ -73,20 +70,17 @@
   width: 100%;
 }
 
-/* Mobile-specific styles */
+/* Mobile-specific adjustments */
 @media only screen and (max-width: 768px) {
   .subcategories {
-    padding: 10px 16px; /* Slightly less vertical padding */
+    padding: 10px 16px; /* Slightly reduced vertical padding */
+    gap: 8px;
   }
 
-  .subcategoryButton {
-    padding: 6px 12px; /* More compact on mobile */
-    font-size: 14px; /* Slightly smaller text */
-  }
-
+  .subcategoryButton,
   .selectedSubcategoryButton {
     padding: 6px 12px; /* More compact on mobile */
-    font-size: 14px; /* Slightly smaller text */
+    font-size: 14px;
   }
 }
 
