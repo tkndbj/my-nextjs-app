@@ -11,20 +11,13 @@
 /* Subcategories Row */
 .subcategories {
   display: flex;
-  justify-content: flex-start; /* Changed from center to allow scrolling */
+  justify-content: center; /* Centered by default for PC */
   gap: 8px;
-  overflow-x: auto; /* Enables horizontal scrolling for subcategories */
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on mobile */
   padding: 16px;
   background-color: #fafafa;
   white-space: nowrap; /* Keeps buttons in a single row */
   width: 100%;
-  scrollbar-width: none; /* Hides scrollbar in Firefox */
-  -ms-overflow-style: none; /* Hides scrollbar in IE/Edge */
-}
-
-.subcategories::-webkit-scrollbar {
-  display: none; /* Hides scrollbar in Webkit browsers */
+  max-width: 100%; /* Ensures it respects parent container */
 }
 
 .subcategoryButton {
@@ -64,6 +57,20 @@
 
 /* Mobile-specific styles */
 @media only screen and (max-width: 768px) {
+  .subcategories {
+    justify-content: flex-start; /* Allows scrolling on mobile */
+    overflow-x: auto; /* Enables horizontal scrolling */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on mobile */
+    padding: 10px 16px; /* Slightly less vertical padding */
+    gap: 6px; /* Tighter spacing between buttons */
+    scrollbar-width: none; /* Hides scrollbar in Firefox */
+    -ms-overflow-style: none; /* Hides scrollbar in IE/Edge */
+  }
+
+  .subcategories::-webkit-scrollbar {
+    display: none; /* Hides scrollbar in Webkit browsers */
+  }
+
   .subcategoryButton {
     padding: 6px 12px; /* More compact on mobile */
     font-size: 14px; /* Slightly smaller text */
@@ -72,11 +79,6 @@
   .selectedSubcategoryButton {
     padding: 6px 12px; /* More compact on mobile */
     font-size: 14px; /* Slightly smaller text */
-  }
-
-  .subcategories {
-    padding: 10px 16px; /* Slightly less vertical padding */
-    gap: 6px; /* Tighter spacing between buttons */
   }
 }
 
