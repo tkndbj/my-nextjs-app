@@ -221,7 +221,7 @@ export default function Header() {
             className="text-lg font-bold bg-clip-text text-transparent
                        bg-gradient-to-r from-red-500 to-orange-500"
           >
-            Ada Express
+            Nar24
           </h1>
         </div>
 
@@ -265,7 +265,7 @@ export default function Header() {
             className="text-xl font-bold bg-clip-text text-transparent 
                        bg-gradient-to-r from-red-500 to-orange-500"
           >
-            Ada Express
+            Nar24
           </h1>
         </div>
 
