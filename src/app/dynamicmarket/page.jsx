@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useEffect } from "react";
+import React, { Suspense, useEffect, useRef } from "react";
 import { useMarket } from "../../../context/MarketContext";
 import { useSearchParams } from "next/navigation";
 import styles from "./DynamicMarket.module.css";
@@ -21,6 +21,8 @@ function DynamicMarketContent() {
     subcategories,
     ownerVerificationMap,
   } = useMarket();
+
+  const subcategoriesRef = useRef(null);
 
   const searchParams = useSearchParams();
   useEffect(() => {
@@ -47,10 +49,26 @@ function DynamicMarketContent() {
       !ownerVerificationMap || ownerVerificationMap[product.ownerId] !== false
   );
 
+  // Scroll to active subcategory when it changes
+  useEffect(() => {
+    if (selectedSubcategory && subcategoriesRef.current) {
+      const selectedButton = subcategoriesRef.current.querySelector(
+        `.${styles.selectedSubcategoryButton}`
+      );
+      if (selectedButton) {
+        selectedButton.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "center",
+        });
+      }
+    }
+  }, [selectedSubcategory]);
+
   return (
     <div className={styles.dynamicMarketPage}>
       {selectedCategory && subcategories && subcategories[selectedCategory] && (
-        <div className={styles.subcategories}>
+        <div className={styles.subcategories} ref={subcategoriesRef}>
           {subcategories[selectedCategory].map((subcat) => (
             <button
               key={subcat}
