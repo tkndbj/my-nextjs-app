@@ -4,6 +4,7 @@
   min-height: 100vh;
   background-color: #fff;
   font-family: sans-serif;
+  overflow-x: hidden; /* Prevent horizontal scrolling on mobile */
 }
 
 /* Subcategories Row */
@@ -26,8 +27,8 @@
 
 .selectedSubcategoryButton {
   padding: 8px 16px;
-  border: 1px solid #0070f3;
-  background-color: #0070f3;
+  border: 1px solid #00a36c; /* Jade green border */
+  background-color: #00a36c; /* Jade green background */
   color: #fff;
   border-radius: 20px;
   cursor: pointer;
@@ -50,5 +51,17 @@
 @media only screen and (orientation: landscape) and (max-width: 768px) {
   .productGrid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Mobile view adjustments for subcategories */
+@media (max-width: 768px) {
+  .subcategories {
+    padding: 8px;
+    gap: 4px;
+  }
+  .subcategoryButton,
+  .selectedSubcategoryButton {
+    padding: 4px 8px;
   }
 }
