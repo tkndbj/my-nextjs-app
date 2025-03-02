@@ -21,13 +21,14 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 16px; /* Similar to px-4 py-4 in your home page component */
+  padding: 16px;
   white-space: nowrap;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   -ms-overflow-style: none;
   touch-action: pan-x;
+  justify-content: flex-start; /* default for mobile */
 }
 
 .subcategories::-webkit-scrollbar {
@@ -61,13 +62,26 @@
   overflow-x: hidden;
 }
 
-/* Product Grid */
+/* Product Grid: 2 columns on mobile, 4 columns on PC */
 .productGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  row-gap: 8px;
+  column-gap: 8px;
   justify-items: center;
   width: 100%;
+}
+
+@media (min-width: 768px) {
+  .productGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: 4px;
+    row-gap: 8px;
+  }
+  /* Center subcategories for PC view */
+  .subcategories {
+    justify-content: center;
+  }
 }
 
 /* Mobile-specific adjustments */
@@ -81,11 +95,5 @@
   .selectedSubcategoryButton {
     padding: 6px 12px; /* More compact on mobile */
     font-size: 14px;
-  }
-}
-
-@media only screen and (orientation: landscape) and (max-width: 768px) {
-  .productGrid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
