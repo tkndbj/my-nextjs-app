@@ -4,17 +4,27 @@
   min-height: 100vh;
   background-color: #fff;
   font-family: sans-serif;
-  overflow-x: hidden; /* Prevent horizontal scrolling on mobile */
+  width: 100%;
+  overflow-x: hidden; /* Prevents horizontal scroll on entire page */
 }
 
 /* Subcategories Row */
 .subcategories {
   display: flex;
-  justify-content: center; /* centers subcategory buttons horizontally */
+  justify-content: flex-start; /* Changed from center to allow scrolling */
   gap: 8px;
-  overflow-x: auto;
+  overflow-x: auto; /* Enables horizontal scrolling for subcategories */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on mobile */
   padding: 16px;
   background-color: #fafafa;
+  white-space: nowrap; /* Keeps buttons in a single row */
+  width: 100%;
+  scrollbar-width: none; /* Hides scrollbar in Firefox */
+  -ms-overflow-style: none; /* Hides scrollbar in IE/Edge */
+}
+
+.subcategories::-webkit-scrollbar {
+  display: none; /* Hides scrollbar in Webkit browsers */
 }
 
 .subcategoryButton {
@@ -23,45 +33,55 @@
   background-color: transparent;
   border-radius: 20px;
   cursor: pointer;
+  flex-shrink: 0; /* Prevents buttons from shrinking */
 }
 
 .selectedSubcategoryButton {
   padding: 8px 16px;
-  border: 1px solid #00a36c; /* Jade green border */
-  background-color: #00a36c; /* Jade green background */
+  border: 1px solid #00a86b; /* Jade green border */
+  background-color: #00a86b; /* Jade green background */
   color: #fff;
   border-radius: 20px;
   cursor: pointer;
+  flex-shrink: 0; /* Prevents buttons from shrinking */
 }
 
 /* Product List */
 .productList {
   flex: 1;
   padding: 16px;
+  width: 100%;
 }
 
-/* Product Grid (matching the home page layout) */
+/* Product Grid */
 .productGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 16px;
   justify-items: center;
+  width: 100%;
+}
+
+/* Mobile-specific styles */
+@media only screen and (max-width: 768px) {
+  .subcategoryButton {
+    padding: 6px 12px; /* More compact on mobile */
+    font-size: 14px; /* Slightly smaller text */
+  }
+
+  .selectedSubcategoryButton {
+    padding: 6px 12px; /* More compact on mobile */
+    font-size: 14px; /* Slightly smaller text */
+  }
+
+  .subcategories {
+    padding: 10px 16px; /* Slightly less vertical padding */
+    gap: 6px; /* Tighter spacing between buttons */
+  }
 }
 
 @media only screen and (orientation: landscape) and (max-width: 768px) {
   .productGrid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
-
-/* Mobile view adjustments for subcategories */
-@media (max-width: 768px) {
-  .subcategories {
-    padding: 8px;
-    gap: 4px;
-  }
-  .subcategoryButton,
-  .selectedSubcategoryButton {
-    padding: 4px 8px;
   }
 }

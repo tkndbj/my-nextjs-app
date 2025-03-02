@@ -22,7 +22,6 @@ function DynamicMarketContent() {
     ownerVerificationMap,
   } = useMarket();
 
-  // When the page loads, check for a category in the URL query and update context.
   const searchParams = useSearchParams();
   useEffect(() => {
     const categoryFromUrl = searchParams.get("category");
@@ -31,7 +30,6 @@ function DynamicMarketContent() {
     }
   }, [searchParams, setSelectedCategory]);
 
-  // Clear old products immediately when the selected category changes.
   useEffect(() => {
     return () => {
       setSelectedCategory(null);
@@ -40,12 +38,10 @@ function DynamicMarketContent() {
     };
   }, [setSelectedCategory, setSelectedSubcategory, setCategoryProducts]);
 
-  // Determine which products to display:
   const productsToDisplay = inputQuery.trim()
     ? searchResults
     : categoryProducts;
 
-  // Filter products: show product if owner's verification is true or not yet determined.
   const filteredProducts = productsToDisplay.filter(
     (product) =>
       !ownerVerificationMap || ownerVerificationMap[product.ownerId] !== false
