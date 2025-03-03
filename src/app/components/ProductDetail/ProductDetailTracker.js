@@ -38,11 +38,11 @@ const ProductDetailTracker = ({ productId }) => {
   ];
 
   return (
-    <div className="w-full bg-background p-4 rounded-lg shadow-md flex flex-wrap justify-around mt-4">
+    <div className="w-full bg-white p-6 rounded-lg shadow-md flex justify-around mt-6">
       {trackerItems.map((item) => (
-        <div key={item.label} className="flex flex-col items-center m-2">
-          <span className="text-xl font-bold text-accent">{item.count}</span>
-          <span className="text-sm text-foreground">{item.label}</span>
+        <div key={item.label} className="flex flex-col items-center">
+          <span className="text-2xl font-bold text-accent">{item.count}</span>
+          <span className="text-sm text-gray-600">{item.label}</span>
         </div>
       ))}
     </div>

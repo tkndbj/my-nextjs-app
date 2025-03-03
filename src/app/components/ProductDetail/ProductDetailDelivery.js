@@ -24,12 +24,12 @@ const ProductDetailDelivery = ({ deliveryOption }) => {
   };
 
   return (
-    <div className="w-full bg-background p-4 rounded-lg shadow-md flex flex-wrap items-center justify-between mt-4">
-      <div className="flex items-center mb-2 sm:mb-0">
-        <FaTruck className="text-accent text-2xl mr-2 flex-shrink-0" />
+    <div className="w-full bg-white p-4 rounded-lg shadow-md flex items-center justify-between mt-6 transition-shadow hover:shadow-lg">
+      <div className="flex items-center">
+        <FaTruck className="text-accent text-3xl mr-3" />
         <div>
-          <h3 className="text-lg font-semibold text-foreground">{title}</h3>
-          <p className="text-foreground text-sm">{description}</p>
+          <h3 className="text-xl font-semibold text-foreground">{title}</h3>
+          <p className="text-gray-600 text-sm">{description}</p>
         </div>
       </div>
       <button
@@ -37,7 +37,7 @@ const ProductDetailDelivery = ({ deliveryOption }) => {
         className="text-accent hover:text-accent-dark transition-colors"
         aria-label="More Delivery Information"
       >
-        <FaInfoCircle size={20} />
+        <FaInfoCircle size={24} />
       </button>
 
       {isModalOpen && (

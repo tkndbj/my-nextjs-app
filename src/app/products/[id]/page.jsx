@@ -1,5 +1,3 @@
-// pages/products/[id]/page.js
-
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
@@ -35,7 +33,6 @@ import ProductDetailSellerInfo from "../../components/ProductDetail/ProductDetai
 import ProductDetailDetails from "../../components/ProductDetail/ProductDetailDetails";
 import ProductDetailDelivery from "../../components/ProductDetail/ProductDetailDelivery";
 import ProductDetailReviews from "../../components/ProductDetail/ProductDetailReviews";
-import RelatedProducts from "../../components/ProductDetail/RelatedProducts";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -83,85 +80,83 @@ export default function ProductDetailPage() {
   const rating = product.averageRating || 0.0;
 
   return (
-    <div className="w-full min-h-screen overflow-x-hidden bg-background">
-      <main className="pt-16 sm:pt-20 px-2 sm:px-6 max-w-7xl mx-auto w-full">
-        {/* Main Content Container */}
-        <div className="flex flex-col gap-4">
-          {/* Main Image */}
-          <div className="w-full h-64 sm:h-96 relative rounded-lg overflow-hidden shadow-md bg-secondaryBackground">
-            <Image
-              src={selectedImage}
-              alt={product.productName}
-              layout="fill"
-              objectFit="cover"
-            />
-          </div>
-
-          {/* Thumbnails */}
-          <div className="flex gap-2 overflow-x-auto bg-background p-2 rounded-lg">
-            {product.imageUrls?.map((img, i) => (
-              <div
-                key={i}
-                onClick={() => setSelectedImage(img)}
-                className={`w-16 h-16 sm:w-24 sm:h-24 relative rounded-lg overflow-hidden cursor-pointer border ${
-                  selectedImage === img
-                    ? "border-accent"
-                    : "border-secondaryBackground"
-                }`}
+    <div className="w-full min-h-screen bg-background">
+      <main className="pt-16 sm:pt-20 px-4 sm:px-6 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Left Column: Product Images */}
+          <section className="flex flex-col gap-4">
+            {/* Back Button Above the Image */}
+            <div>
+              <button
+                onClick={() => router.back()}
+                className="p-2 bg-white rounded-full shadow hover:bg-gray-100 transition-colors"
+                aria-label="Go Back"
               >
-                <Image
-                  src={img}
-                  alt={`Thumbnail ${i}`}
-                  layout="fill"
-                  objectFit="cover"
-                />
-              </div>
-            ))}
-          </div>
-
-          {/* Product Name */}
-          <h1 className="text-xl sm:text-3xl font-bold text-foreground">
-            {product.productName}
-          </h1>
-
-          {/* Price + Star Rating */}
-          <div className="flex items-center gap-4">
-            <p className="text-lg sm:text-2xl font-semibold text-foreground">
-              {formatCurrency(product.price)}
-            </p>
-            <InlineStarRating rating={rating} />
-          </div>
-
-          {/* Product Tracker (above seller info) */}
-          <div className="mt-4">
+                <svg
+                  className="h-6 w-6 text-gray-700"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </button>
+            </div>
+            {/* Main Image */}
+            <div className="w-full h-[400px] sm:h-[700px] relative rounded-lg overflow-hidden shadow-lg bg-secondaryBackground">
+              <Image
+                src={selectedImage}
+                alt={product.productName}
+                layout="fill"
+                objectFit="cover"
+              />
+            </div>
+            {/* Thumbnails */}
+            <div className="flex gap-3 overflow-x-auto py-2">
+              {product.imageUrls?.map((img, i) => (
+                <div
+                  key={i}
+                  onClick={() => setSelectedImage(img)}
+                  className={`w-20 h-20 relative rounded-lg overflow-hidden cursor-pointer border transition-transform transform hover:scale-105 ${
+                    selectedImage === img
+                      ? "border-accent"
+                      : "border-secondaryBackground"
+                  }`}
+                >
+                  <Image
+                    src={img}
+                    alt={`Thumbnail ${i}`}
+                    layout="fill"
+                    objectFit="cover"
+                  />
+                </div>
+              ))}
+            </div>
+          </section>
+          {/* Right Column: Product Details */}
+          <section className="flex flex-col gap-6">
+            <h1 className="text-2xl md:text-4xl font-bold text-foreground">
+              {product.productName}
+            </h1>
+            <div className="flex items-center gap-6">
+              <p className="text-2xl font-semibold text-foreground">
+                {formatCurrency(product.price)}
+              </p>
+              <InlineStarRating rating={rating} />
+            </div>
             <ProductDetailTracker productId={product.id} />
-          </div>
-
-          {/* Seller Info */}
-          <div className="mt-4">
             <ProductDetailSellerInfo sellerId={product.userId} />
-          </div>
-
-          {/* Product Details */}
-          <div className="mt-4">
             <ProductDetailDetails product={product} />
-          </div>
-
-          {/* Delivery */}
-          <div className="mt-4">
             <ProductDetailDelivery deliveryOption={product.deliveryOption} />
-          </div>
-
-          {/* Reviews */}
-          <div className="mt-4">
             <ProductDetailReviews productId={product.id} />
-          </div>
+          </section>
         </div>
-
-        {/* Related Products at the bottom
-        <div className="mt-6">
-          <RelatedProducts currentProduct={product} />
-        </div> */}
       </main>
     </div>
   );

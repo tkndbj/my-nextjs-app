@@ -23,15 +23,17 @@ const ProductDetailDetails = ({ product }) => {
   ];
 
   return (
-    <div className="w-full max-w-full bg-background p-4 sm:p-8 rounded-lg shadow-md whitespace-normal break-words">
-      <h2 className="text-lg sm:text-xl font-semibold mb-4 text-foreground">
+    <div className="w-full bg-white p-6 rounded-lg shadow-md mt-6">
+      <h2 className="text-2xl font-semibold mb-5 text-foreground">
         Product Details
       </h2>
-      <ul className="space-y-3">
+      <ul className="space-y-4">
         {detailItems.map((item, index) => (
           <li key={index} className="flex justify-between items-center">
-            <span className="text-foreground font-medium">{item.label}:</span>
-            <span className="text-foreground flex-shrink-0">
+            <span className="text-lg font-medium text-foreground">
+              {item.label}:
+            </span>
+            <span className="text-lg text-foreground flex items-center">
               {item.value}
               {item.icon && item.icon}
             </span>

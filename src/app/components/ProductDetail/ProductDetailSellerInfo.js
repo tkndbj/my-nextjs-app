@@ -29,10 +29,8 @@ const ProductDetailSellerInfo = ({ sellerId }) => {
           }));
         }
 
-        // Reference to the 'reviews' subcollection
+        // Listen for real-time review updates
         const reviewsRef = collection(db, "users", sellerId, "reviews");
-
-        // Listen for real-time updates
         const unsubscribeReviews = onSnapshot(reviewsRef, (snapshot) => {
           let totalRating = 0;
           snapshot.forEach((doc) => {
@@ -61,37 +59,35 @@ const ProductDetailSellerInfo = ({ sellerId }) => {
   }, [sellerId]);
 
   const handleSellerClick = () => {
-    // Navigate to seller's profile or reviews page
     router.push(`/seller/${sellerId}`);
   };
 
   return (
     <div
-      className="w-full bg-background p-4 rounded-lg shadow-md flex flex-wrap items-center justify-between mt-4 cursor-pointer hover:bg-secondaryBackground transition-colors"
+      className="w-full bg-white p-6 rounded-lg shadow-md flex items-center justify-between mt-6 cursor-pointer hover:bg-gray-50 transition-colors"
       onClick={handleSellerClick}
       aria-label="View Seller Information"
     >
-      <div className="flex items-center mb-2 sm:mb-0">
-        {/* Seller Avatar or Icon */}
-        <div className="w-12 h-12 rounded-full bg-secondaryBackground flex items-center justify-center mr-4">
-          <span className="text-foreground text-xl">
+      <div className="flex items-center">
+        <div className="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center mr-4">
+          <span className="text-2xl text-foreground">
             {sellerInfo.sellerName.charAt(0).toUpperCase()}
           </span>
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-foreground">
+          <h3 className="text-xl font-semibold text-foreground">
             {sellerInfo.sellerName}
           </h3>
-          <div className="flex items-center space-x-1">
+          <div className="flex items-center space-x-2">
             <StarRating rating={sellerInfo.sellerAverageRating} />
-            <span className="text-gray-400 text-sm">
+            <span className="text-gray-500 text-sm">
               ({sellerInfo.sellerTotalReviews} Reviews)
             </span>
           </div>
         </div>
       </div>
       <button
-        className="text-accent hover:text-accent-hover transition-colors"
+        className="text-accent hover:text-accent-dark transition-colors"
         aria-label="View Seller Reviews"
       >
         &rarr;
